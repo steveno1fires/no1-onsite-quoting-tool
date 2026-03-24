@@ -37,6 +37,8 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
     onChange({ ...data, kitType, price });
   };
 
+  const colourValue = (data.colour as string) === "Raw" ? "RAL" : data.colour;
+
   return (
     <div className="animate-slide-in space-y-4">
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-4">
@@ -55,7 +57,7 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
 
         <div>
           <Label className="text-xs">Colour</Label>
-          <Select value={data.colour} onValueChange={(v) => onChange({ ...data, colour: v as TwinWallKit["colour"] })}>
+          <Select value={colourValue} onValueChange={(v) => onChange({ ...data, colour: v as TwinWallKit["colour"] })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Stainless Steel">Stainless Steel</SelectItem>
