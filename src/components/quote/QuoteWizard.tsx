@@ -76,7 +76,9 @@ export function QuoteWizard() {
       case 4:
         return <StepExtras data={data.extras} onChange={(extras) => setData({ ...data, extras })} />;
       case 5:
-        return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} />;
+        return isTwinWall
+          ? <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />
+          : <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       case 6:
         return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
       case 7:
