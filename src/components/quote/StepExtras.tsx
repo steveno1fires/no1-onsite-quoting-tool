@@ -21,6 +21,13 @@ export function StepExtras({ data, onChange }: Props) {
     const updated = [...data];
     const config = EXTRAS_CONFIG[index];
     if (enabled && config) {
+      // Disable mutually exclusive extra
+      if (config.excludes) {
+        const exIdx = EXTRAS_CONFIG.findIndex((c) => c.label === config.excludes);
+        if (exIdx >= 0) {
+          updated[exIdx] = { ...updated[exIdx], enabled: false, price: 0, selectedOption: undefined };
+        }
+      }
       if (config.type === "fixed") {
         updated[index] = { ...updated[index], enabled, price: config.price || 0 };
       } else if (config.type === "select" && config.options?.length) {
