@@ -82,6 +82,7 @@ export const initialQuoteData: QuoteData = {
     kitType: "House (12m)",
     flueSize: '5"',
     system: "Schiedel Techno Flex",
+    grade: "316L",
     price: 0,
   },
   notes: "",
