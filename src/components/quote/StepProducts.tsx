@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Products, JobType } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,9 +66,16 @@ function OptionalSection({
 export function StepProducts({ data, jobType, onChange }: Props) {
   const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
 
-  const selectedFireLabel = data.fire.brand && data.fire.model
-    ? `${data.fire.brand} ${data.fire.model}`
-    : "";
+  // Fire: cascading brand → model
+  const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
+  const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
+
+  // Surround: cascading brand → model
+  const surroundBrands = [...new Set(SURROUND_OPTIONS.map((s) => s.brand))];
+  const surroundModelsForBrand = SURROUND_OPTIONS.filter(
+    (s) => s.brand === (data.surround as any).brand
+  );
+  const surroundBrand = (data.surround as any).brand || "";
 
   return (
     <div className="space-y-4 animate-slide-in">
@@ -75,46 +83,85 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">Fire / Appliance *</Label>
         <div>
-          <Label className="text-xs">Select Fire</Label>
+          <Label className="text-xs">Supplier</Label>
           <Select
-            value={selectedFireLabel}
-            onValueChange={(val) => {
-              const item = FIRE_OPTIONS.find((f) => `${f.brand} ${f.model}` === val);
-              if (item) {
-                onChange({
-                  ...data,
-                  fire: { brand: item.brand, model: item.model, kw: item.kw || "", price: item.price },
-                });
-              }
+            value={data.fire.brand || undefined}
+            onValueChange={(brand) => {
+              onChange({
+                ...data,
+                fire: { brand, model: "", kw: "", price: 0 },
+              });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose a fire/appliance" />
+              <SelectValue placeholder="Choose supplier" />
             </SelectTrigger>
             <SelectContent>
-              {FIRE_OPTIONS.map((f) => (
-                <SelectItem key={f.label} value={`${f.brand} ${f.model}`}>
-                  {f.label} — £{f.price}
+              {fireBrands.map((b) => (
+                <SelectItem key={b} value={b}>
+                  {b}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        {data.fire.brand && (
+          <div>
+            <Label className="text-xs">Model</Label>
+            <Select
+              value={data.fire.model || undefined}
+              onValueChange={(model) => {
+                const item = FIRE_OPTIONS.find(
+                  (f) => f.brand === data.fire.brand && f.model === model
+                );
+                if (item) {
+                  onChange({
+                    ...data,
+                    fire: {
+                      brand: item.brand,
+                      model: item.model,
+                      kw: item.kw || "",
+                      price: item.price,
+                    },
+                  });
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose model" />
+              </SelectTrigger>
+              <SelectContent>
+                {fireModelsForBrand.map((f) => (
+                  <SelectItem key={f.model} value={f.model}>
+                    {f.model} — £{f.price}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {showKw && data.fire.kw && (
           <p className="text-xs text-muted-foreground">kW Output: {data.fire.kw}</p>
         )}
         <div>
           <Label className="text-xs">Price</Label>
-          <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+          <PriceInput
+            value={data.fire.price}
+            onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })}
+          />
         </div>
       </div>
 
       {/* Hearth */}
-      <OptionalSection title="Hearth" enabled={data.hearth.enabled} onToggle={(v) => onChange({ ...data, hearth: { ...data.hearth, enabled: v } })}>
+      <OptionalSection
+        title="Hearth"
+        enabled={data.hearth.enabled}
+        onToggle={(v) => onChange({ ...data, hearth: { ...data.hearth, enabled: v } })}
+      >
         <div>
           <Label className="text-xs">Select Hearth</Label>
           <Select
-            value={data.hearth.description}
+            value={data.hearth.description || undefined}
             onValueChange={(val) => {
               const item = HEARTH_OPTIONS.find((h) => h.label === val);
               if (item) {
@@ -141,11 +188,15 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       </OptionalSection>
 
       {/* Chamber */}
-      <OptionalSection title="Chamber" enabled={data.chamber.enabled} onToggle={(v) => onChange({ ...data, chamber: { ...data.chamber, enabled: v } })}>
+      <OptionalSection
+        title="Chamber"
+        enabled={data.chamber.enabled}
+        onToggle={(v) => onChange({ ...data, chamber: { ...data.chamber, enabled: v } })}
+      >
         <div>
           <Label className="text-xs">Select Chamber</Label>
           <Select
-            value={data.chamber.description}
+            value={data.chamber.description || undefined}
             onValueChange={(val) => {
               const item = CHAMBER_OPTIONS.find((c) => c.label === val);
               if (item) {
@@ -172,11 +223,21 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       </OptionalSection>
 
       {/* Beam */}
-      <OptionalSection title="Beam" enabled={data.beam.enabled} onToggle={(v) => onChange({ ...data, beam: { ...data.beam, enabled: v }, surround: { ...data.surround, enabled: v ? false : data.surround.enabled } })}>
+      <OptionalSection
+        title="Beam"
+        enabled={data.beam.enabled}
+        onToggle={(v) =>
+          onChange({
+            ...data,
+            beam: { ...data.beam, enabled: v },
+            surround: { ...data.surround, enabled: v ? false : data.surround.enabled },
+          })
+        }
+      >
         <div>
           <Label className="text-xs">Select Beam</Label>
           <Select
-            value={data.beam.material ? BEAM_OPTIONS.find((b) => b.material === data.beam.material)?.label || "" : ""}
+            value={data.beam.description || undefined}
             onValueChange={(val) => {
               const item = BEAM_OPTIONS.find((b) => b.label === val);
               if (item) {
@@ -203,30 +264,76 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       </OptionalSection>
 
       {/* Surround */}
-      <OptionalSection title="Surround" enabled={data.surround.enabled} onToggle={(v) => onChange({ ...data, surround: { ...data.surround, enabled: v }, beam: { ...data.beam, enabled: v ? false : data.beam.enabled } })}>
+      <OptionalSection
+        title="Surround"
+        enabled={data.surround.enabled}
+        onToggle={(v) =>
+          onChange({
+            ...data,
+            surround: { ...data.surround, enabled: v },
+            beam: { ...data.beam, enabled: v ? false : data.beam.enabled },
+          })
+        }
+      >
         <div>
-          <Label className="text-xs">Select Surround</Label>
+          <Label className="text-xs">Supplier</Label>
           <Select
-            value={data.surround.description}
-            onValueChange={(val) => {
-              const item = SURROUND_OPTIONS.find((s) => s.label === val);
-              if (item) {
-                onChange({ ...data, surround: { ...data.surround, description: item.label, price: item.price } });
-              }
+            value={surroundBrand || undefined}
+            onValueChange={(brand) => {
+              onChange({
+                ...data,
+                surround: { enabled: true, description: "", price: 0, brand, model: "" } as any,
+              });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose a surround" />
+              <SelectValue placeholder="Choose supplier" />
             </SelectTrigger>
             <SelectContent>
-              {SURROUND_OPTIONS.map((s) => (
-                <SelectItem key={s.label} value={s.label}>
-                  {s.label} — £{s.price}
+              {surroundBrands.map((b) => (
+                <SelectItem key={b} value={b}>
+                  {b}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        {surroundBrand && (
+          <div>
+            <Label className="text-xs">Model</Label>
+            <Select
+              value={(data.surround as any).model || undefined}
+              onValueChange={(model) => {
+                const item = SURROUND_OPTIONS.find(
+                  (s) => s.brand === surroundBrand && s.model === model
+                );
+                if (item) {
+                  onChange({
+                    ...data,
+                    surround: {
+                      enabled: true,
+                      description: item.label,
+                      price: item.price,
+                      brand: item.brand,
+                      model: item.model,
+                    } as any,
+                  });
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose model" />
+              </SelectTrigger>
+              <SelectContent>
+                {surroundModelsForBrand.map((s) => (
+                  <SelectItem key={s.model} value={s.model}>
+                    {s.model} — £{s.price}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.surround.price} onChange={(v) => onChange({ ...data, surround: { ...data.surround, price: v } })} />
