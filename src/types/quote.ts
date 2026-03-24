@@ -110,5 +110,6 @@ export const initialQuoteData: QuoteData = {
     price: 450,
   },
   notes: "",
+  photos: { current: [], upClose: [], outside: [] },
   includeVat: true,
 };
