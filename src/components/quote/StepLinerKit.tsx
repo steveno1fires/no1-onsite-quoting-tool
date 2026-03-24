@@ -43,7 +43,18 @@ export function StepLinerKit({ data, onChange }: Props) {
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Schiedel Techno Flex">Schiedel Techno Flex</SelectItem>
-              <SelectItem value="Schiedel ICID">Schiedel ICID</SelectItem>
+              <SelectItem value="Mi Flues">Mi Flues</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-xs">Grade</Label>
+          <Select value={data.grade} onValueChange={(v) => onChange({ ...data, grade: v as LinerKit["grade"] })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="316L">316L</SelectItem>
+              <SelectItem value="904L">904L</SelectItem>
             </SelectContent>
           </Select>
         </div>
