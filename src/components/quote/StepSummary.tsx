@@ -45,10 +45,21 @@ function getLineItems(data: QuoteData): LineItem[] {
   });
 
   if (data.jobType?.startsWith("Woodburner") && data.linerKit.price > 0) {
+    let linerPrice = data.linerKit.price;
+    const surcharges: string[] = [];
+    if (data.linerKit.flueSize === '6"') {
+      linerPrice *= 1.2;
+      surcharges.push('6" +20%');
+    }
+    if (data.linerKit.grade === "904L") {
+      linerPrice *= 1.2;
+      surcharges.push("904L +20%");
+    }
+    const surchargeNote = surcharges.length ? ` (${surcharges.join(", ")})` : "";
     items.push({
       label: "Liner Kit",
-      detail: `${data.linerKit.kitType} · ${data.linerKit.flueSize} · ${data.linerKit.system} · ${data.linerKit.grade}`,
-      price: data.linerKit.price,
+      detail: `${data.linerKit.kitType} · ${data.linerKit.flueSize} · ${data.linerKit.system} · ${data.linerKit.grade}${surchargeNote}`,
+      price: Math.round(linerPrice * 100) / 100,
     });
     if (data.linerKit.regPlateSize) {
       items.push({ label: `Reg Plate (${data.linerKit.regPlateSize})`, price: data.linerKit.regPlatePrice });
