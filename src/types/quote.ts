@@ -1,3 +1,8 @@
+import { Extra } from "@/types/extra";
+import { EXTRAS_CONFIG } from "@/data/extrasConfig";
+
+export type { Extra };
+
 export interface CustomerDetails {
   firstName: string;
   lastName: string;
@@ -43,22 +48,6 @@ export interface Products {
   surround: OptionalProduct;
 }
 
-export interface Extra {
-  label: string;
-  enabled: boolean;
-  price: number;
-}
-
-export const EXTRA_LABELS = [
-  "Making Good",
-  "Scaffolding",
-  "Cherry Picker",
-  "Gas Disconnection",
-  "Electrics Disconnection",
-  "CO Alarm",
-  "Starter Bundle",
-  "Log Kit/Log Store",
-] as const;
 
 export interface LinerKit {
   kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
@@ -87,7 +76,7 @@ export const initialQuoteData: QuoteData = {
     beam: { enabled: false, description: "", material: "", price: 0 },
     surround: { enabled: false, description: "", price: 0 },
   },
-  extras: EXTRA_LABELS.map((label) => ({ label, enabled: false, price: 0 })),
+  extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
   linerKit: {
     kitType: "House (12m)",
     flueSize: '5"',
