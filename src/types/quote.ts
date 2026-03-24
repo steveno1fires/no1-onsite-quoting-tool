@@ -68,7 +68,7 @@ export interface LinerKit {
 
 export interface TwinWallKit {
   system: "Schiedel ICID" | "Mi Flue TW Pro";
-  colour: "Stainless Steel" | "Black" | "Raw";
+  colour: "Stainless Steel" | "Black" | "RAL";
   kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
   flueSize: '5"' | '6"';
   price: number;

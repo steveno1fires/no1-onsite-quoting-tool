@@ -60,7 +60,7 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
             <SelectContent>
               <SelectItem value="Stainless Steel">Stainless Steel</SelectItem>
               <SelectItem value="Black">Black</SelectItem>
-              <SelectItem value="Raw">Raw</SelectItem>
+              <SelectItem value="RAL">RAL</SelectItem>
             </SelectContent>
           </Select>
         </div>
