@@ -10,6 +10,7 @@ import { StepNotes } from "./StepNotes";
 import { StepSummary } from "./StepSummary";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import logo from "@/assets/logo.jpeg";
 import { toast } from "sonner";
 
 export function QuoteWizard() {
