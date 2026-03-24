@@ -54,12 +54,14 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
     description: "Includes: gloves, companion set, moisture meter, kindling, firelighters & log basket",
   },
   {
-    label: "Log Kit / Log Store",
-    type: "select",
+    label: "Log Kit",
+    type: "fixed",
+    price: 250,
     description: "Includes: bulk bag of kiln-dried logs & kindling pack",
-    options: [
-      { label: "Log Kit", price: 250 },
-      { label: "Log Store", price: 350 },
-    ],
+  },
+  {
+    label: "Log Store",
+    type: "fixed",
+    price: 350,
   },
 ];
