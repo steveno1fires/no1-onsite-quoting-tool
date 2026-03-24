@@ -24,9 +24,9 @@ export function StepNotes({ value, onChange }: Props) {
       return;
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    const SpeechRecognitionCtor =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognitionCtor();
     recognition.lang = "en-GB";
     recognition.continuous = true;
     recognition.interimResults = true;
