@@ -49,11 +49,20 @@ export interface Products {
 }
 
 
+export interface LinerKitAccessory {
+  label: string;
+  enabled: boolean;
+  price: number;
+}
+
 export interface LinerKit {
   kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
   flueSize: '5"' | '6"';
   system: "Schiedel Techno Flex" | "Mi Flues";
   grade: "316L" | "904L";
+  regPlateSize: string;
+  regPlatePrice: number;
+  accessories: LinerKitAccessory[];
   price: number;
 }
 
