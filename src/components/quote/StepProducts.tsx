@@ -89,7 +89,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             onValueChange={(brand) => {
               onChange({
                 ...data,
-                fire: { brand, model: "", kw: "", price: 0 },
+                fire: { brand, model: brand === "Customer's Own" ? "Customer's Own" : "", kw: "", price: 0 },
               });
             }}
           >
@@ -97,6 +97,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
               <SelectValue placeholder="Choose supplier" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="Customer's Own">Customer's Own</SelectItem>
               {fireBrands.map((b) => (
                 <SelectItem key={b} value={b}>
                   {b}
@@ -105,7 +106,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             </SelectContent>
           </Select>
         </div>
-        {data.fire.brand && (
+        {data.fire.brand && data.fire.brand !== "Customer's Own" && (
           <div>
             <Label className="text-xs">Model</Label>
             <Select
@@ -138,6 +139,16 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        )}
+        {data.fire.brand === "Customer's Own" && (
+          <div>
+            <Label className="text-xs">Description</Label>
+            <Input
+              value={data.fire.model}
+              onChange={(e) => onChange({ ...data, fire: { ...data.fire, model: e.target.value } })}
+              placeholder="Describe the customer's fire"
+            />
           </div>
         )}
         {showKw && data.fire.kw && (
