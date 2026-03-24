@@ -44,7 +44,23 @@ function getLineItems(data: QuoteData): LineItem[] {
     items.push({ label: e.label, price: e.price });
   });
 
-  if (data.jobType?.startsWith("Woodburner") && data.linerKit.price > 0) {
+  if (data.jobType === "Woodburner—Twin Wall" && data.twinWallKit.price > 0) {
+    let twPrice = data.twinWallKit.price;
+    if (data.twinWallKit.flueSize === '6"') {
+      twPrice *= 1.2;
+    }
+    items.push({
+      label: "Twin Wall Flue Kit",
+      detail: `${data.twinWallKit.kitType} · ${data.twinWallKit.flueSize} · ${data.twinWallKit.system} · ${data.twinWallKit.colour}${data.twinWallKit.flueSize === '6"' ? ' (6" +20%)' : ''}`,
+      price: Math.round(twPrice * 100) / 100,
+    });
+    if (data.twinWallKit.additionalItemDescription.trim()) {
+      items.push({
+        label: data.twinWallKit.additionalItemDescription,
+        price: data.twinWallKit.additionalItemPrice,
+      });
+    }
+  } else if (data.jobType === "Woodburner—Chimney Liner" && data.linerKit.price > 0) {
     let linerPrice = data.linerKit.price;
     const surcharges: string[] = [];
     if (data.linerKit.flueSize === '6"') {
