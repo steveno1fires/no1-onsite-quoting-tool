@@ -172,7 +172,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       </OptionalSection>
 
       {/* Beam */}
-      <OptionalSection title="Beam" enabled={data.beam.enabled} onToggle={(v) => onChange({ ...data, beam: { ...data.beam, enabled: v } })}>
+      <OptionalSection title="Beam" enabled={data.beam.enabled} onToggle={(v) => onChange({ ...data, beam: { ...data.beam, enabled: v }, surround: { ...data.surround, enabled: v ? false : data.surround.enabled } })}>
         <div>
           <Label className="text-xs">Select Beam</Label>
           <Select
@@ -203,7 +203,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
       </OptionalSection>
 
       {/* Surround */}
-      <OptionalSection title="Surround" enabled={data.surround.enabled} onToggle={(v) => onChange({ ...data, surround: { ...data.surround, enabled: v } })}>
+      <OptionalSection title="Surround" enabled={data.surround.enabled} onToggle={(v) => onChange({ ...data, surround: { ...data.surround, enabled: v }, beam: { ...data.beam, enabled: v ? false : data.beam.enabled } })}>
         <div>
           <Label className="text-xs">Select Surround</Label>
           <Select
