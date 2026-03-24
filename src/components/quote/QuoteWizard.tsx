@@ -18,11 +18,13 @@ export function QuoteWizard() {
   const [data, setData] = useState<QuoteData>(initialQuoteData);
 
   const isWoodburner = data.jobType?.startsWith("Woodburner");
-  const totalSteps = isWoodburner ? 7 : 6;
+  const isTwinWall = data.jobType === "Woodburner—Twin Wall";
+  const hasFlueStep = isWoodburner; // both liner and twin wall
+  const totalSteps = hasFlueStep ? 7 : 6;
 
-  // Map logical step to actual step (skip liner kit if not woodburner)
+  // Map logical step to actual step (skip flue kit if not woodburner)
   const getActualStep = (s: number) => {
-    if (!isWoodburner && s >= 5) return s + 1; // skip step 5 (liner kit)
+    if (!hasFlueStep && s >= 5) return s + 1;
     return s;
   };
 
@@ -74,7 +76,9 @@ export function QuoteWizard() {
       case 4:
         return <StepExtras data={data.extras} onChange={(extras) => setData({ ...data, extras })} />;
       case 5:
-        return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} />;
+        return isTwinWall
+          ? <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />
+          : <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       case 6:
         return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
       case 7:
@@ -89,7 +93,7 @@ export function QuoteWizard() {
     2: "Job Type",
     3: "Products",
     4: "Extras",
-    5: "Liner Kit",
+    5: isTwinWall ? "Twin Wall Kit" : "Liner Kit",
     6: "Notes",
     7: "Quote Summary",
   };

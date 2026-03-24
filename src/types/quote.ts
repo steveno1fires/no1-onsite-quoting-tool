@@ -66,6 +66,16 @@ export interface LinerKit {
   price: number;
 }
 
+export interface TwinWallKit {
+  system: "Schiedel ICID" | "Mi Flue TW Pro";
+  colour: "Stainless Steel" | "Black" | "Raw";
+  kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
+  flueSize: '5"' | '6"';
+  price: number;
+  additionalItemDescription: string;
+  additionalItemPrice: number;
+}
+
 export interface SitePhotos {
   current: string[];
   upClose: string[];
@@ -78,6 +88,7 @@ export interface QuoteData {
   products: Products;
   extras: Extra[];
   linerKit: LinerKit;
+  twinWallKit: TwinWallKit;
   notes: string;
   photos: SitePhotos;
   includeVat: boolean;
@@ -108,6 +119,15 @@ export const initialQuoteData: QuoteData = {
       { label: "Debris Collar", enabled: false, price: 50 },
     ],
     price: 450,
+  },
+  twinWallKit: {
+    system: "Schiedel ICID",
+    colour: "Stainless Steel",
+    kitType: "House (12m)",
+    flueSize: '5"',
+    price: 450,
+    additionalItemDescription: "",
+    additionalItemPrice: 0,
   },
   notes: "",
   photos: { current: [], upClose: [], outside: [] },
