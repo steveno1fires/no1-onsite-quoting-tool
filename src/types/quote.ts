@@ -88,6 +88,7 @@ export interface QuoteData {
   products: Products;
   extras: Extra[];
   linerKit: LinerKit;
+  twinWallKit: TwinWallKit;
   notes: string;
   photos: SitePhotos;
   includeVat: boolean;
