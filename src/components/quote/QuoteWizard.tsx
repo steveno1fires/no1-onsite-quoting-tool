@@ -97,9 +97,12 @@ export function QuoteWizard() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground px-4 py-3 shadow-md">
-        <h1 className="text-lg font-bold tracking-tight">No1 Fires</h1>
-        <p className="text-xs opacity-80">Field Quoting Tool</p>
+      <header className="bg-primary text-primary-foreground px-4 py-3 shadow-md flex items-center gap-3">
+        <img src={logo} alt="No1 Fires" className="h-10 w-auto rounded" />
+        <div>
+          <h1 className="text-lg font-bold tracking-tight">No1 Fires</h1>
+          <p className="text-xs opacity-80">Field Quoting Tool</p>
+        </div>
       </header>
 
       {/* Step indicator */}
