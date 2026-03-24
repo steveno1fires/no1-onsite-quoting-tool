@@ -85,7 +85,8 @@ function PhotoSection({
   );
 }
 
-export function StepNotes({ value, onChange, photos, onPhotosChange }: Props) {
+export function StepNotes({ value, onChange, photos: rawPhotos, onPhotosChange }: Props) {
+  const photos: SitePhotos = rawPhotos ?? { current: [], upClose: [], outside: [] };
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
