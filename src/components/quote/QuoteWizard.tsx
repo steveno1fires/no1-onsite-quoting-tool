@@ -93,7 +93,7 @@ export function QuoteWizard() {
     2: "Job Type",
     3: "Products",
     4: "Extras",
-    5: "Liner Kit",
+    5: isTwinWall ? "Twin Wall Kit" : "Liner Kit",
     6: "Notes",
     7: "Quote Summary",
   };
