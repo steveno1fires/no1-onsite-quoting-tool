@@ -11,7 +11,7 @@ interface Props {
 
 export function StepNotes({ value, onChange }: Props) {
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   const supported =
     typeof window !== "undefined" &&
