@@ -100,7 +100,7 @@ export const initialQuoteData: QuoteData = {
     system: "Schiedel Techno Flex",
     grade: "316L",
     regPlateSize: "",
-    regPlatePrice: 40,
+    regPlatePrice: 0,
     accessories: [
       { label: "45° Bend", enabled: false, price: 50 },
       { label: "Offset Bend", enabled: false, price: 50 },

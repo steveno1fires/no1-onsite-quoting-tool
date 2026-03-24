@@ -98,12 +98,18 @@ export function StepLinerKit({ data, onChange }: Props) {
 
       {/* Reg Plate */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-        <Label className="text-sm font-semibold">Reg Plate — £40</Label>
+        <Label className="text-sm font-semibold">
+          Reg Plate — £{data.regPlateSize.trim() ? "40" : "0"}
+        </Label>
         <div>
           <Label className="text-xs">Size</Label>
           <Input
             value={data.regPlateSize}
-            onChange={(e) => onChange({ ...data, regPlateSize: e.target.value })}
+            onChange={(e) => {
+              const regPlateSize = e.target.value;
+              const regPlatePrice = regPlateSize.trim() ? 40 : 0;
+              onChange({ ...data, regPlateSize, regPlatePrice });
+            }}
             placeholder="e.g. 12x12"
           />
         </div>
