@@ -18,11 +18,13 @@ export function QuoteWizard() {
   const [data, setData] = useState<QuoteData>(initialQuoteData);
 
   const isWoodburner = data.jobType?.startsWith("Woodburner");
-  const totalSteps = isWoodburner ? 7 : 6;
+  const isTwinWall = data.jobType === "Woodburner—Twin Wall";
+  const hasFlueStep = isWoodburner; // both liner and twin wall
+  const totalSteps = hasFlueStep ? 7 : 6;
 
-  // Map logical step to actual step (skip liner kit if not woodburner)
+  // Map logical step to actual step (skip flue kit if not woodburner)
   const getActualStep = (s: number) => {
-    if (!isWoodburner && s >= 5) return s + 1; // skip step 5 (liner kit)
+    if (!hasFlueStep && s >= 5) return s + 1;
     return s;
   };
 
