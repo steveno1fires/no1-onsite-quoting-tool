@@ -47,7 +47,7 @@ function getLineItems(data: QuoteData): LineItem[] {
   if (data.jobType?.startsWith("Woodburner") && data.linerKit.price > 0) {
     items.push({
       label: "Liner Kit",
-      detail: `${data.linerKit.kitType} · ${data.linerKit.flueSize} · ${data.linerKit.system}`,
+      detail: `${data.linerKit.kitType} · ${data.linerKit.flueSize} · ${data.linerKit.system} · ${data.linerKit.grade}`,
       price: data.linerKit.price,
     });
   }
