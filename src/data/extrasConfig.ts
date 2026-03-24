@@ -4,6 +4,7 @@ export interface ExtraOption {
   price?: number;
   options?: { label: string; price: number }[];
   description?: string;
+  excludes?: string;
 }
 
 export const EXTRAS_CONFIG: ExtraOption[] = [
@@ -18,6 +19,7 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
   {
     label: "Scaffolding",
     type: "select",
+    excludes: "Cherry Picker",
     options: [
       { label: "Gable End", price: 550 },
       { label: "Up and Over", price: 750 },
@@ -28,6 +30,7 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
     label: "Cherry Picker",
     type: "fixed",
     price: 350,
+    excludes: "Scaffolding",
   },
   {
     label: "Gas Disconnection",
@@ -52,7 +55,11 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
   },
   {
     label: "Log Kit / Log Store",
-    type: "info",
-    description: "Includes: log store, bulk bag of kiln-dried logs & kindling pack",
+    type: "select",
+    description: "Includes: bulk bag of kiln-dried logs & kindling pack",
+    options: [
+      { label: "Log Kit", price: 250 },
+      { label: "Log Store", price: 350 },
+    ],
   },
 ];
