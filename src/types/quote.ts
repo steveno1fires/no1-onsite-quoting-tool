@@ -76,7 +76,7 @@ export const initialQuoteData: QuoteData = {
     beam: { enabled: false, description: "", material: "", price: 0 },
     surround: { enabled: false, description: "", price: 0 },
   },
-  extras: EXTRA_LABELS.map((label) => ({ label, enabled: false, price: 0 })),
+  extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
   linerKit: {
     kitType: "House (12m)",
     flueSize: '5"',
