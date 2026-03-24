@@ -1,3 +1,8 @@
+import { Extra } from "@/types/extra";
+import { EXTRAS_CONFIG } from "@/data/extrasConfig";
+
+export type { Extra };
+
 export interface CustomerDetails {
   firstName: string;
   lastName: string;
