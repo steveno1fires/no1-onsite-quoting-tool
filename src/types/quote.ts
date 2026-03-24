@@ -66,6 +66,12 @@ export interface LinerKit {
   price: number;
 }
 
+export interface SitePhotos {
+  current: string[];
+  upClose: string[];
+  outside: string[];
+}
+
 export interface QuoteData {
   customer: CustomerDetails;
   jobType: JobType | "";
@@ -73,6 +79,7 @@ export interface QuoteData {
   extras: Extra[];
   linerKit: LinerKit;
   notes: string;
+  photos: SitePhotos;
   includeVat: boolean;
 }
 
