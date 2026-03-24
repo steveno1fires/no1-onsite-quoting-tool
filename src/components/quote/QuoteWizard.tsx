@@ -76,7 +76,7 @@ export function QuoteWizard() {
       case 5:
         return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} />;
       case 6:
-        return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} />;
+        return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
       case 7:
         return <StepSummary data={data} onToggleVat={(includeVat) => setData({ ...data, includeVat })} />;
       default:
