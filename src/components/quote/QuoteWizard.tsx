@@ -119,23 +119,23 @@ export function QuoteWizard() {
       </div>
 
       {/* Bottom nav */}
-      {actualStep !== 7 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-3 shadow-lg">
-          <Button
-            variant="outline"
-            onClick={prev}
-            disabled={step === 1}
-            className="flex-1"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Back
-          </Button>
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-3 shadow-lg">
+        <Button
+          variant="outline"
+          onClick={prev}
+          disabled={step === 1}
+          className="flex-1"
+        >
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Back
+        </Button>
+        {actualStep !== 7 && (
           <Button onClick={next} className="flex-1">
             Next
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
