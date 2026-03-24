@@ -49,11 +49,20 @@ export interface Products {
 }
 
 
+export interface LinerKitAccessory {
+  label: string;
+  enabled: boolean;
+  price: number;
+}
+
 export interface LinerKit {
   kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
   flueSize: '5"' | '6"';
   system: "Schiedel Techno Flex" | "Mi Flues";
   grade: "316L" | "904L";
+  regPlateSize: string;
+  regPlatePrice: number;
+  accessories: LinerKitAccessory[];
   price: number;
 }
 
@@ -83,7 +92,15 @@ export const initialQuoteData: QuoteData = {
     flueSize: '5"',
     system: "Schiedel Techno Flex",
     grade: "316L",
-    price: 0,
+    regPlateSize: "",
+    regPlatePrice: 40,
+    accessories: [
+      { label: "45° Bend", enabled: false, price: 50 },
+      { label: "Offset Bend", enabled: false, price: 50 },
+      { label: "Adjustable Length", enabled: false, price: 50 },
+      { label: "Debris Collar", enabled: false, price: 50 },
+    ],
+    price: 450,
   },
   notes: "",
   includeVat: true,

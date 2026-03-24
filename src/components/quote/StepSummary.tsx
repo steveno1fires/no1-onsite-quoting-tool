@@ -50,6 +50,12 @@ function getLineItems(data: QuoteData): LineItem[] {
       detail: `${data.linerKit.kitType} · ${data.linerKit.flueSize} · ${data.linerKit.system} · ${data.linerKit.grade}`,
       price: data.linerKit.price,
     });
+    if (data.linerKit.regPlateSize) {
+      items.push({ label: `Reg Plate (${data.linerKit.regPlateSize})`, price: data.linerKit.regPlatePrice });
+    }
+    data.linerKit.accessories.filter((a) => a.enabled).forEach((a) => {
+      items.push({ label: a.label, price: a.price });
+    });
   }
 
   return items;
