@@ -48,22 +48,6 @@ export interface Products {
   surround: OptionalProduct;
 }
 
-export interface Extra {
-  label: string;
-  enabled: boolean;
-  price: number;
-}
-
-export const EXTRA_LABELS = [
-  "Making Good",
-  "Scaffolding",
-  "Cherry Picker",
-  "Gas Disconnection",
-  "Electrics Disconnection",
-  "CO Alarm",
-  "Starter Bundle",
-  "Log Kit/Log Store",
-] as const;
 
 export interface LinerKit {
   kitType: "Bungalow (6m)" | "House (12m)" | "Custom";
