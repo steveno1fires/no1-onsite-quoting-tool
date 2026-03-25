@@ -42,6 +42,7 @@ export interface OptionalProduct {
 
 export interface Products {
   fire: Product;
+  woodburner: Product;
   hearth: OptionalProduct;
   chamber: OptionalProduct & { size: string };
   beam: OptionalProduct & { material: string };
