@@ -637,8 +637,6 @@ export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
   { name: "Opulus 16\" RFT — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Satin/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Chrome/Chrome Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
-  // Gas fire: Panache 620 Hybrid (C&J — fits 16" with fireplace installations)
-  { name: "Panache 620 Hybrid CF (Gas)", description: "C&J Panache 620 Hybrid Conventional Flue gas fire", priceExVat: 1999.17 },
 ];
 
 // ─────────────────────────────────────────────
