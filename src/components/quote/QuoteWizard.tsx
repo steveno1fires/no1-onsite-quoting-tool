@@ -90,7 +90,20 @@ export function QuoteWizard() {
         return <StepFireplace data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 5:
         return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
-      case 6: {
+      case 6:
+        if (!hasFlueStep) {
+          return (
+            <StepNotes
+              value={data.notes}
+              onChange={(notes) => setData({ ...data, notes })}
+              photos={data.photos}
+              onPhotosChange={(photos) => setData({ ...data, photos })}
+              labourDays={data.labourDays}
+              onLabourDaysChange={(labourDays) => setData({ ...data, labourDays })}
+            />
+          );
+        }
+        // Has flue step, so show flue UI
         if (isTwinWall) {
           return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />;
         }
@@ -123,7 +136,6 @@ export function QuoteWizard() {
         }
         // woodburner liner (also covers gas stove CF)
         return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
-      }
       case 7:
         return (
           <StepNotes
@@ -148,8 +160,8 @@ export function QuoteWizard() {
     3: "Fires",
     4: "Fireplace",
     5: "Extras",
-    6: isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit",
-    7: "Notes",
+    6: hasFlueStep ? (isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit") : "Notes",
+    7: hasFlueStep ? "Notes" : "Quote Summary",
     8: "Quote Summary",
   };
 
