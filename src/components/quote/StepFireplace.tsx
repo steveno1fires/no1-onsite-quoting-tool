@@ -91,6 +91,7 @@ export function StepFireplace({ data, jobType, onChange }: Props) {
 
   return (
     <div className="space-y-4 animate-slide-in">
+      <p className="text-sm text-muted-foreground">Configure the fireplace surrounds, hearths, beams, and chamber boards for this installation.</p>
       {/* Capital Hearths */}
       {showHearth && (
         <OptionalSection

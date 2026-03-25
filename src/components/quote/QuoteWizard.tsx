@@ -3,7 +3,7 @@ import { QuoteData, initialQuoteData } from "@/types/quote";
 import { StepIndicator } from "./StepIndicator";
 import { StepCustomer } from "./StepCustomer";
 import { StepJobType } from "./StepJobType";
-import { StepFire } from "./StepProducts";
+import { StepFires } from "./StepFires";
 import { StepFireplace } from "./StepFireplace";
 import { StepExtras } from "./StepExtras";
 import { StepLinerKit } from "./StepLinerKit";
@@ -85,7 +85,7 @@ export function QuoteWizard() {
       case 2:
         return <StepJobType value={data.jobType} onChange={(jobType) => setData({ ...data, jobType })} />;
       case 3:
-        return <StepFire data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
+        return <StepFires data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 4:
         return <StepFireplace data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 5:
@@ -145,7 +145,7 @@ export function QuoteWizard() {
   const stepTitles: Record<number, string> = {
     1: "Customer Details",
     2: "Job Type",
-    3: "Fire",
+    3: "Fires",
     4: "Fireplace",
     5: "Extras",
     6: isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit",

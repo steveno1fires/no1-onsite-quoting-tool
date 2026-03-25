@@ -1124,7 +1124,7 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
 // ─────────────────────────────────────────────
 //  MAIN StepFire component (renamed from StepProducts)
 // ─────────────────────────────────────────────
-export function StepFire({ data, jobType, onChange }: Props) {
+export function StepFires({ data, jobType, onChange }: Props) {
   // Render the correct fire/appliance section based on job type
   const renderFireSection = () => {
     switch (jobType) {
