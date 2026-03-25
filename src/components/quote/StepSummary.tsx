@@ -31,9 +31,6 @@ function getLineItems(data: QuoteData): LineItem[] {
   if (data.products.hearth.enabled) {
     items.push({ label: "Hearth", detail: data.products.hearth.description, price: data.products.hearth.price });
   }
-  if (data.products.chamber.enabled) {
-    items.push({ label: "Chamber", detail: data.products.chamber.size, price: data.products.chamber.price });
-  }
   if (data.products.beam.enabled) {
     items.push({ label: "Beam", detail: data.products.beam.material, price: data.products.beam.price });
   }
