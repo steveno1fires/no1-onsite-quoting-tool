@@ -438,41 +438,68 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </OptionalSection>
 
-      {/* Beam */}
+      {/* Beam (Capital Geocast) */}
       <OptionalSection
-        title="Beam"
+        title="Beam (Capital Geocast)"
         enabled={data.beam.enabled}
-        onToggle={(v) =>
+        onToggle={(v) => {
           onChange({
             ...data,
             beam: { ...data.beam, enabled: v },
             surround: { ...data.surround, enabled: v ? false : data.surround.enabled },
-          })
-        }
+          });
+          if (!v) setBeamCategory("");
+        }}
       >
         <div>
-          <Label className="text-xs">Select Beam</Label>
+          <Label className="text-xs">Category</Label>
           <Select
-            value={data.beam.description || undefined}
+            value={beamCategory || undefined}
             onValueChange={(val) => {
-              const item = BEAM_OPTIONS.find((b) => b.label === val);
-              if (item) {
-                onChange({ ...data, beam: { ...data.beam, description: item.label, material: item.material, price: item.price } });
-              }
+              setBeamCategory(val);
+              onChange({ ...data, beam: { ...data.beam, description: "", material: val, price: 0 } });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose a beam" />
+              <SelectValue placeholder="Choose category" />
             </SelectTrigger>
             <SelectContent>
-              {BEAM_OPTIONS.map((b) => (
-                <SelectItem key={b.label} value={b.label}>
-                  {b.label} — £{b.price}
+              {CAPITAL_BEAM_CATEGORIES.map((c) => (
+                <SelectItem key={c.category} value={c.category}>
+                  {c.category}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        {beamCategory && (() => {
+          const products = CAPITAL_BEAM_CATEGORIES.find((c) => c.category === beamCategory)?.products || [];
+          return (
+            <div>
+              <Label className="text-xs">Product</Label>
+              <Select
+                value={data.beam.description || undefined}
+                onValueChange={(val) => {
+                  const item = products.find((p) => `${p.name} (${p.finish})` === val);
+                  if (item) {
+                    onChange({ ...data, beam: { ...data.beam, description: `${item.name} (${item.finish})`, material: beamCategory, price: item.price } });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose beam" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p, i) => (
+                    <SelectItem key={`${p.name}-${p.finish}-${i}`} value={`${p.name} (${p.finish})`}>
+                      {p.name} — {p.finish} — £{p.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })()}
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.beam.price} onChange={(v) => onChange({ ...data, beam: { ...data.beam, price: v } })} />
