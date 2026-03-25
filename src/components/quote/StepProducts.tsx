@@ -19,6 +19,8 @@ import {
   WOODBURNER_OPTIONS,
   CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
+import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
+import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
 import React from "react";
 
 interface Props {
