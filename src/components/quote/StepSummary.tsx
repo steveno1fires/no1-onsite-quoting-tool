@@ -27,14 +27,6 @@ function getLineItems(data: QuoteData): LineItem[] {
     });
   }
 
-  if (data.products.woodburner.brand || data.products.woodburner.model) {
-    items.push({
-      label: "Wood Burning Stove",
-      detail: `${data.products.woodburner.brand} ${data.products.woodburner.model}`.trim() + (data.products.woodburner.kw ? ` (${data.products.woodburner.kw}kW)` : ""),
-      price: data.products.woodburner.price,
-    });
-  }
-
   if (data.products.fireplace.enabled) {
     items.push({ label: "Fireplace", detail: data.products.fireplace.description, price: data.products.fireplace.price });
   }
