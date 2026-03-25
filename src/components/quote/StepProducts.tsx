@@ -7,7 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -29,6 +31,9 @@ import {
   GAS_FIRE_TRIMS,
   CJ_COMPATIBLE_FIREPLACES,
   CJ_16_INCH_FIRES,
+  ONYX_ELECTRIC_PRODUCTS,
+  ONYX_ELECTRIC_ADDONS,
+  ONYX_CF_FRAME_OPTIONS,
 } from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
@@ -75,6 +80,21 @@ function OptionalSection({
         <Switch checked={enabled} onCheckedChange={onToggle} />
       </div>
       {enabled && <div className="space-y-3 pt-1">{children}</div>}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  BRAND HEADER — visual divider between manufacturer sections
+// ─────────────────────────────────────────────
+function BrandHeader({ brand }: { brand: string }) {
+  return (
+    <div className="flex items-center gap-3 pt-2">
+      <div className="flex-1 h-px bg-border" />
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">
+        {brand}
+      </span>
+      <div className="flex-1 h-px bg-border" />
     </div>
   );
 }
@@ -203,7 +223,7 @@ function GasFireSection({
         : item.slideControlNg || 0;
     onChange({
       ...data,
-      fire: { brand: "C&J", model: item.name, kw: "", price },
+      fire: { brand: item.brand ?? "C&J", model: item.name, kw: "", price },
       gasFireTrim: null,
       gasFireGatherHood: { enabled: false, priceExVat: 0 },
       cjFireplace: null,
@@ -267,12 +287,34 @@ function GasFireSection({
           >
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
-              {productsInCat.map((p) => (
-                <SelectItem key={p.name} value={p.name}>
-                  {p.name}
-                  {p.description ? ` — ${p.description}` : ""}
-                </SelectItem>
-              ))}
+              {(() => {
+                // Group products by brand for clearer manufacturer sections
+                const brandMap = new Map<string, typeof productsInCat>();
+                for (const p of productsInCat) {
+                  const b = p.brand ?? "Charlton & Jenrick";
+                  if (!brandMap.has(b)) brandMap.set(b, []);
+                  brandMap.get(b)!.push(p);
+                }
+                const groups = Array.from(brandMap.entries());
+                if (groups.length === 1) {
+                  // Single brand — no label overhead needed
+                  return groups[0][1].map((p) => (
+                    <SelectItem key={p.name} value={p.name}>
+                      {p.name}{p.description ? ` — ${p.description}` : ""}
+                    </SelectItem>
+                  ));
+                }
+                return groups.map(([brand, items]) => (
+                  <SelectGroup key={brand}>
+                    <SelectLabel className="font-bold text-foreground">{brand}</SelectLabel>
+                    {items.map((p) => (
+                      <SelectItem key={p.name} value={p.name}>
+                        {p.name}{p.description ? ` — ${p.description}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ));
+              })()}
             </SelectContent>
           </Select>
         </div>
@@ -458,6 +500,42 @@ function GasFireSection({
         </div>
       )}
 
+      {/* ── Onyx Optional Frame — shown when an Onyx CF fire is selected ── */}
+      {data.fire.brand === "Onyx" && title.includes("CF") && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-orange-400/30">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs font-bold uppercase tracking-widest text-orange-600 dark:text-orange-400 px-1">Onyx</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+          <Label className="text-sm font-semibold">Optional Frame (Onyx CF)</Label>
+          <Select
+            value={data.gasFireTrim?.name ?? "__none__"}
+            onValueChange={(val) => {
+              if (val === "__none__") {
+                onChange({ ...data, gasFireTrim: null });
+              } else {
+                const item = ONYX_CF_FRAME_OPTIONS.find((f) => f.name === val);
+                if (item) {
+                  // Store as ex-VAT (divide by 1.2)
+                  onChange({ ...data, gasFireTrim: { name: item.name, priceExVat: item.priceIncVat / 1.2 } });
+                }
+              }
+            }}
+          >
+            <SelectTrigger><SelectValue placeholder="No frame" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none__">No frame</SelectItem>
+              {ONYX_CF_FRAME_OPTIONS.map((f) => (
+                <SelectItem key={f.name} value={f.name}>
+                  {f.name} — £{f.priceIncVat} inc VAT
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* ── C&J Limestone Fireplace Package — large format only, shown when C&J mode active ── */}
       {data.fire.model && isLargeFormat && largeFormatMode === "cj" && cjFireplaceOptions && cjFireplaceOptions.length > 0 && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
@@ -497,6 +575,15 @@ function GasFireSection({
 //  GAS STOVE section (conventional flue or balanced flue)
 // ─────────────────────────────────────────────
 function GasStoveSection({ data, onChange }: { data: Products; onChange: (d: Products) => void }) {
+  // Group stove products by brand
+  const brandMap = new Map<string, typeof GAS_STOVE_PRODUCTS>();
+  for (const p of GAS_STOVE_PRODUCTS) {
+    const b = p.brand ?? "Charlton & Jenrick";
+    if (!brandMap.has(b)) brandMap.set(b, []);
+    brandMap.get(b)!.push(p);
+  }
+  const stoveBrandGroups = Array.from(brandMap.entries());
+
   return (
     <>
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
@@ -508,17 +595,29 @@ function GasStoveSection({ data, onChange }: { data: Products; onChange: (d: Pro
             onValueChange={(name) => {
               const item = GAS_STOVE_PRODUCTS.find((p) => p.name === name);
               if (item) {
-                onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price: item.priceExVat } });
+                onChange({ ...data, fire: { brand: item.brand ?? "C&J", model: item.name, kw: "", price: item.priceExVat } });
               }
             }}
           >
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
-              {GAS_STOVE_PRODUCTS.map((p) => (
-                <SelectItem key={p.name} value={p.name}>
-                  {p.name} ({p.fuel}) — £{p.priceExVat.toFixed(2)}
-                </SelectItem>
-              ))}
+              {stoveBrandGroups.length === 1
+                ? stoveBrandGroups[0][1].map((p) => (
+                    <SelectItem key={p.name} value={p.name}>
+                      {p.name} ({p.fuel}) — £{p.priceExVat.toFixed(2)}
+                    </SelectItem>
+                  ))
+                : stoveBrandGroups.map(([brand, items]) => (
+                    <SelectGroup key={brand}>
+                      <SelectLabel className="font-bold text-foreground">{brand}</SelectLabel>
+                      {items.map((p) => (
+                        <SelectItem key={p.name} value={p.name}>
+                          {p.name} ({p.fuel}) — £{p.priceExVat.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))
+              }
             </SelectContent>
           </Select>
         </div>
@@ -539,8 +638,12 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
   const [activeTab, setActiveTab] = React.useState(ELECTRIC_FIRE_TABS[0].tabName);
   const [realLogsChecked, setRealLogsChecked] = React.useState(false);
   const [woodLogSetChecked, setWoodLogSetChecked] = React.useState(false);
+  const [onyxAddonIds, setOnyxAddonIds] = React.useState<string[]>([]);
 
   const currentTab = ELECTRIC_FIRE_TABS.find((t) => t.tabName === activeTab) || ELECTRIC_FIRE_TABS[0];
+
+  // Derive unique Onyx series for grouped display
+  const onyxSeries = [...new Set(ONYX_ELECTRIC_PRODUCTS.map((p) => p.series))];
 
   const handleProductSelect = (name: string) => {
     const item = currentTab.products.find((p) => p.name === name);
@@ -558,6 +661,26 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
     if (rl && currentTab.realLogsUpgrade) price += currentTab.realLogsUpgrade.price;
     if (wl && currentTab.optionalWoodLogSet) price += currentTab.optionalWoodLogSet.price;
     onChange({ ...data, fire: { ...data.fire, price } });
+  };
+
+  const handleOnyxProductSelect = (name: string) => {
+    const item = ONYX_ELECTRIC_PRODUCTS.find((p) => p.name === name);
+    if (!item) return;
+    // Store inc-VAT price as-is; convert to ex-VAT for the quote system
+    const priceExVat = item.priceIncVat / 1.2;
+    onChange({ ...data, fire: { brand: "Onyx", model: item.name, kw: "", price: priceExVat } });
+    setOnyxAddonIds([]);
+  };
+
+  const recalcOnyxAddonPrice = (baseProductName: string, addonIds: string[]) => {
+    const item = ONYX_ELECTRIC_PRODUCTS.find((p) => p.name === baseProductName);
+    if (!item) return;
+    let extra = 0;
+    for (const id of addonIds) {
+      const addon = ONYX_ELECTRIC_ADDONS.find((a) => a.id === id);
+      if (addon?.priceIncVat) extra += addon.priceIncVat / 1.2;
+    }
+    onChange({ ...data, fire: { ...data.fire, price: item.priceIncVat / 1.2 + extra } });
   };
 
   const mwItems = data.mediaWallItems;
@@ -615,7 +738,7 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
         </div>
       )}
 
-      {/* Fire product selector — iRange / Luminosa (not shown for 16 inch style) */}
+      {/* Fire product selector — iRange / Luminosa / Onyx (not shown for 16 inch style) */}
       {data.electricStyle !== "16 Inch Fire with Fireplace" && (
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">Electric Fire *</Label>
@@ -625,16 +748,22 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
             setActiveTab(val);
             setRealLogsChecked(false);
             setWoodLogSetChecked(false);
+            setOnyxAddonIds([]);
             onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 } });
           }}
         >
-          <TabsList className="w-full grid grid-cols-3">
+          <TabsList className="w-full grid grid-cols-4">
             {ELECTRIC_FIRE_TABS.map((t) => (
               <TabsTrigger key={t.tabName} value={t.tabName} className="text-xs">{t.tabName}</TabsTrigger>
             ))}
+            <TabsTrigger value="Onyx" className="text-xs font-semibold">Onyx</TabsTrigger>
           </TabsList>
+
+          {/* ── C&J iRange / Luminosa tabs ── */}
           {ELECTRIC_FIRE_TABS.map((tab) => (
             <TabsContent key={tab.tabName} value={tab.tabName} className="space-y-3">
+              {/* C&J brand header */}
+              <BrandHeader brand="Charlton & Jenrick" />
               {tab.note && <p className="text-xs text-muted-foreground">{tab.note}</p>}
               <div>
                 <Label className="text-xs">Model</Label>
@@ -688,6 +817,59 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
               )}
             </TabsContent>
           ))}
+
+          {/* ── Onyx Electric tab ── */}
+          <TabsContent value="Onyx" className="space-y-3">
+            <BrandHeader brand="Onyx" />
+            <p className="text-xs text-muted-foreground">All Onyx prices shown inc VAT</p>
+            <div>
+              <Label className="text-xs">Model</Label>
+              <Select
+                value={data.fire.brand === "Onyx" ? data.fire.model : undefined}
+                onValueChange={handleOnyxProductSelect}
+              >
+                <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+                <SelectContent className="max-h-[340px] overflow-y-auto">
+                  {onyxSeries.map((series) => (
+                    <SelectGroup key={series}>
+                      <SelectLabel className="font-semibold text-foreground">{series}</SelectLabel>
+                      {ONYX_ELECTRIC_PRODUCTS.filter((p) => p.series === series).map((p) => (
+                        <SelectItem key={p.name} value={p.name}>
+                          {p.name} — £{p.priceIncVat.toLocaleString()} inc VAT
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Onyx optional add-ons */}
+            {data.fire.brand === "Onyx" && data.fire.model && (
+              <div className="space-y-2 pt-1 border-t border-border">
+                <Label className="text-xs font-semibold">Optional Add-ons</Label>
+                {ONYX_ELECTRIC_ADDONS.map((addon) => (
+                  <div key={addon.id} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`onyx-addon-${addon.id}`}
+                      checked={onyxAddonIds.includes(addon.id)}
+                      onCheckedChange={(v) => {
+                        const next = v === true
+                          ? [...onyxAddonIds, addon.id]
+                          : onyxAddonIds.filter((id) => id !== addon.id);
+                        setOnyxAddonIds(next);
+                        recalcOnyxAddonPrice(data.fire.model, next);
+                      }}
+                    />
+                    <Label htmlFor={`onyx-addon-${addon.id}`} className="text-xs cursor-pointer">
+                      {addon.label}
+                      {addon.priceIncVat != null ? ` — +£${addon.priceIncVat} inc VAT` : " (price on request)"}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
         <div>
           <Label className="text-xs">Price ex VAT</Label>

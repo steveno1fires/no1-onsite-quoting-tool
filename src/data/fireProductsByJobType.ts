@@ -9,6 +9,7 @@ export interface WoodburnerProduct {
 }
 
 export interface GasFireProduct {
+  brand?: string; // defaults to "C&J" when undefined
   name: string;
   description: string;
   subCategory: string;
@@ -18,6 +19,7 @@ export interface GasFireProduct {
 }
 
 export interface GasStoveProduct {
+  brand?: string; // defaults to "C&J" when undefined
   name: string;
   fuel: string;
   priceExVat: number;
@@ -36,6 +38,62 @@ export interface ElectricFireTab {
   optionalWoodLogSet?: { label: string; price: number };
   note?: string;
 }
+
+// ─────────────────────────────────────────────
+//  ONYX ELECTRIC FIRE PRODUCTS (prices inc VAT)
+// ─────────────────────────────────────────────
+
+export interface OnyxElectricProduct {
+  name: string;
+  series: string; // sub-group within Onyx range
+  priceIncVat: number;
+}
+
+export interface OnyxElectricAddon {
+  id: string;
+  label: string;
+  priceIncVat?: number; // undefined = price varies / POA
+}
+
+export const ONYX_ELECTRIC_PRODUCTS: OnyxElectricProduct[] = [
+  // Avita Electric
+  { series: "Avita Electric",                                  name: "Avita 120RW",                             priceIncVat: 1995 },
+  { series: "Avita Electric",                                  name: "Avita 160RW",                             priceIncVat: 2395 },
+  { series: "Avita Electric",                                  name: "Avita 190RW",                             priceIncVat: 2895 },
+  // Avanti Electric — Real Woodland Logscape
+  { series: "Avanti Electric (Real Woodland Logscape)",        name: "Avanti 110RW (Real Woodland Logscape)",   priceIncVat: 2395 },
+  { series: "Avanti Electric (Real Woodland Logscape)",        name: "Avanti 150RW (Real Woodland Logscape)",   priceIncVat: 2795 },
+  { series: "Avanti Electric (Real Woodland Logscape)",        name: "Avanti 190RW (Real Woodland Logscape)",   priceIncVat: 3595 },
+  // Avanti Electric — Standard Oak Log Set
+  { series: "Avanti Electric (Standard Oak Log Set)",          name: "Avanti 110RW (Standard Oak Log Set)",     priceIncVat: 2095 },
+  { series: "Avanti Electric (Standard Oak Log Set)",          name: "Avanti 150RW (Standard Oak Log Set)",     priceIncVat: 2495 },
+  { series: "Avanti Electric (Standard Oak Log Set)",          name: "Avanti 190RW (Standard Oak Log Set)",     priceIncVat: 3189 },
+  // Fusion Electric
+  { series: "Fusion Electric",                                 name: "Fusion 150RW (Real Wood Logscape)",       priceIncVat: 3575 },
+  { series: "Fusion Electric",                                 name: "Fusion 150RW (Birch Log Effect)",         priceIncVat: 3255 },
+];
+
+export const ONYX_ELECTRIC_ADDONS: OnyxElectricAddon[] = [
+  { id: "edge-xl-frame",          label: "Edge XL Frame" },
+  { id: "mood-lighting-kit",      label: "Mood Lighting Kit",              priceIncVat: 119 },
+  { id: "silver-birch-log-upgrade", label: "Silver Birch Log Set upgrade" },
+];
+
+// ─────────────────────────────────────────────
+//  ONYX GAS FIRE OPTIONAL FRAMES (prices inc VAT)
+// ─────────────────────────────────────────────
+export interface OnyxFrameOption {
+  name: string;
+  priceIncVat: number;
+}
+
+/** Optional frames for Onyx CF gas fires */
+export const ONYX_CF_FRAME_OPTIONS: OnyxFrameOption[] = [
+  { name: "Edge+ Frame (Small)",      priceIncVat: 135 },
+  { name: "Edge+ Frame (Large)",      priceIncVat: 159 },
+  { name: "Expression Frame (Small)", priceIncVat: 265 },
+  { name: "Expression Frame (Large)", priceIncVat: 285 },
+];
 
 // ─────────────────────────────────────────────
 //  GAS FIRE TRIM / FASCIA TYPES
@@ -489,6 +547,28 @@ export const WOODBURNER_PRODUCTS: WoodburnerProduct[] = [
 //  GAS FIRE — BALANCED FLUE (BF)
 // ─────────────────────────────────────────────
 export const GAS_BF_PRODUCTS: GasFireProduct[] = [
+  // ── Onyx BF ───────────────────────────────────
+  {
+    brand: "Onyx",
+    name: "Avanti 65 BF (NG)",
+    description: "Balanced Flue, Natural Gas",
+    subCategory: "Onyx Fires",
+    price: 2704.17, // £3,245 inc VAT ÷ 1.2
+  },
+  {
+    brand: "Onyx",
+    name: "Avanti 85 BF (NG)",
+    description: "Balanced Flue, Natural Gas",
+    subCategory: "Onyx Fires",
+    price: 3037.50, // £3,645 inc VAT ÷ 1.2
+  },
+  {
+    brand: "Onyx",
+    name: "Avanti 85 BF (LPG)",
+    description: "Balanced Flue, LPG",
+    subCategory: "Onyx Fires",
+    price: 3037.50, // £3,645 inc VAT ÷ 1.2
+  },
   // Glass Fronted
   {
     name: "Paragon Focus RS Plus BF",
@@ -529,6 +609,49 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
 //  GAS FIRE — INSET (CONVENTIONAL FLUE)
 // ─────────────────────────────────────────────
 export const GAS_CF_PRODUCTS: GasFireProduct[] = [
+  // ── Onyx CF ───────────────────────────────────
+  {
+    brand: "Onyx",
+    name: "Avanti 65 CF (NG)",
+    description: "Conventional Flue, Natural Gas",
+    subCategory: "Onyx Fires",
+    price: 2495.83, // £2,995 inc VAT ÷ 1.2
+  },
+  {
+    brand: "Onyx",
+    name: "Avanti 65 CF (LPG)",
+    description: "Conventional Flue, LPG",
+    subCategory: "Onyx Fires",
+    price: 2495.83,
+  },
+  {
+    brand: "Onyx",
+    name: "Avanti 85 CF (NG)",
+    description: "Conventional Flue, Natural Gas",
+    subCategory: "Onyx Fires",
+    price: 2854.17, // £3,425 inc VAT ÷ 1.2
+  },
+  {
+    brand: "Onyx",
+    name: "Avanti 85 CF (LPG)",
+    description: "Conventional Flue, LPG",
+    subCategory: "Onyx Fires",
+    price: 2854.17,
+  },
+  {
+    brand: "Onyx",
+    name: "Eclipse 60HL CF (NG)",
+    description: "Conventional Flue, Natural Gas",
+    subCategory: "Onyx Fires",
+    price: 2495.83, // £2,995 inc VAT ÷ 1.2
+  },
+  {
+    brand: "Onyx",
+    name: "Eclipse 60HL CF (LPG)",
+    description: "Conventional Flue, LPG",
+    subCategory: "Onyx Fires",
+    price: 2495.83,
+  },
   // Open Flame
   {
     name: "Paragon 2000 Plus CF",
@@ -623,6 +746,11 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
 //  GAS STOVE (Conventional Flue)
 // ─────────────────────────────────────────────
 export const GAS_STOVE_PRODUCTS: GasStoveProduct[] = [
+  // ── Onyx Gas Stoves ──────────────────────────
+  { brand: "Onyx", name: "Liv 3 CF (NG)",  fuel: "Natural Gas (CF)",   priceExVat: 2790.83 }, // £3,349 inc VAT ÷ 1.2
+  { brand: "Onyx", name: "Liv 3 CF (LPG)", fuel: "LPG (CF)",           priceExVat: 2790.83 },
+  { brand: "Onyx", name: "Liv 3 BF (NG)",  fuel: "Natural Gas (BF)",   priceExVat: 2979.17 }, // £3,575 inc VAT ÷ 1.2
+  { brand: "Onyx", name: "Liv 3 BF (LPG)", fuel: "LPG (BF)",           priceExVat: 2979.17 },
   // Conventional Flue
   { name: "Paragon Edge Conventional Flue NG", fuel: "Natural Gas (CF)", priceExVat: 1499.17 },
   { name: "Paragon Edge Conventional Flue LPG", fuel: "LPG (CF)", priceExVat: 1499.17 },
