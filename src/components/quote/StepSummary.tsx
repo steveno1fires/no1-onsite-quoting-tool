@@ -22,7 +22,7 @@ function getLineItems(data: QuoteData): LineItem[] {
 
   if (data.products.fire.brand || data.products.fire.model) {
     items.push({
-      label: "Fire / Appliance",
+      label: "Woodburner",
       detail: `${data.products.fire.brand} ${data.products.fire.model}`.trim(),
       price: data.products.fire.price,
     });
