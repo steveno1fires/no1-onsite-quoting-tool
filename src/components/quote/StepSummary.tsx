@@ -75,6 +75,7 @@ function getLineItems(data: QuoteData): LineItem[] {
     if (mw.cornerBeadQty > 0) items.push({ label: "Corner Bead", detail: `${mw.cornerBeadQty} lengths`, price: mw.cornerBeadQty });
     if (mw.tvBracket) items.push({ label: "TV Bracket", price: 150 });
     if (mw.plastered) items.push({ label: "Plastered", price: 450 });
+    if (mw.electricSockets) items.push({ label: "Electric (2x double sockets only)", price: 275 });
   }
 
   data.extras.filter((e) => e.enabled).forEach((e) => {

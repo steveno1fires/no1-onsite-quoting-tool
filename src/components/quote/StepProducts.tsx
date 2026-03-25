@@ -505,6 +505,16 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
                 Plastered (+£450.00 ex VAT)
               </Label>
             </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="electric-sockets"
+                checked={mwItems.electricSockets}
+                onCheckedChange={(v) => onChange({ ...data, mediaWallItems: { ...mwItems, electricSockets: v === true } })}
+              />
+              <Label htmlFor="electric-sockets" className="text-xs cursor-pointer font-medium">
+                Electric (2x double sockets only) (+£275.00 ex VAT)
+              </Label>
+            </div>
           </div>
         </div>
       )}

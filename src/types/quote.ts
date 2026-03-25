@@ -66,6 +66,7 @@ export interface MediaWallItems {
   cornerBeadQty: number;
   tvBracket: boolean;
   plastered: boolean;
+  electricSockets: boolean;
 }
 
 export interface Products {
@@ -157,6 +158,7 @@ export const initialQuoteData: QuoteData = {
       cornerBeadQty: 0,
       tvBracket: false,
       plastered: false,
+      electricSockets: false,
     },
   },
   extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
