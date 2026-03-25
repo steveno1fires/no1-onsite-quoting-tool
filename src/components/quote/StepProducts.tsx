@@ -17,7 +17,9 @@ import {
   BEAM_OPTIONS,
   SURROUND_OPTIONS,
   WOODBURNER_OPTIONS,
+  CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
+import React from "react";
 
 interface Props {
   data: Products;

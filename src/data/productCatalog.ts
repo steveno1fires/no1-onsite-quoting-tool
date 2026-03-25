@@ -22,6 +22,192 @@ export const FIRE_OPTIONS: FireCatalogItem[] = [
   { label: "Dimplex Opti-Myst Pro", brand: "Dimplex", model: "Opti-Myst Pro", price: 1299 },
 ];
 
+export interface CapitalHearthProduct {
+  name: string;
+  price: number;
+}
+
+export interface CapitalHearthType {
+  type: string;
+  products: CapitalHearthProduct[];
+}
+
+export interface CapitalHearthCategory {
+  material: string;
+  types: CapitalHearthType[];
+}
+
+export const CAPITAL_HEARTHS: CapitalHearthCategory[] = [
+  {
+    material: "Granite",
+    types: [
+      {
+        type: "Boxed & Lipped - Polished or Honed",
+        products: [
+          { name: '36" x 15" Granite Boxed & Lipped', price: 119 },
+          { name: '48" x 15" Granite Boxed & Lipped', price: 129 },
+          { name: '51" x 15" Granite Boxed & Lipped', price: 160 },
+          { name: '54" x 15" Granite Boxed & Lipped', price: 139 },
+          { name: '54" x 18" Granite Boxed & Lipped (Polished Only)', price: 180 },
+        ],
+      },
+      {
+        type: "Flat Hearths",
+        products: [
+          { name: 'Push-Under Back Hearth (30" x 6")', price: 28 },
+          { name: 'Standard Back Hearth (32" x 15")', price: 71 },
+          { name: 'Large Back Hearth (38" x 15")', price: 77 },
+          { name: '36" x 18" Granite Flat Hearth', price: 75 },
+          { name: '36" x 24" Granite Flat Hearth (4-Sided)', price: 108 },
+          { name: '37" x 37" Granite Flat Hearth (4-Sided)', price: 150 },
+          { name: '48" x 18" Granite Flat Hearth', price: 105 },
+          { name: '54" x 18" Granite Flat Hearth', price: 134 },
+          { name: '60" x 20" Granite Flat Hearth', price: 144 },
+        ],
+      },
+      {
+        type: "Slabbed Granite Hearths",
+        products: [
+          { name: '48" x 15" Slabbed Granite', price: 140 },
+          { name: '48" x 18" Slabbed Granite', price: 155 },
+          { name: '54" x 15" Slabbed Granite', price: 145 },
+          { name: '54" x 18" Slabbed Granite', price: 160 },
+          { name: '56" x 18" Slabbed Granite (Polished Only)', price: 180 },
+        ],
+      },
+      {
+        type: "Back Panels",
+        products: [
+          { name: '37" x 37" Granite Back Panel (Standard Cut Out)', price: 139 },
+          { name: '37" x 37" Granite Back Panel (No Cut Out)', price: 139 },
+        ],
+      },
+      {
+        type: "Pearl Grey Granite",
+        products: [
+          { name: 'Standard Back Hearth (32" x 15") Pearl Grey', price: 80 },
+          { name: 'Large Back Hearth (38" x 15") Pearl Grey', price: 85 },
+          { name: '36" x 24" Pearl Grey Hearth (4-Sided)', price: 120 },
+          { name: '37" x 37" Pearl Grey Hearth (4-Sided)', price: 175 },
+          { name: '37" x 37" Pearl Grey Back Panel', price: 160 },
+          { name: '48" x 18" Pearl Grey Flat Hearth', price: 119 },
+        ],
+      },
+    ],
+  },
+  {
+    material: "Slate",
+    types: [
+      {
+        type: "Boxed & Lipped - Graphite Riven/Grey Brushed/Honed",
+        products: [
+          { name: '36" x 15" Slate Boxed & Lipped', price: 87 },
+          { name: '48" x 15" Slate Boxed & Lipped', price: 87 },
+          { name: '51" x 15" Slate Boxed & Lipped', price: 99 },
+          { name: '54" x 15" Slate Boxed & Lipped', price: 139 },
+          { name: '54" x 18" Slate Boxed & Lipped (Honed Only)', price: 139 },
+          { name: '56" x 15" Slate Boxed & Lipped (Honed Only)', price: 139 },
+          { name: '59" x 15" Slate Boxed & Lipped', price: 153 },
+          { name: '60" x 18" Slate Boxed & Lipped (Polished Only)', price: 149 },
+        ],
+      },
+      {
+        type: "Brazilian Slate - Graphite/Antique Riven",
+        products: [
+          { name: 'Standard Back Hearth (32" x 15") Brazilian Slate', price: 51 },
+          { name: 'Large Back Hearth (38" x 15") Brazilian Slate', price: 57 },
+          { name: '36" x 24" Brazilian Slate Hearth (4-Sided)', price: 82 },
+          { name: '37" x 37" Brazilian Slate Hearth (4-Sided)', price: 150 },
+          { name: '48" x 18" Brazilian Slate Flat Hearth', price: 83 },
+          { name: '54" x 18" Brazilian Slate Flat Hearth', price: 98 },
+          { name: '60" x 20" Brazilian Slate Flat Hearth (Riven Only)', price: 119 },
+          { name: '36" x 15" Brazilian Slate Boxed & Lipped', price: 119 },
+          { name: '48" x 15" Brazilian Slate Boxed & Lipped', price: 129 },
+          { name: '54" x 15" Brazilian Slate Boxed & Lipped', price: 140 },
+        ],
+      },
+      {
+        type: "Limestone Hearths",
+        products: [
+          { name: 'Aegean Limestone Back Hearth (32" x 15")', price: 77 },
+          { name: 'Aegean Limestone Large Back Hearth (38" x 15")', price: 81 },
+          { name: 'Aegean Limestone Boxed & Lipped 48" x 15"', price: 110 },
+          { name: 'Aegean Limestone Boxed & Lipped 54" x 15"', price: 114 },
+          { name: 'Aegean Limestone Boxed & Lipped 59" x 15"', price: 121 },
+          { name: 'Aegean Limestone Flat 48" x 20"', price: 115 },
+          { name: 'Aegean Limestone Flat 60" x 20"', price: 152 },
+          { name: 'Portuguese Limestone Boxed Flush 42"/48"/54" x 15"', price: 62 },
+          { name: 'Portuguese Limestone Curved 48" x 13"', price: 77 },
+          { name: 'Portuguese Limestone Back Hearth (32" x 15")', price: 71 },
+          { name: 'Portuguese Limestone Flat 48" x 20"', price: 113 },
+          { name: 'Portuguese Limestone Flat 60" x 20"', price: 149 },
+        ],
+      },
+    ],
+  },
+  {
+    material: "Glass",
+    types: [
+      {
+        type: "Light Duty Glass Hearths - Smoked/Transparent",
+        products: [
+          { name: "1100mm x 950mm Truncated Glass (Smoked)", price: 81 },
+          { name: "1100mm x 950mm Truncated Glass (Transparent)", price: 71 },
+          { name: "1100mm x 1100mm Tear Drop Glass (Smoked)", price: 91 },
+          { name: "1100mm x 1100mm Tear Drop Glass (Transparent)", price: 81 },
+          { name: "1200mm x 1200mm Quadrant Glass (Smoked)", price: 101 },
+          { name: "1200mm x 1200mm Quadrant Glass (Transparent)", price: 91 },
+          { name: "1100mm x 850mm Semi-Circle Glass (Smoked)", price: 71 },
+          { name: "1100mm x 850mm Semi-Circle Glass (Transparent)", price: 61 },
+          { name: "900mm x 900mm Square Glass (Smoked)", price: 71 },
+          { name: "900mm x 900mm Square Glass (Transparent)", price: 61 },
+          { name: "1100mm x 1100mm Circular Glass (Smoked)", price: 81 },
+          { name: "1100mm x 1100mm Circular Glass (Transparent)", price: 71 },
+        ],
+      },
+    ],
+  },
+  {
+    material: "Special Shapes",
+    types: [
+      {
+        type: "Granite Slip Sets - Standard Sizes",
+        products: [
+          { name: "Size One Granite Slip Set (Basket Opening)", price: 129 },
+          { name: "Size Two Granite Slip Set (Inset Opening)", price: 129 },
+          { name: "Size Three Granite Slip Set (Stove Opening)", price: 129 },
+        ],
+      },
+      {
+        type: "Stone Slip Sets",
+        products: [
+          { name: 'Aegean Limestone Slip Set Size Two (16" x 22")', price: 131 },
+          { name: "Corinthian Stone Small Slip Set", price: 133 },
+          { name: "Corinthian Stone Large Slip Set", price: 133 },
+          { name: "Corinthian Stone Stove Slip Set", price: 118 },
+        ],
+      },
+      {
+        type: "Farmhouse Stone Hearths - Complete",
+        products: [
+          { name: '42" x 15" Farmhouse Stone Hearth', price: 49 },
+          { name: '48" x 15" Farmhouse Stone Hearth', price: 59 },
+          { name: '51" x 15" Farmhouse Stone Hearth', price: 61 },
+          { name: '54" x 15" Farmhouse Stone Hearth', price: 63 },
+        ],
+      },
+      {
+        type: "Corinthian Stone Special Shapes",
+        products: [
+          { name: '48" x 15" Corinthian Stone Boxed Flush', price: 62 },
+          { name: '54" x 15" Corinthian Stone Boxed Flush', price: 62 },
+          { name: '48" x 13" Corinthian Stone Curved Hearth', price: 77 },
+        ],
+      },
+    ],
+  },
+];
+
 export const HEARTH_OPTIONS: CatalogItem[] = [
   { label: "Natural Slate", price: 195 },
   { label: "Polished Granite – Black", price: 275 },
