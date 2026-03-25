@@ -71,6 +71,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
   const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
 
+  // Woodburner: cascading brand → model
+  const woodburnerBrands = [...new Set(WOODBURNER_OPTIONS.map((w) => w.brand))];
+  const woodburnerModelsForBrand = WOODBURNER_OPTIONS.filter((w) => w.brand === data.woodburner.brand);
+
   // Surround: cascading brand → model
   const surroundBrands = [...new Set(SURROUND_OPTIONS.map((s) => s.brand))];
   const surroundModelsForBrand = SURROUND_OPTIONS.filter(
