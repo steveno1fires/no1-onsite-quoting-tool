@@ -40,12 +40,23 @@ export interface OptionalProduct {
   price: number;
 }
 
+export interface ChamberBoardSelection {
+  enabled: boolean;
+  boardName: string;
+  boardPrice: number;
+  reededPanels: boolean;
+  chamberTrimKit: boolean;
+  chamberTrimColour: "Black" | "Stainless Steel";
+  fermacellQty: number;
+}
+
 export interface Products {
   fire: Product;
   hearth: OptionalProduct;
   chamber: OptionalProduct & { size: string };
   beam: OptionalProduct & { material: string };
   surround: OptionalProduct;
+  chamberBoard: ChamberBoardSelection;
 }
 
 
@@ -103,6 +114,15 @@ export const initialQuoteData: QuoteData = {
     chamber: { enabled: false, description: "", size: "", price: 0 },
     beam: { enabled: false, description: "", material: "", price: 0 },
     surround: { enabled: false, description: "", price: 0 },
+    chamberBoard: {
+      enabled: false,
+      boardName: "",
+      boardPrice: 0,
+      reededPanels: false,
+      chamberTrimKit: false,
+      chamberTrimColour: "Black",
+      fermacellQty: 2,
+    },
   },
   extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
   linerKit: {

@@ -3,6 +3,7 @@ import { Products, JobType } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,11 @@ import {
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
   CAPITAL_HEARTHS,
+  CHAMBER_BOARD_VARIANTS,
+  CHAMBER_BOARD_NOTE,
+  REEDED_PANELS_PRICE,
+  CHAMBER_TRIM_KIT_PRICE,
+  FERMACELL_BOARD_PRICE,
 } from "@/data/productCatalog";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
@@ -423,6 +429,152 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.surround.price} onChange={(v) => onChange({ ...data, surround: { ...data.surround, price: v } })} />
+        </div>
+      </OptionalSection>
+
+      {/* Chamber Boards */}
+      <OptionalSection
+        title="Chamber Boards"
+        enabled={data.chamberBoard.enabled}
+        onToggle={(v) =>
+          onChange({
+            ...data,
+            chamberBoard: v
+              ? data.chamberBoard.enabled
+                ? data.chamberBoard
+                : { ...data.chamberBoard, enabled: true }
+              : {
+                  enabled: false,
+                  boardName: "",
+                  boardPrice: 0,
+                  reededPanels: false,
+                  chamberTrimKit: false,
+                  chamberTrimColour: "Black",
+                  fermacellQty: 2,
+                },
+          })
+        }
+      >
+        {/* Board selection */}
+        <div>
+          <Label className="text-xs">Board Design</Label>
+          <Select
+            value={data.chamberBoard.boardName || undefined}
+            onValueChange={(val) => {
+              const item = CHAMBER_BOARD_VARIANTS.find((v) => v.name === val);
+              if (item) {
+                onChange({
+                  ...data,
+                  chamberBoard: {
+                    ...data.chamberBoard,
+                    boardName: item.name,
+                    boardPrice: item.price,
+                  },
+                });
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choose board design" />
+            </SelectTrigger>
+            <SelectContent>
+              {CHAMBER_BOARD_VARIANTS.map((v) => (
+                <SelectItem key={v.name} value={v.name}>
+                  {v.name} — £{v.price.toFixed(2)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-[10px] text-muted-foreground mt-1">{CHAMBER_BOARD_NOTE}</p>
+        </div>
+
+        <div>
+          <Label className="text-xs">Board Price</Label>
+          <PriceInput
+            value={data.chamberBoard.boardPrice}
+            onChange={(v) =>
+              onChange({ ...data, chamberBoard: { ...data.chamberBoard, boardPrice: v } })
+            }
+          />
+        </div>
+
+        {/* Cast Reeded Infill Panels */}
+        <div className="flex items-center justify-between">
+          <div>
+            <Label className="text-xs font-medium">Cast Reeded Infill Panels</Label>
+            <p className="text-[10px] text-muted-foreground">4× 915mm × 380mm × 7mm — £{REEDED_PANELS_PRICE.toFixed(2)}</p>
+          </div>
+          <Switch
+            checked={data.chamberBoard.reededPanels}
+            onCheckedChange={(v) =>
+              onChange({ ...data, chamberBoard: { ...data.chamberBoard, reededPanels: v } })
+            }
+          />
+        </div>
+
+        {/* Chamber Trim Kit — checkbox */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="chamberTrimKit"
+              checked={data.chamberBoard.chamberTrimKit}
+              onCheckedChange={(v) =>
+                onChange({
+                  ...data,
+                  chamberBoard: { ...data.chamberBoard, chamberTrimKit: v === true },
+                })
+              }
+            />
+            <Label htmlFor="chamberTrimKit" className="text-xs font-medium cursor-pointer">
+              Add Chamber Trim Kit (+£{CHAMBER_TRIM_KIT_PRICE.toFixed(2)} ex VAT)
+            </Label>
+          </div>
+          {data.chamberBoard.chamberTrimKit && (
+            <div>
+              <Label className="text-xs">Colour</Label>
+              <Select
+                value={data.chamberBoard.chamberTrimColour}
+                onValueChange={(val) =>
+                  onChange({
+                    ...data,
+                    chamberBoard: {
+                      ...data.chamberBoard,
+                      chamberTrimColour: val as "Black" | "Stainless Steel",
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Black">Black</SelectItem>
+                  <SelectItem value="Stainless Steel">Stainless Steel</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+
+        {/* Fermacell Board */}
+        <div>
+          <Label className="text-xs">Fermacell Board (£{FERMACELL_BOARD_PRICE.toFixed(2)} each)</Label>
+          <p className="text-[10px] text-muted-foreground mb-1">1200mm × 1000mm × 12.5mm</p>
+          <Input
+            type="number"
+            min={0}
+            value={data.chamberBoard.fermacellQty}
+            onChange={(e) =>
+              onChange({
+                ...data,
+                chamberBoard: {
+                  ...data.chamberBoard,
+                  fermacellQty: parseInt(e.target.value) || 0,
+                },
+              })
+            }
+            className="w-24"
+          />
         </div>
       </OptionalSection>
     </div>
