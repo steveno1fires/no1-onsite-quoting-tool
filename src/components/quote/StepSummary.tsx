@@ -48,9 +48,6 @@ function getLineItems(data: QuoteData): LineItem[] {
     if (data.products.chamberBoard.chamberTrimKit) {
       items.push({ label: "Chamber Trim Kit", detail: data.products.chamberBoard.chamberTrimColour, price: CHAMBER_TRIM_KIT_PRICE });
     }
-    if (data.products.chamberBoard.fermacellQty > 0) {
-      items.push({ label: `Fermacell Board ×${data.products.chamberBoard.fermacellQty}`, price: data.products.chamberBoard.fermacellQty * FERMACELL_BOARD_PRICE });
-    }
   }
 
   data.extras.filter((e) => e.enabled).forEach((e) => {

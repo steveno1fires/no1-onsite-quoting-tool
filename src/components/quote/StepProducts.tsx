@@ -416,7 +416,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                   reededPanels: false,
                   chamberTrimKit: false,
                   chamberTrimColour: "Black",
-                  fermacellQty: 2,
+                  
                 },
           })
         }
