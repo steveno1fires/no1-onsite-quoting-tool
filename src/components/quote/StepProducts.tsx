@@ -16,6 +16,7 @@ import {
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
   SURROUND_OPTIONS,
+  WOODBURNER_OPTIONS,
 } from "@/data/productCatalog";
 
 interface Props {
