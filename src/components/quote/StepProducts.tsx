@@ -522,26 +522,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           )}
         </div>
 
-        {/* Fermacell Board */}
-        <div>
-          <Label className="text-xs">Fermacell Board (£{FERMACELL_BOARD_PRICE.toFixed(2)} each)</Label>
-          <p className="text-[10px] text-muted-foreground mb-1">1200mm × 1000mm × 12.5mm</p>
-          <Input
-            type="number"
-            min={0}
-            value={data.chamberBoard.fermacellQty}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                chamberBoard: {
-                  ...data.chamberBoard,
-                  fermacellQty: parseInt(e.target.value) || 0,
-                },
-              })
-            }
-            className="w-24"
-          />
-        </div>
       </OptionalSection>
     </div>
   );

@@ -313,6 +313,7 @@ export const CHAMBER_BOARD_VARIANTS: ChamberBoardVariant[] = [
   { name: "OLIVE WATERFALL*", price: 310 },
   { name: "ZAMORA*", price: 310 },
   { name: "OYSTER SLATE*", price: 310 },
+  { name: "FERMACELL BOARD (2x)", price: 87 },
 ];
 
 export const CHAMBER_BOARD_NOTE = "*Made to order. Allow up to 4 weeks. Minimum clearance distances apply. Chamber sizes vary between designs.";
