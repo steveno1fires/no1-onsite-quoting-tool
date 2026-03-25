@@ -114,6 +114,15 @@ export const initialQuoteData: QuoteData = {
     chamber: { enabled: false, description: "", size: "", price: 0 },
     beam: { enabled: false, description: "", material: "", price: 0 },
     surround: { enabled: false, description: "", price: 0 },
+    chamberBoard: {
+      enabled: false,
+      boardName: "",
+      boardPrice: 0,
+      reededPanels: false,
+      chamberTrimKit: false,
+      chamberTrimColour: "Black",
+      fermacellQty: 2,
+    },
   },
   extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
   linerKit: {
