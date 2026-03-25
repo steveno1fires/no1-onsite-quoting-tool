@@ -541,6 +541,40 @@ export const WOODBURNER_PRODUCTS: WoodburnerProduct[] = [
   { brand: "Capital", name: "Atlas 1 Single Window", kw: 5, rrp: 1495 },
   { brand: "Capital", name: "Atlas 2 Side Windows", kw: 6, rrp: 1695 },
   { brand: "Capital", name: "Atlas 3 Side Windows", kw: 6, rrp: 1995 },
+  // ── Stovax & Gazco Freestanding Stoves ───────
+  // Huntingdon Stoves
+  { brand: "Stovax & Gazco", name: "Huntingdon 20", kw: null, rrp: 1090 },
+  { brand: "Stovax & Gazco", name: "Huntingdon 30", kw: null, rrp: 1299 },
+  { brand: "Stovax & Gazco", name: "Huntingdon 40", kw: null, rrp: 1549 },
+  // Chesterfield Stoves
+  { brand: "Stovax & Gazco", name: "Chesterfield 5", kw: null, rrp: 1590 },
+  { brand: "Stovax & Gazco", name: "Chesterfield 5 Wide", kw: null, rrp: 1915 },
+  // Sheraton Stoves
+  { brand: "Stovax & Gazco", name: "Sheraton 5", kw: null, rrp: 1590 },
+  { brand: "Stovax & Gazco", name: "Sheraton 5 Wide", kw: null, rrp: 1915 },
+  // County Stoves
+  { brand: "Stovax & Gazco", name: "County 3", kw: null, rrp: 954 },
+  { brand: "Stovax & Gazco", name: "County 5", kw: null, rrp: 1090 },
+  { brand: "Stovax & Gazco", name: "County 5 Wide", kw: null, rrp: 1299 },
+  { brand: "Stovax & Gazco", name: "County 8", kw: null, rrp: 1504 },
+  // Stockton Stoves
+  { brand: "Stovax & Gazco", name: "Stockton 3", kw: null, rrp: 1045 },
+  { brand: "Stovax & Gazco", name: "Stockton 4", kw: null, rrp: 1195 },
+  { brand: "Stovax & Gazco", name: "Stockton 5", kw: null, rrp: 1320 },
+  { brand: "Stovax & Gazco", name: "Stockton 5 Wide", kw: null, rrp: 1504 },
+  { brand: "Stovax & Gazco", name: "Stockton 8", kw: null, rrp: 1750 },
+  { brand: "Stovax & Gazco", name: "Stockton 11", kw: null, rrp: 1962 },
+  // Futura Stoves
+  { brand: "Stovax & Gazco", name: "Futura 4", kw: null, rrp: 1045 },
+  { brand: "Stovax & Gazco", name: "Futura 5", kw: null, rrp: 1195 },
+  { brand: "Stovax & Gazco", name: "Futura 8", kw: null, rrp: 1504 },
+  // Vogue Stoves
+  { brand: "Stovax & Gazco", name: "Vogue Small", kw: null, rrp: 1632 },
+  { brand: "Stovax & Gazco", name: "Vogue Small T", kw: null, rrp: 1824 },
+  { brand: "Stovax & Gazco", name: "Vogue Midi", kw: null, rrp: 1915 },
+  { brand: "Stovax & Gazco", name: "Vogue Midi T", kw: null, rrp: 2079 },
+  { brand: "Stovax & Gazco", name: "Vogue Medium", kw: null, rrp: 2345 },
+  { brand: "Stovax & Gazco", name: "Vogue Medium Slimline", kw: null, rrp: 2520 },
 ];
 
 // ─────────────────────────────────────────────
