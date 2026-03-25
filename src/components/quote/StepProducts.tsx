@@ -21,7 +21,6 @@ import {
   CHAMBER_BOARD_NOTE,
   REEDED_PANELS_PRICE,
   CHAMBER_TRIM_KIT_PRICE,
-  FERMACELL_BOARD_PRICE,
 } from "@/data/productCatalog";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
