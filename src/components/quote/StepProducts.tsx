@@ -16,6 +16,7 @@ import {
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
   SURROUND_OPTIONS,
+  WOODBURNER_OPTIONS,
 } from "@/data/productCatalog";
 
 interface Props {
@@ -69,6 +70,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   // Fire: cascading brand → model
   const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
   const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
+
+  // Woodburner: cascading brand → model
+  const woodburnerBrands = [...new Set(WOODBURNER_OPTIONS.map((w) => w.brand))];
+  const woodburnerModelsForBrand = WOODBURNER_OPTIONS.filter((w) => w.brand === data.woodburner.brand);
 
   // Surround: cascading brand → model
   const surroundBrands = [...new Set(SURROUND_OPTIONS.map((s) => s.brand))];
@@ -159,6 +164,79 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           <PriceInput
             value={data.fire.price}
             onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })}
+          />
+        </div>
+      </div>
+
+      {/* Wood Burning Stoves */}
+      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+        <Label className="text-sm font-semibold">Wood Burning Stoves</Label>
+        <div>
+          <Label className="text-xs">Brand</Label>
+          <Select
+            value={data.woodburner.brand || undefined}
+            onValueChange={(brand) => {
+              onChange({
+                ...data,
+                woodburner: { brand, model: "", kw: "", price: 0 },
+              });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choose brand" />
+            </SelectTrigger>
+            <SelectContent>
+              {woodburnerBrands.map((b) => (
+                <SelectItem key={b} value={b}>
+                  {b}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {data.woodburner.brand && (
+          <div>
+            <Label className="text-xs">Model</Label>
+            <Select
+              value={data.woodburner.model || undefined}
+              onValueChange={(model) => {
+                const item = WOODBURNER_OPTIONS.find(
+                  (w) => w.brand === data.woodburner.brand && w.model === model
+                );
+                if (item) {
+                  onChange({
+                    ...data,
+                    woodburner: {
+                      brand: item.brand,
+                      model: item.model,
+                      kw: item.kw || "",
+                      price: item.price,
+                    },
+                  });
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose model" />
+              </SelectTrigger>
+              <SelectContent>
+                {woodburnerModelsForBrand.map((w) => (
+                  <SelectItem key={w.model} value={w.model}>
+                    {w.model}{w.kw ? ` — ${w.kw}kW` : ""} — £{w.price}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {data.woodburner.kw && (
+          <p className="text-xs text-muted-foreground">kW Output: {data.woodburner.kw}</p>
+        )}
+        <div>
+          <Label className="text-xs">Price</Label>
+          <PriceInput
+            value={data.woodburner.price}
+            onChange={(v) => onChange({ ...data, woodburner: { ...data.woodburner, price: v } })}
           />
         </div>
       </div>

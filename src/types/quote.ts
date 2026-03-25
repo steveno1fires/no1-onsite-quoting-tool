@@ -42,6 +42,7 @@ export interface OptionalProduct {
 
 export interface Products {
   fire: Product;
+  woodburner: Product;
   hearth: OptionalProduct;
   chamber: OptionalProduct & { size: string };
   beam: OptionalProduct & { material: string };
@@ -99,6 +100,7 @@ export const initialQuoteData: QuoteData = {
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },
+    woodburner: { brand: "", model: "", kw: "", price: 0 },
     hearth: { enabled: false, description: "", price: 0 },
     chamber: { enabled: false, description: "", size: "", price: 0 },
     beam: { enabled: false, description: "", material: "", price: 0 },
