@@ -3,7 +3,8 @@ import { QuoteData, initialQuoteData } from "@/types/quote";
 import { StepIndicator } from "./StepIndicator";
 import { StepCustomer } from "./StepCustomer";
 import { StepJobType } from "./StepJobType";
-import { StepProducts } from "./StepProducts";
+import { StepFire } from "./StepProducts";
+import { StepFireplace } from "./StepFireplace";
 import { StepExtras } from "./StepExtras";
 import { StepLinerKit } from "./StepLinerKit";
 import { StepNotes } from "./StepNotes";
@@ -29,7 +30,7 @@ export function QuoteWizard() {
     data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
   );
   const hasFlueStep = isWoodburner || isGasCF || isGasSoveCF || isGasStoveBF;
-  const totalSteps = hasFlueStep ? 7 : 6;
+  const totalSteps = hasFlueStep ? 8 : 7;
 
   // Map logical step to actual step (skip flue kit if not woodburner)
   const getActualStep = (s: number) => {
@@ -61,6 +62,9 @@ export function QuoteWizard() {
           return false;
         }
         return true;
+      case 4:
+        // Fireplace step is optional
+        return true;
       default:
         return true;
     }
@@ -81,10 +85,12 @@ export function QuoteWizard() {
       case 2:
         return <StepJobType value={data.jobType} onChange={(jobType) => setData({ ...data, jobType })} />;
       case 3:
-        return <StepProducts data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
+        return <StepFire data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 4:
+        return <StepFireplace data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
+      case 5:
         return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
-      case 5: {
+      case 6: {
         if (isTwinWall) {
           return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />;
         }
@@ -118,7 +124,7 @@ export function QuoteWizard() {
         // woodburner liner (also covers gas stove CF)
         return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       }
-      case 6:
+      case 7:
         return (
           <StepNotes
             value={data.notes}
@@ -129,7 +135,7 @@ export function QuoteWizard() {
             onLabourDaysChange={(labourDays) => setData({ ...data, labourDays })}
           />
         );
-      case 7:
+      case 8:
         return <StepSummary data={data} onToggleVat={(includeVat) => setData({ ...data, includeVat })} />;
       default:
         return null;
@@ -139,11 +145,12 @@ export function QuoteWizard() {
   const stepTitles: Record<number, string> = {
     1: "Customer Details",
     2: "Job Type",
-    3: "Products",
-    4: "Extras",
-    5: isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit",
-    6: "Notes",
-    7: "Quote Summary",
+    3: "Fire",
+    4: "Fireplace",
+    5: "Extras",
+    6: isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit",
+    7: "Notes",
+    8: "Quote Summary",
   };
 
   return (

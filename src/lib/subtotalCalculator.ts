@@ -30,8 +30,20 @@ export function calculateProductSubtotal(products: Products, jobType: string): n
     subtotal += products.gasFireGatherHood.priceExVat || 0;
   }
 
-  // Gas fire lining (if present in products)
-  // This is typically included in the frame selection
+  // BF fittings
+  if (products.bfFittings) {
+    for (const fitting of products.bfFittings) {
+      if (fitting.enabled) {
+        subtotal += fitting.price || 0;
+      }
+    }
+  }
+
+  return subtotal;
+}
+
+export function calculateFireplaceSubtotal(products: Products): number {
+  let subtotal = 0;
 
   // Hearth
   if (products.hearth.enabled) {
@@ -59,15 +71,6 @@ export function calculateProductSubtotal(products: Products, jobType: string): n
     }
     if (products.chamberBoard.chamberTrimKit) {
       subtotal += CHAMBER_TRIM_KIT_PRICE;
-    }
-  }
-
-  // BF fittings
-  if (products.bfFittings) {
-    for (const fitting of products.bfFittings) {
-      if (fitting.enabled) {
-        subtotal += fitting.price || 0;
-      }
     }
   }
 
