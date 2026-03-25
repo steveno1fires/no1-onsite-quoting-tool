@@ -178,81 +178,75 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           if (!v) { setHearthMaterial(""); setHearthType(""); }
         }}
       >
-        <div>
-          <Label className="text-xs">Material</Label>
-          <Select
-            value={hearthMaterial || undefined}
-            onValueChange={(val) => {
-              setHearthMaterial(val);
-              setHearthType("");
-              onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose material" />
-            </SelectTrigger>
-            <SelectContent>
-              {CAPITAL_HEARTHS.map((c) => (
-                <SelectItem key={c.material} value={c.material}>
-                  {c.material}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {hearthMaterial && (
-          <div>
-            <Label className="text-xs">Type</Label>
-            <Select
-              value={hearthType || undefined}
-              onValueChange={(val) => {
-                setHearthType(val);
-                onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose type" />
-              </SelectTrigger>
-              <SelectContent>
-                {CAPITAL_HEARTHS.find((c) => c.material === hearthMaterial)?.types.map((t) => (
-                  <SelectItem key={t.type} value={t.type}>
-                    {t.type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-        {hearthMaterial && hearthType && (() => {
-          const products = CAPITAL_HEARTHS
-            .find((c) => c.material === hearthMaterial)
-            ?.types.find((t) => t.type === hearthType)?.products || [];
-          return (
-            <div>
-              <Label className="text-xs">Product</Label>
-              <Select
-                value={data.hearth.description || undefined}
-                onValueChange={(val) => {
-                  const item = products.find((p) => p.name === val);
-                  if (item) {
-                    onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {products.map((p) => (
-                    <SelectItem key={p.name} value={p.name}>
-                      {p.name} — £{p.price}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          );
-        })()}
+        <Tabs
+          value={hearthMaterial || CAPITAL_HEARTHS[0]?.material}
+          onValueChange={(val) => {
+            setHearthMaterial(val);
+            setHearthType("");
+            onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
+          }}
+        >
+          <TabsList className="w-full grid grid-cols-3">
+            {CAPITAL_HEARTHS.map((c) => (
+              <TabsTrigger key={c.material} value={c.material} className="text-xs">
+                {c.material}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {CAPITAL_HEARTHS.map((cat) => (
+            <TabsContent key={cat.material} value={cat.material} className="space-y-3">
+              <div>
+                <Label className="text-xs">Type</Label>
+                <Select
+                  value={hearthMaterial === cat.material ? hearthType || undefined : undefined}
+                  onValueChange={(val) => {
+                    setHearthType(val);
+                    onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cat.types.map((t) => (
+                      <SelectItem key={t.type} value={t.type}>
+                        {t.type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {hearthType && cat.types.find((t) => t.type === hearthType) && (() => {
+                const products = cat.types.find((t) => t.type === hearthType)?.products || [];
+                return (
+                  <div>
+                    <Label className="text-xs">Product</Label>
+                    <Select
+                      value={data.hearth.description || undefined}
+                      onValueChange={(val) => {
+                        const item = products.find((p) => p.name === val);
+                        if (item) {
+                          onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose product" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] overflow-y-auto">
+                        {products.map((p) => (
+                          <SelectItem key={p.name} value={p.name}>
+                            {p.name} — £{p.price}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              })()}
+            </TabsContent>
+          ))}
+        </Tabs>
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.hearth.price} onChange={(v) => onChange({ ...data, hearth: { ...data.hearth, price: v } })} />
