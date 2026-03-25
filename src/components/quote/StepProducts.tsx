@@ -78,12 +78,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
 
 
-  // Surround: cascading brand → model
-  const surroundBrands = [...new Set(SURROUND_OPTIONS.map((s) => s.brand))];
-  const surroundModelsForBrand = SURROUND_OPTIONS.filter(
-    (s) => s.brand === (data.surround as any).brand
-  );
-  const surroundBrand = (data.surround as any).brand || "";
 
   return (
     <div className="space-y-4 animate-slide-in">
