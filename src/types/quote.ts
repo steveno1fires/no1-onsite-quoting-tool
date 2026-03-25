@@ -53,7 +53,7 @@ export interface ChamberBoardSelection {
 export interface Products {
   fire: Product;
   hearth: OptionalProduct;
-  chamber: OptionalProduct & { size: string };
+  
   beam: OptionalProduct & { material: string };
   surround: OptionalProduct;
   chamberBoard: ChamberBoardSelection;
