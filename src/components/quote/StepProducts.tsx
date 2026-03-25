@@ -27,7 +27,6 @@ import {
   GAS_STOVE_PRODUCTS,
   ELECTRIC_FIRE_TABS,
   GAS_FIRE_TRIMS,
-  GATHER_HOOD_PRICES,
   CJ_COMPATIBLE_FIREPLACES,
   CJ_16_INCH_FIRES,
 } from "@/data/fireProductsByJobType";
@@ -175,9 +174,6 @@ function GasFireSection({
   const hasFrets        = (trimConfig?.frets.length ?? 0) > 0;
   const hasStandardTrims = (trimConfig?.standardTrims.length ?? 0) > 0;
   const hasTrimSection  = hasFascias || hasFrets;
-
-  // Gather hood
-  const gatherHoodPrice = data.fire.model ? GATHER_HOOD_PRICES[data.fire.model] : undefined;
 
   // C&J compatible fireplaces
   const cjFireplaceOptions = data.fire.model ? CJ_COMPATIBLE_FIREPLACES[data.fire.model] : undefined;
@@ -459,27 +455,6 @@ function GasFireSection({
               )}
             </div>
           )}
-        </div>
-      )}
-
-      {/* ── Gather Hood ── */}
-      {data.fire.model && gatherHoodPrice !== undefined && (
-        <div className="bg-card rounded-lg p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <Checkbox
-              id="gather-hood"
-              checked={data.gasFireGatherHood.enabled}
-              onCheckedChange={(v) =>
-                onChange({
-                  ...data,
-                  gasFireGatherHood: { enabled: v === true, priceExVat: v === true ? gatherHoodPrice : 0 },
-                })
-              }
-            />
-            <label htmlFor="gather-hood" className="text-sm font-medium cursor-pointer">
-              Gather Hood (+£{gatherHoodPrice.toFixed(2)} ex VAT)
-            </label>
-          </div>
         </div>
       )}
 

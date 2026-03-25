@@ -3,10 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GATHER_HOOD_PRICES } from "@/data/fireProductsByJobType";
 
 type Props =
   | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: boolean; gasFirebox?: boolean; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
-  | { mode: "liner-gas-cf"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox: true; gasFirebox: boolean; onGasFireboxChange: (v: boolean) => void; products?: never; onProductsChange?: never }
+  | { mode: "liner-gas-cf"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox: true; gasFirebox: boolean; onGasFireboxChange: (v: boolean) => void; fireModel?: string; gatherHoodEnabled?: boolean; onGatherHoodChange?: (enabled: boolean) => void; products?: never; onProductsChange?: never }
   | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
   | { mode: "gasstovebf"; data?: never; onChange?: never; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never };
 
@@ -123,12 +124,15 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
   );
 }
 
-function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFireboxChange }: {
+function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFireboxChange, fireModel, gatherHoodEnabled, onGatherHoodChange }: {
   data: LinerKit;
   onChange: (d: LinerKit) => void;
   showGasFirebox?: boolean;
   gasFirebox?: boolean;
   onGasFireboxChange?: (v: boolean) => void;
+  fireModel?: string;
+  gatherHoodEnabled?: boolean;
+  onGatherHoodChange?: (enabled: boolean) => void;
 }) {
   const handleKitType = (v: string) => {
     const kitType = v as LinerKit["kitType"];
@@ -238,6 +242,26 @@ function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFirebox
         </div>
       )}
 
+      {/* Gather Hood — large format gas fires (P11, P5, Infinity 890HD) */}
+      {(() => {
+        const price = fireModel ? GATHER_HOOD_PRICES[fireModel] : undefined;
+        if (price === undefined) return null;
+        return (
+          <div className="bg-card rounded-lg p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="gather-hood"
+                checked={gatherHoodEnabled ?? false}
+                onCheckedChange={(v) => onGatherHoodChange?.(v === true)}
+              />
+              <Label htmlFor="gather-hood" className="text-sm cursor-pointer font-medium">
+                Gather Hood (+£{price.toFixed(2)} ex VAT)
+              </Label>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Accessories */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">Accessories — £50 each</Label>
@@ -302,6 +326,9 @@ export function StepLinerKit(props: Props) {
         showGasFirebox
         gasFirebox={props.gasFirebox}
         onGasFireboxChange={props.onGasFireboxChange}
+        fireModel={props.fireModel}
+        gatherHoodEnabled={props.gatherHoodEnabled}
+        onGatherHoodChange={props.onGatherHoodChange}
       />
     );
   }

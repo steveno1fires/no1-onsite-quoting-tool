@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { toast } from "sonner";
+import { GATHER_HOOD_PRICES } from "@/data/fireProductsByJobType";
 
 export function QuoteWizard() {
   const [step, setStep] = useState(1);
@@ -99,6 +100,18 @@ export function QuoteWizard() {
               showGasFirebox
               gasFirebox={data.products.gasFirebox}
               onGasFireboxChange={(gasFirebox) => setData({ ...data, products: { ...data.products, gasFirebox } })}
+              fireModel={data.products.fire.model}
+              gatherHoodEnabled={data.products.gasFireGatherHood.enabled}
+              onGatherHoodChange={(enabled) => setData({
+                ...data,
+                products: {
+                  ...data.products,
+                  gasFireGatherHood: {
+                    enabled,
+                    priceExVat: enabled ? (GATHER_HOOD_PRICES[data.products.fire.model] ?? 0) : 0,
+                  },
+                },
+              })}
             />
           );
         }
