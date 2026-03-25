@@ -262,15 +262,6 @@ export const HEARTH_OPTIONS: CatalogItem[] = [
   { label: "Tiled Hearth", price: 150 },
 ];
 
-export const CHAMBER_OPTIONS: (CatalogItem & { size: string })[] = [
-  { label: "Brick Chamber 36×36", size: "36x36", price: 350 },
-  { label: "Brick Chamber 40×40", size: "40x40", price: 395 },
-  { label: "Vermiculite Chamber 36×36", size: "36x36", price: 295 },
-  { label: "Vermiculite Chamber 40×40", size: "40x40", price: 325 },
-  { label: "Reeded Chamber 36×36", size: "36x36", price: 375 },
-  { label: "Slate Chamber 36×36", size: "36x36", price: 425 },
-];
-
 export const BEAM_OPTIONS: (CatalogItem & { material: string })[] = [
   { label: 'Solid Oak Beam 48"', material: "Solid Oak", price: 295 },
   { label: 'Solid Oak Beam 54"', material: "Solid Oak", price: 325 },
