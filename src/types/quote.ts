@@ -100,7 +100,6 @@ export const initialQuoteData: QuoteData = {
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },
-    woodburner: { brand: "", model: "", kw: "", price: 0 },
     fireplace: { enabled: false, description: "", price: 0 },
     hearth: { enabled: false, description: "", price: 0 },
     chamber: { enabled: false, description: "", size: "", price: 0 },
