@@ -68,6 +68,8 @@ function OptionalSection({
 
 export function StepProducts({ data, jobType, onChange }: Props) {
   const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
+  const [hearthMaterial, setHearthMaterial] = React.useState("");
+  const [hearthType, setHearthType] = React.useState("");
 
   // Fire: cascading brand → model
   const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
