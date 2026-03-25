@@ -804,6 +804,10 @@ export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
   { name: "4D Ecoflame 16\" — Elite Chrome/Black + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
   { name: "4D Ecoflame 16\" — Elite Brass/Black + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
   { name: "4D Ecoflame 16\" — Elite Chrome/Chrome + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
+  // 4D Ecoflame 22" Maxi (NEW — fits 16" or 22" openings)
+  { name: "4D Ecoflame 22\" Maxi — Engine Only", description: "Fits standard 16\" or 22\" wide opening; fascia sold separately", priceExVat: 499.17 },
+  { name: "4D Ecoflame 22\" Maxi — Eclipse Fascia Black/Nickel Black", description: "Fascia only for 22\" Maxi engine", priceExVat: 165.83 },
+  { name: "4D Ecoflame 22\" Maxi — Eclipse Fascia Chrome/Nickel Black", description: "Fascia only for 22\" Maxi engine", priceExVat: 165.83 },
   // Opulus Real Flame Technology
   { name: "Opulus 16\" RFT Engine Only", description: "Real Flame Technology, engine only", priceExVat: 832.50 },
   { name: "Opulus 16\" RFT — Prestige Nickel/Chrome Fascia", description: "Complete with Prestige fascia", priceExVat: 957.50 },
@@ -852,5 +856,17 @@ export const ELECTRIC_FIRE_TABS: ElectricFireTab[] = [
       { name: "Luminosa 185", widthMm: 1850, priceExVat: 3082.50 },
     ],
     note: "Real Flame Technology — Birch & Oak Logs included as standard.",
+  },
+  {
+    tabName: "Maxi 22\"",
+    products: [
+      // Engine only — fits both standard 16" and 22" wide openings
+      { name: "4D Ecoflame 22\" Maxi — Engine Only",                             widthMm: 560, priceExVat: 499.17 },
+      // Engine + Eclipse fascia bundles (engine £499.17 + fascia £165.83)
+      { name: "4D Ecoflame 22\" Maxi + Eclipse Fascia Black/Nickel Black",       widthMm: 560, priceExVat: 665.00 },
+      { name: "4D Ecoflame 22\" Maxi + Eclipse Fascia Chrome/Nickel Black",      widthMm: 560, priceExVat: 665.00 },
+    ],
+    realLogsUpgrade: { label: "Real Oak Premium Log Set — 7 logs (Maxi)", price: 74.17 },
+    note: "Engine fits standard 16\" or 22\" wide opening. Eclipse fascias sold separately (£165.83 each) or as package above.",
   },
 ];
