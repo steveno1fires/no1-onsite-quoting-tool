@@ -261,40 +261,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </OptionalSection>
 
-      {/* Chamber */}
-      <OptionalSection
-        title="Chamber"
-        enabled={data.chamber.enabled}
-        onToggle={(v) => onChange({ ...data, chamber: { ...data.chamber, enabled: v } })}
-      >
-        <div>
-          <Label className="text-xs">Select Chamber</Label>
-          <Select
-            value={data.chamber.description || undefined}
-            onValueChange={(val) => {
-              const item = CHAMBER_OPTIONS.find((c) => c.label === val);
-              if (item) {
-                onChange({ ...data, chamber: { ...data.chamber, description: item.label, size: item.size, price: item.price } });
-              }
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose a chamber" />
-            </SelectTrigger>
-            <SelectContent>
-              {CHAMBER_OPTIONS.map((c) => (
-                <SelectItem key={c.label} value={c.label}>
-                  {c.label} — £{c.price}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label className="text-xs">Price</Label>
-          <PriceInput value={data.chamber.price} onChange={(v) => onChange({ ...data, chamber: { ...data.chamber, price: v } })} />
-        </div>
-      </OptionalSection>
 
       {/* Beam (Capital Geocast) */}
       <OptionalSection
