@@ -1,5 +1,5 @@
 import { QuoteData } from "@/types/quote";
-import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE, FERMACELL_BOARD_PRICE } from "@/data/productCatalog";
+import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE } from "@/data/productCatalog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
