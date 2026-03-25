@@ -12,14 +12,12 @@ export interface CustomerDetails {
 }
 
 export const JOB_TYPES = [
-  "Woodburner—Chimney Liner",
-  "Woodburner—Twin Wall",
-  "Gas Fire—Balanced Flue",
-  "Gas Fire—Inset",
+  "Woodburner — Chimney Liner",
+  "Woodburner — Twin Wall",
+  "Gas Fire — Balanced Flue (BF)",
+  "Gas Fire — Inset (Conventional Flue)",
   "Gas Stove",
-  "Electric Fire/Media Wall",
-  "Gas Media Wall",
-  "Air Conditioning",
+  "Electric Fire / Media Wall",
 ] as const;
 
 export type JobType = (typeof JOB_TYPES)[number];

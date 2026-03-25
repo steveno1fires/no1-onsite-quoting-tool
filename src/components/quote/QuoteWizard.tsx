@@ -18,7 +18,7 @@ export function QuoteWizard() {
   const [data, setData] = useState<QuoteData>(initialQuoteData);
 
   const isWoodburner = data.jobType?.startsWith("Woodburner");
-  const isTwinWall = data.jobType === "Woodburner—Twin Wall";
+  const isTwinWall = data.jobType === "Woodburner — Twin Wall";
   const hasFlueStep = isWoodburner; // both liner and twin wall
   const totalSteps = hasFlueStep ? 7 : 6;
 

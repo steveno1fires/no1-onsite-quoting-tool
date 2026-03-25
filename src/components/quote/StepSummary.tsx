@@ -59,7 +59,7 @@ function getLineItems(data: QuoteData): LineItem[] {
     items.push({ label: e.label, price: e.price });
   });
 
-  if (data.jobType === "Woodburner—Twin Wall" && data.twinWallKit.price > 0) {
+  if (data.jobType === "Woodburner — Twin Wall" && data.twinWallKit.price > 0) {
     let twPrice = data.twinWallKit.price;
     if (data.twinWallKit.flueSize === '6"') {
       twPrice *= 1.2;
@@ -75,7 +75,7 @@ function getLineItems(data: QuoteData): LineItem[] {
         price: data.twinWallKit.additionalItemPrice,
       });
     }
-  } else if (data.jobType === "Woodburner—Chimney Liner" && data.linerKit.price > 0) {
+  } else if (data.jobType === "Woodburner — Chimney Liner" && data.linerKit.price > 0) {
     let linerPrice = data.linerKit.price;
     const surcharges: string[] = [];
     if (data.linerKit.flueSize === '6"') {

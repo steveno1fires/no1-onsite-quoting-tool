@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  FIRE_OPTIONS,
   BEAM_OPTIONS,
   CAPITAL_HEARTHS,
   CHAMBER_BOARD_VARIANTS,
@@ -21,6 +21,13 @@ import {
   REEDED_PANELS_PRICE,
   CHAMBER_TRIM_KIT_PRICE,
 } from "@/data/productCatalog";
+import {
+  WOODBURNER_PRODUCTS,
+  GAS_BF_PRODUCTS,
+  GAS_CF_PRODUCTS,
+  GAS_STOVE_PRODUCTS,
+  ELECTRIC_FIRE_TABS,
+} from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
 import React from "react";
@@ -70,104 +77,410 @@ function OptionalSection({
   );
 }
 
-export function StepProducts({ data, jobType, onChange }: Props) {
-  const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
-  const [hearthMaterial, setHearthMaterial] = React.useState(CAPITAL_HEARTHS[0]?.material || "");
-  const [hearthType, setHearthType] = React.useState("");
-  const [fireplaceMaterial, setFireplaceMaterial] = React.useState("");
-  const [beamCategory, setBeamCategory] = React.useState("");
-
-  // Fire: cascading brand → model
-  const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
-  const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
-
-
+// ─────────────────────────────────────────────
+//  WOODBURNER fire section
+// ─────────────────────────────────────────────
+function WoodburnerSection({ data, onChange }: { data: Products; onChange: (d: Products) => void }) {
+  const brands = [...new Set(WOODBURNER_PRODUCTS.map((p) => p.brand))];
+  const modelsForBrand = WOODBURNER_PRODUCTS.filter((p) => p.brand === data.fire.brand);
 
   return (
-    <div className="space-y-4 animate-slide-in">
-      {/* Fire/Appliance */}
-      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-        <Label className="text-sm font-semibold">Woodburner *</Label>
+    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+      <Label className="text-sm font-semibold">Woodburner / Stove *</Label>
+      <div>
+        <Label className="text-xs">Supplier</Label>
+        <Select
+          value={data.fire.brand || undefined}
+          onValueChange={(brand) => {
+            onChange({ ...data, fire: { brand, model: brand === "Customer's Own" ? "Customer's Own" : "", kw: "", price: 0 } });
+          }}
+        >
+          <SelectTrigger><SelectValue placeholder="Choose supplier" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Customer's Own">Customer's Own</SelectItem>
+            {brands.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      {data.fire.brand && data.fire.brand !== "Customer's Own" && (
         <div>
-          <Label className="text-xs">Supplier</Label>
+          <Label className="text-xs">Model</Label>
           <Select
-            value={data.fire.brand || undefined}
-            onValueChange={(brand) => {
-              onChange({
-                ...data,
-                fire: { brand, model: brand === "Customer's Own" ? "Customer's Own" : "", kw: "", price: 0 },
-              });
+            value={data.fire.model || undefined}
+            onValueChange={(model) => {
+              const item = WOODBURNER_PRODUCTS.find((p) => p.brand === data.fire.brand && p.name === model);
+              if (item) {
+                onChange({ ...data, fire: { brand: item.brand, model: item.name, kw: item.kw ? String(item.kw) : "", price: item.rrp } });
+              }
             }}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose supplier" />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="Customer's Own">Customer's Own</SelectItem>
-              {fireBrands.map((b) => (
-                <SelectItem key={b} value={b}>
-                  {b}
+              {modelsForBrand.map((p) => (
+                <SelectItem key={p.name} value={p.name}>
+                  {p.name}{p.kw ? ` (${p.kw}kW)` : ""} — £{p.rrp}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        {data.fire.brand && data.fire.brand !== "Customer's Own" && (
-          <div>
-            <Label className="text-xs">Model</Label>
-            <Select
-              value={data.fire.model || undefined}
-              onValueChange={(model) => {
-                const item = FIRE_OPTIONS.find(
-                  (f) => f.brand === data.fire.brand && f.model === model
-                );
-                if (item) {
-                  onChange({
-                    ...data,
-                    fire: {
-                      brand: item.brand,
-                      model: item.model,
-                      kw: item.kw || "",
-                      price: item.price,
-                    },
-                  });
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose model" />
-              </SelectTrigger>
-              <SelectContent>
-                {fireModelsForBrand.map((f) => (
-                  <SelectItem key={f.model} value={f.model}>
-                    {f.model} — £{f.price}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-        {data.fire.brand === "Customer's Own" && (
-          <div>
-            <Label className="text-xs">Description</Label>
-            <Input
-              value={data.fire.model}
-              onChange={(e) => onChange({ ...data, fire: { ...data.fire, model: e.target.value } })}
-              placeholder="Describe the customer's fire"
-            />
-          </div>
-        )}
-        {showKw && data.fire.kw && (
-          <p className="text-xs text-muted-foreground">kW Output: {data.fire.kw}</p>
-        )}
+      )}
+      {data.fire.brand === "Customer's Own" && (
         <div>
-          <Label className="text-xs">Price</Label>
-          <PriceInput
-            value={data.fire.price}
-            onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })}
+          <Label className="text-xs">Description</Label>
+          <Input
+            value={data.fire.model}
+            onChange={(e) => onChange({ ...data, fire: { ...data.fire, model: e.target.value } })}
+            placeholder="Describe the customer's stove"
           />
         </div>
+      )}
+      {data.fire.kw && <p className="text-xs text-muted-foreground">kW Output: {data.fire.kw}</p>}
+      <div>
+        <Label className="text-xs">Price</Label>
+        <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
       </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  GAS FIRE section (BF or CF)
+// ─────────────────────────────────────────────
+function GasFireSection({
+  data,
+  onChange,
+  products,
+  title,
+}: {
+  data: Products;
+  onChange: (d: Products) => void;
+  products: typeof GAS_BF_PRODUCTS;
+  title: string;
+}) {
+  const subCategories = [...new Set(products.map((p) => p.subCategory))];
+  const [selectedSubCat, setSelectedSubCat] = React.useState(subCategories[0] || "");
+  const [controlType, setControlType] = React.useState<"slide" | "remote">("slide");
+
+  const productsInCat = products.filter((p) => p.subCategory === selectedSubCat);
+
+  const handleProductSelect = (productName: string) => {
+    const item = productsInCat.find((p) => p.name === productName);
+    if (!item) return;
+    const price = item.price !== undefined
+      ? item.price
+      : controlType === "remote" && item.remoteControlNg !== undefined
+        ? item.remoteControlNg
+        : item.slideControlNg || 0;
+    onChange({
+      ...data,
+      fire: { brand: "C&J", model: item.name, kw: "", price },
+    });
+  };
+
+  const handleControlChange = (ct: "slide" | "remote") => {
+    setControlType(ct);
+    // recalculate price if a product is already selected
+    const item = products.find((p) => p.name === data.fire.model);
+    if (item && item.price === undefined) {
+      const price = ct === "remote" && item.remoteControlNg !== undefined
+        ? item.remoteControlNg
+        : item.slideControlNg || 0;
+      onChange({ ...data, fire: { ...data.fire, price } });
+    }
+  };
+
+  const selectedProduct = products.find((p) => p.name === data.fire.model);
+  const hasControlOptions = selectedProduct && selectedProduct.price === undefined;
+
+  return (
+    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+      <Label className="text-sm font-semibold">{title} *</Label>
+
+      {/* Sub-category tabs */}
+      <div>
+        <Label className="text-xs">Category</Label>
+        <Select
+          value={selectedSubCat}
+          onValueChange={(val) => {
+            setSelectedSubCat(val);
+            onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 } });
+          }}
+        >
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Product */}
+      <div>
+        <Label className="text-xs">Model</Label>
+        <Select
+          value={data.fire.model || undefined}
+          onValueChange={handleProductSelect}
+        >
+          <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+          <SelectContent>
+            {productsInCat.map((p) => (
+              <SelectItem key={p.name} value={p.name}>
+                {p.name}
+                {p.description ? ` — ${p.description}` : ""}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Control type (only if relevant) */}
+      {data.fire.model && hasControlOptions && (
+        <div className="space-y-1">
+          <Label className="text-xs">Control Type</Label>
+          <RadioGroup
+            value={controlType}
+            onValueChange={(v) => handleControlChange(v as "slide" | "remote")}
+            className="flex gap-4"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="slide" id="ctrl-slide" />
+              <Label htmlFor="ctrl-slide" className="text-xs cursor-pointer">
+                Slide Control
+                {selectedProduct?.slideControlNg && ` — £${selectedProduct.slideControlNg.toFixed(2)}`}
+              </Label>
+            </div>
+            {selectedProduct?.remoteControlNg && (
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="remote" id="ctrl-remote" />
+                <Label htmlFor="ctrl-remote" className="text-xs cursor-pointer">
+                  Remote Control — £{selectedProduct.remoteControlNg.toFixed(2)}
+                </Label>
+              </div>
+            )}
+          </RadioGroup>
+        </div>
+      )}
+
+      <div>
+        <Label className="text-xs">Price ex VAT</Label>
+        <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  GAS STOVE section (conventional flue)
+// ─────────────────────────────────────────────
+function GasStoveSection({ data, onChange }: { data: Products; onChange: (d: Products) => void }) {
+  return (
+    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+      <Label className="text-sm font-semibold">Gas Stove *</Label>
+      <div>
+        <Label className="text-xs">Model</Label>
+        <Select
+          value={data.fire.model || undefined}
+          onValueChange={(name) => {
+            const item = GAS_STOVE_PRODUCTS.find((p) => p.name === name);
+            if (item) {
+              onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price: item.priceExVat } });
+            }
+          }}
+        >
+          <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+          <SelectContent>
+            {GAS_STOVE_PRODUCTS.map((p) => (
+              <SelectItem key={p.name} value={p.name}>
+                {p.name} ({p.fuel}) — £{p.priceExVat.toFixed(2)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label className="text-xs">Price ex VAT</Label>
+        <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  ELECTRIC FIRE / MEDIA WALL section
+// ─────────────────────────────────────────────
+function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d: Products) => void }) {
+  const [activeTab, setActiveTab] = React.useState(ELECTRIC_FIRE_TABS[0].tabName);
+  const [realLogsChecked, setRealLogsChecked] = React.useState(false);
+  const [woodLogSetChecked, setWoodLogSetChecked] = React.useState(false);
+
+  const currentTab = ELECTRIC_FIRE_TABS.find((t) => t.tabName === activeTab) || ELECTRIC_FIRE_TABS[0];
+
+  const handleProductSelect = (name: string) => {
+    const item = currentTab.products.find((p) => p.name === name);
+    if (!item) return;
+    let price = item.priceExVat;
+    if (realLogsChecked && currentTab.realLogsUpgrade) price += currentTab.realLogsUpgrade.price;
+    if (woodLogSetChecked && currentTab.optionalWoodLogSet) price += currentTab.optionalWoodLogSet.price;
+    onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price } });
+  };
+
+  const recalcPrice = (
+    productName: string,
+    rl: boolean,
+    wl: boolean,
+  ) => {
+    const item = currentTab.products.find((p) => p.name === productName);
+    if (!item) return;
+    let price = item.priceExVat;
+    if (rl && currentTab.realLogsUpgrade) price += currentTab.realLogsUpgrade.price;
+    if (wl && currentTab.optionalWoodLogSet) price += currentTab.optionalWoodLogSet.price;
+    onChange({ ...data, fire: { ...data.fire, price } });
+  };
+
+  return (
+    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+      <Label className="text-sm font-semibold">Electric Fire *</Label>
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => {
+          setActiveTab(val);
+          setRealLogsChecked(false);
+          setWoodLogSetChecked(false);
+          onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 } });
+        }}
+      >
+        <TabsList className="w-full grid grid-cols-3">
+          {ELECTRIC_FIRE_TABS.map((t) => (
+            <TabsTrigger key={t.tabName} value={t.tabName} className="text-xs">{t.tabName}</TabsTrigger>
+          ))}
+        </TabsList>
+        {ELECTRIC_FIRE_TABS.map((tab) => (
+          <TabsContent key={tab.tabName} value={tab.tabName} className="space-y-3">
+            {tab.note && <p className="text-xs text-muted-foreground">{tab.note}</p>}
+            <div>
+              <Label className="text-xs">Model</Label>
+              <Select
+                value={data.fire.model || undefined}
+                onValueChange={handleProductSelect}
+              >
+                <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+                <SelectContent>
+                  {tab.products.map((p) => (
+                    <SelectItem key={p.name} value={p.name}>
+                      {p.name} ({p.widthMm}mm) — £{p.priceExVat.toFixed(2)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Real Logs upgrade */}
+            {tab.realLogsUpgrade && data.fire.model && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`real-logs-${tab.tabName}`}
+                  checked={realLogsChecked}
+                  onCheckedChange={(v) => {
+                    const checked = v === true;
+                    setRealLogsChecked(checked);
+                    recalcPrice(data.fire.model, checked, woodLogSetChecked);
+                  }}
+                />
+                <Label htmlFor={`real-logs-${tab.tabName}`} className="text-xs cursor-pointer">
+                  {tab.realLogsUpgrade.label} upgrade (+£{tab.realLogsUpgrade.price.toFixed(2)})
+                </Label>
+              </div>
+            )}
+            {/* Optional Wood Log Set (Deep only) */}
+            {tab.optionalWoodLogSet && data.fire.model && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`wood-log-set-${tab.tabName}`}
+                  checked={woodLogSetChecked}
+                  onCheckedChange={(v) => {
+                    const checked = v === true;
+                    setWoodLogSetChecked(checked);
+                    recalcPrice(data.fire.model, realLogsChecked, checked);
+                  }}
+                />
+                <Label htmlFor={`wood-log-set-${tab.tabName}`} className="text-xs cursor-pointer">
+                  {tab.optionalWoodLogSet.label} (+£{tab.optionalWoodLogSet.price.toFixed(2)})
+                </Label>
+              </div>
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
+      <div>
+        <Label className="text-xs">Price ex VAT</Label>
+        <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  MAIN StepProducts component
+// ─────────────────────────────────────────────
+export function StepProducts({ data, jobType, onChange }: Props) {
+  const [hearthMaterial, setHearthMaterial] = React.useState(CAPITAL_HEARTHS[0]?.material || "");
+  const [hearthType, setHearthType] = React.useState("");
+  const [fireplaceMaterial, setFireplaceMaterial] = React.useState("");
+  const [beamCategory, setBeamCategory] = React.useState("");
+
+  // Render the correct fire/appliance section based on job type
+  const renderFireSection = () => {
+    switch (jobType) {
+      case "Woodburner — Chimney Liner":
+      case "Woodburner — Twin Wall":
+        return <WoodburnerSection data={data} onChange={onChange} />;
+      case "Gas Fire — Balanced Flue (BF)":
+        return (
+          <GasFireSection
+            data={data}
+            onChange={onChange}
+            products={GAS_BF_PRODUCTS}
+            title="Gas Fire — Balanced Flue"
+          />
+        );
+      case "Gas Fire — Inset (Conventional Flue)":
+        return (
+          <GasFireSection
+            data={data}
+            onChange={onChange}
+            products={GAS_CF_PRODUCTS}
+            title="Gas Fire — Inset (CF)"
+          />
+        );
+      case "Gas Stove":
+        return <GasStoveSection data={data} onChange={onChange} />;
+      case "Electric Fire / Media Wall":
+        return <ElectricFireSection data={data} onChange={onChange} />;
+      default:
+        // Fallback — manual entry
+        return (
+          <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+            <Label className="text-sm font-semibold">Fire / Appliance *</Label>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Input
+                value={data.fire.model}
+                onChange={(e) => onChange({ ...data, fire: { ...data.fire, model: e.target.value } })}
+                placeholder="Describe the appliance"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Price</Label>
+              <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="space-y-4 animate-slide-in">
+      {/* Fire / Appliance — conditional by job type */}
+      {renderFireSection()}
 
       {/* Capital Hearths */}
       <OptionalSection
@@ -188,9 +501,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         >
           <TabsList className="w-full grid grid-cols-3">
             {CAPITAL_HEARTHS.map((c) => (
-              <TabsTrigger key={c.material} value={c.material} className="text-xs">
-                {c.material}
-              </TabsTrigger>
+              <TabsTrigger key={c.material} value={c.material} className="text-xs">{c.material}</TabsTrigger>
             ))}
           </TabsList>
           {CAPITAL_HEARTHS.map((cat) => {
@@ -206,15 +517,9 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                       onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0, description2: "", price2: 0 } });
                     }}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose type" />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Choose type" /></SelectTrigger>
                     <SelectContent>
-                      {cat.types.map((t) => (
-                        <SelectItem key={t.type} value={t.type}>
-                          {t.type}
-                        </SelectItem>
-                      ))}
+                      {cat.types.map((t) => <SelectItem key={t.type} value={t.type}>{t.type}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -228,19 +533,13 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                           value={data.hearth.description || undefined}
                           onValueChange={(val) => {
                             const item = products.find((p) => p.name === val);
-                            if (item) {
-                              onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
-                            }
+                            if (item) onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
                           }}
                         >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Choose product" />
-                          </SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="Choose product" /></SelectTrigger>
                           <SelectContent className="max-h-[300px] overflow-y-auto">
                             {products.map((p) => (
-                              <SelectItem key={p.name} value={p.name}>
-                                {p.name} — £{p.price}
-                              </SelectItem>
+                              <SelectItem key={p.name} value={p.name}>{p.name} — £{p.price}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -255,21 +554,15 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                                 onChange({ ...data, hearth: { ...data.hearth, description2: "", price2: 0 } });
                               } else {
                                 const item = products.find((p) => p.name === val);
-                                if (item) {
-                                  onChange({ ...data, hearth: { ...data.hearth, description2: item.name, price2: item.price } });
-                                }
+                                if (item) onChange({ ...data, hearth: { ...data.hearth, description2: item.name, price2: item.price } });
                               }
                             }}
                           >
-                            <SelectTrigger>
-                              <SelectValue placeholder="None" />
-                            </SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                             <SelectContent className="max-h-[300px] overflow-y-auto">
                               <SelectItem value="__none__">None</SelectItem>
                               {products.filter((p) => p.name !== data.hearth.description).map((p) => (
-                                <SelectItem key={p.name} value={p.name}>
-                                  {p.name} — £{p.price}
-                                </SelectItem>
+                                <SelectItem key={p.name} value={p.name}>{p.name} — £{p.price}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -290,7 +583,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           />
         </div>
       </OptionalSection>
-
 
       {/* Beam (Capital Geocast) */}
       <OptionalSection
@@ -314,14 +606,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
               onChange({ ...data, beam: { ...data.beam, description: "", material: val, price: 0 } });
             }}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose category" />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose category" /></SelectTrigger>
             <SelectContent>
               {CAPITAL_BEAM_CATEGORIES.map((c) => (
-                <SelectItem key={c.category} value={c.category}>
-                  {c.category}
-                </SelectItem>
+                <SelectItem key={c.category} value={c.category}>{c.category}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -340,9 +628,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                   }
                 }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose beam" />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Choose beam" /></SelectTrigger>
                 <SelectContent>
                   {products.map((p, i) => (
                     <SelectItem key={`${p.name}-${p.finish}-${i}`} value={`${p.name} (${p.finish})`}>
@@ -382,14 +668,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
               onChange({ ...data, surround: { ...data.surround, description: "", price: 0 } });
             }}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose material" />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose material" /></SelectTrigger>
             <SelectContent>
               {CAPITAL_FIREPLACE_MATERIALS.map((m) => (
-                <SelectItem key={m.material} value={m.material}>
-                  {m.material}
-                </SelectItem>
+                <SelectItem key={m.material} value={m.material}>{m.material}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -408,9 +690,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                   }
                 }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose product" />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Choose product" /></SelectTrigger>
                 <SelectContent>
                   {products.map((p, i) => (
                     <SelectItem key={`${p.name}-${p.rebate}-${i}`} value={p.name}>
@@ -446,12 +726,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
                   reededPanels: false,
                   chamberTrimKit: false,
                   chamberTrimColour: "Black",
-                  
                 },
           })
         }
       >
-        {/* Board selection */}
         <div>
           <Label className="text-xs">Board Design</Label>
           <Select
@@ -459,42 +737,26 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             onValueChange={(val) => {
               const item = CHAMBER_BOARD_VARIANTS.find((v) => v.name === val);
               if (item) {
-                onChange({
-                  ...data,
-                  chamberBoard: {
-                    ...data.chamberBoard,
-                    boardName: item.name,
-                    boardPrice: item.price,
-                  },
-                });
+                onChange({ ...data, chamberBoard: { ...data.chamberBoard, boardName: item.name, boardPrice: item.price } });
               }
             }}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose board design" />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose board design" /></SelectTrigger>
             <SelectContent className="max-h-[300px] overflow-y-auto">
               {CHAMBER_BOARD_VARIANTS.map((v) => (
-                <SelectItem key={v.name} value={v.name}>
-                  {v.name} — £{v.price.toFixed(2)}
-                </SelectItem>
+                <SelectItem key={v.name} value={v.name}>{v.name} — £{v.price.toFixed(2)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <p className="text-[10px] text-muted-foreground mt-1">{CHAMBER_BOARD_NOTE}</p>
         </div>
-
         <div>
           <Label className="text-xs">Board Price</Label>
           <PriceInput
             value={data.chamberBoard.boardPrice}
-            onChange={(v) =>
-              onChange({ ...data, chamberBoard: { ...data.chamberBoard, boardPrice: v } })
-            }
+            onChange={(v) => onChange({ ...data, chamberBoard: { ...data.chamberBoard, boardPrice: v } })}
           />
         </div>
-
-        {/* Cast Reeded Infill Panels */}
         <div className="flex items-center justify-between">
           <div>
             <Label className="text-xs font-medium">Cast Reeded Infill Panels</Label>
@@ -502,23 +764,16 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           </div>
           <Switch
             checked={data.chamberBoard.reededPanels}
-            onCheckedChange={(v) =>
-              onChange({ ...data, chamberBoard: { ...data.chamberBoard, reededPanels: v } })
-            }
+            onCheckedChange={(v) => onChange({ ...data, chamberBoard: { ...data.chamberBoard, reededPanels: v } })}
           />
         </div>
-
-        {/* Chamber Trim Kit — checkbox */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Checkbox
               id="chamberTrimKit"
               checked={data.chamberBoard.chamberTrimKit}
               onCheckedChange={(v) =>
-                onChange({
-                  ...data,
-                  chamberBoard: { ...data.chamberBoard, chamberTrimKit: v === true },
-                })
+                onChange({ ...data, chamberBoard: { ...data.chamberBoard, chamberTrimKit: v === true } })
               }
             />
             <Label htmlFor="chamberTrimKit" className="text-xs font-medium cursor-pointer">
@@ -531,18 +786,10 @@ export function StepProducts({ data, jobType, onChange }: Props) {
               <Select
                 value={data.chamberBoard.chamberTrimColour}
                 onValueChange={(val) =>
-                  onChange({
-                    ...data,
-                    chamberBoard: {
-                      ...data.chamberBoard,
-                      chamberTrimColour: val as "Black" | "Stainless Steel",
-                    },
-                  })
+                  onChange({ ...data, chamberBoard: { ...data.chamberBoard, chamberTrimColour: val as "Black" | "Stainless Steel" } })
                 }
               >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Black">Black</SelectItem>
                   <SelectItem value="Stainless Steel">Stainless Steel</SelectItem>
@@ -551,7 +798,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             </div>
           )}
         </div>
-
       </OptionalSection>
     </div>
   );
