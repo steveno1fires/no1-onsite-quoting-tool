@@ -49,9 +49,17 @@ export interface ChamberBoardSelection {
   chamberTrimColour: "Black" | "Stainless Steel";
 }
 
+export interface HearthSelection {
+  enabled: boolean;
+  description: string;
+  price: number;
+  description2: string;
+  price2: number;
+}
+
 export interface Products {
   fire: Product;
-  hearth: OptionalProduct;
+  hearth: HearthSelection;
   
   beam: OptionalProduct & { material: string };
   surround: OptionalProduct;
