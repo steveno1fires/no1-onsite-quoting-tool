@@ -182,6 +182,21 @@ function GasFireSection({
   // C&J compatible fireplaces
   const cjFireplaceOptions = data.fire.model ? CJ_COMPATIBLE_FIREPLACES[data.fire.model] : undefined;
 
+  // Large format toggle: trim/fascia vs C&J fireplace package (mutually exclusive)
+  const isLargeFormat = !!(cjFireplaceOptions && cjFireplaceOptions.length > 0);
+  const [largeFormatMode, setLargeFormatMode] = React.useState<"trim" | "cj">("trim");
+
+  const handleLargeFormatModeChange = (mode: "trim" | "cj") => {
+    setLargeFormatMode(mode);
+    if (mode === "trim") {
+      // Clear C&J fireplace selection
+      onChange({ ...data, cjFireplace: null });
+    } else {
+      // Clear trim selection when switching to C&J
+      onChange({ ...data, gasFireTrim: null, cjFireplace: null });
+    }
+  };
+
   const handleProductSelect = (productName: string) => {
     const item = productsInCat.find((p) => p.name === productName);
     if (!item) return;
@@ -299,8 +314,30 @@ function GasFireSection({
         </div>
       </div>
 
-      {/* ── Trim / Fascia selector ── */}
-      {data.fire.model && hasTrimSection && (
+      {/* ── Large Format: Trim/Fascia OR C&J Fireplace Package toggle ── */}
+      {data.fire.model && isLargeFormat && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/30">
+          <Label className="text-sm font-semibold">Fireplace Finishing Option</Label>
+          <p className="text-xs text-muted-foreground">Choose one — trim/fascia and C&J fireplace package are mutually exclusive</p>
+          <RadioGroup
+            value={largeFormatMode}
+            onValueChange={(v) => handleLargeFormatModeChange(v as "trim" | "cj")}
+            className="flex gap-6"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="trim" id="lf-mode-trim" />
+              <Label htmlFor="lf-mode-trim" className="text-sm cursor-pointer font-medium">Trim &amp; Fascia</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="cj" id="lf-mode-cj" />
+              <Label htmlFor="lf-mode-cj" className="text-sm cursor-pointer font-medium">C&amp;J Fireplace Package</Label>
+            </div>
+          </RadioGroup>
+        </div>
+      )}
+
+      {/* ── Trim / Fascia selector — hidden when large format C&J mode is active ── */}
+      {data.fire.model && hasTrimSection && (!isLargeFormat || largeFormatMode === "trim") && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
           <Label className="text-sm font-semibold">Trim / Fascia (optional)</Label>
 
@@ -346,13 +383,12 @@ function GasFireSection({
                   } else {
                     const fret = trimConfig!.frets.find((f) => f.name === val);
                     if (fret) {
-                      // Store fret, clear pairedTrim until user picks it
                       onChange({
                         ...data,
                         gasFireTrim: {
                           name: fret.name,
                           priceExVat: fret.priceExVat,
-                          pairedTrimName: "",   // empty string = fret chosen but trim not yet picked
+                          pairedTrimName: "",
                           pairedTrimPrice: 0,
                         },
                       });
@@ -447,11 +483,11 @@ function GasFireSection({
         </div>
       )}
 
-      {/* ── C&J Compatible Limestone Fireplace ── */}
-      {data.fire.model && cjFireplaceOptions && cjFireplaceOptions.length > 0 && (
+      {/* ── C&J Limestone Fireplace Package — large format only, shown when C&J mode active ── */}
+      {data.fire.model && isLargeFormat && largeFormatMode === "cj" && cjFireplaceOptions && cjFireplaceOptions.length > 0 && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
-          <Label className="text-sm font-semibold">C&J Portuguese Limestone Fireplace (optional)</Label>
-          <p className="text-xs text-muted-foreground">Designed to complement this fire — surround, hearth & back panel options</p>
+          <Label className="text-sm font-semibold">C&amp;J Portuguese Limestone Fireplace Package</Label>
+          <p className="text-xs text-muted-foreground">Includes surround, hearth &amp; back panel — replaces Capital surround</p>
           <Select
             value={data.cjFireplace?.name ?? "__none__"}
             onValueChange={(val) => {
@@ -463,9 +499,9 @@ function GasFireSection({
               }
             }}
           >
-            <SelectTrigger><SelectValue placeholder="No C&J fireplace" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose fireplace package" /></SelectTrigger>
             <SelectContent className="max-h-[300px] overflow-y-auto">
-              <SelectItem value="__none__">No C&J fireplace</SelectItem>
+              <SelectItem value="__none__">No C&amp;J fireplace</SelectItem>
               {cjFireplaceOptions.map((p) => (
                 <SelectItem key={p.name} value={p.name}>
                   {p.name} — £{p.priceExVat.toFixed(2)}
@@ -772,9 +808,13 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const isElectric = jobType === "Electric Fire / Media Wall";
   const electricStyle = data.electricStyle;
 
+  // When a C&J fireplace package is selected for a large format gas fire,
+  // hide Capital surround (C&J package includes the fireplace).
+  const cjPackageActive = data.cjFireplace !== null;
+
   // Which optional sections to show
   const showHearth = !isElectric || electricStyle === "Hole in the Wall" || electricStyle === "With Fireplace" || electricStyle === "16 Inch Fire with Fireplace";
-  const showSurround = !isElectric || electricStyle === "With Fireplace" || electricStyle === "16 Inch Fire with Fireplace";
+  const showSurround = (!isElectric || electricStyle === "With Fireplace" || electricStyle === "16 Inch Fire with Fireplace") && !cjPackageActive;
   const showBeam = !isElectric || electricStyle === "Hole in the Wall";
   const showChamberBoard = !isElectric;
 

@@ -69,7 +69,11 @@ export function StepExtras({ data, jobType, onChange }: Props) {
         {data.map((extra, i) => {
           const config = EXTRAS_CONFIG[i];
           if (!config) return null;
-          // Hide woodburner-only extras on non-woodburner jobs
+          // Hard filter: these items must NEVER appear on non-woodburner jobs,
+          // regardless of any flags or index mismatches.
+          const WOODBURNER_ONLY_LABELS = ["Starter Bundle", "Log Kit", "Log Store"];
+          if (!isWoodburner && WOODBURNER_ONLY_LABELS.includes(extra.label)) return null;
+          // Secondary flag-based filter (belt-and-braces)
           if (!isWoodburner && config.woodburnerOnly) return null;
 
           return (
