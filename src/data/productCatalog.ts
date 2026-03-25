@@ -262,18 +262,3 @@ export const BEAM_OPTIONS: (CatalogItem & { material: string })[] = [
   { label: 'Stone Effect Beam 48"', material: "Stone Effect", price: 195 },
   { label: 'Slate Beam 48"', material: "Slate", price: 250 },
 ];
-
-export interface SurroundCatalogItem extends CatalogItem {
-  brand: string;
-  model: string;
-}
-
-
-export const SURROUND_OPTIONS: SurroundCatalogItem[] = [
-  { label: "Cast Iron Insert", brand: "Cast Iron", model: "Insert", price: 495 },
-  { label: "Cast Iron Combination", brand: "Cast Iron", model: "Combination", price: 695 },
-  { label: "Stone Surround – Limestone", brand: "Stone", model: "Limestone", price: 599 },
-  { label: "Stone Surround – Marble", brand: "Stone", model: "Marble", price: 799 },
-  { label: "Wooden Surround – Oak", brand: "Wooden", model: "Oak", price: 449 },
-  { label: "Wooden Surround – Painted", brand: "Wooden", model: "Painted", price: 399 },
-];
