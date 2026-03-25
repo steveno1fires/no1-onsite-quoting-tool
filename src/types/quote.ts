@@ -20,9 +20,6 @@ export const JOB_TYPES = [
   "Electric Fire/Media Wall",
   "Gas Media Wall",
   "Air Conditioning",
-  "Biofuel Fire",
-  "Sweep & Care Plan",
-  "Gas Service Plan",
 ] as const;
 
 export type JobType = (typeof JOB_TYPES)[number];
