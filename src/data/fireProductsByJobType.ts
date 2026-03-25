@@ -8,6 +8,11 @@ export interface WoodburnerProduct {
   rrp: number;
 }
 
+export interface LiningOption {
+  name: string;
+  priceExVat: number;
+}
+
 export interface GasFireProduct {
   brand?: string; // defaults to "C&J" when undefined
   name: string;
@@ -18,6 +23,7 @@ export interface GasFireProduct {
   price?: number; // used when no control options
   noTrimOptions?: boolean; // true for Gazco products (fixed design, no trim selector)
   programmableRemoteUpgrade?: number; // optional upgrade price for Riva2 (ex VAT)
+  linings?: LiningOption[]; // optional lining finishes for Gazco products
 }
 
 export interface GasStoveProduct {
@@ -543,40 +549,40 @@ export const WOODBURNER_PRODUCTS: WoodburnerProduct[] = [
   { brand: "Capital", name: "Atlas 1 Single Window", kw: 5, rrp: 1495 },
   { brand: "Capital", name: "Atlas 2 Side Windows", kw: 6, rrp: 1695 },
   { brand: "Capital", name: "Atlas 3 Side Windows", kw: 6, rrp: 1995 },
-  // ── Stovax & Gazco Freestanding Stoves ───────
+  // ── Stovax Freestanding Stoves ───────
   // Huntingdon Stoves
-  { brand: "Stovax & Gazco", name: "Huntingdon 20", kw: null, rrp: 1090 },
-  { brand: "Stovax & Gazco", name: "Huntingdon 30", kw: null, rrp: 1299 },
-  { brand: "Stovax & Gazco", name: "Huntingdon 40", kw: null, rrp: 1549 },
+  { brand: "Stovax", name: "Huntingdon 20", kw: null, rrp: 1090 },
+  { brand: "Stovax", name: "Huntingdon 30", kw: null, rrp: 1299 },
+  { brand: "Stovax", name: "Huntingdon 40", kw: null, rrp: 1549 },
   // Chesterfield Stoves
-  { brand: "Stovax & Gazco", name: "Chesterfield 5", kw: null, rrp: 1590 },
-  { brand: "Stovax & Gazco", name: "Chesterfield 5 Wide", kw: null, rrp: 1915 },
+  { brand: "Stovax", name: "Chesterfield 5", kw: null, rrp: 1590 },
+  { brand: "Stovax", name: "Chesterfield 5 Wide", kw: null, rrp: 1915 },
   // Sheraton Stoves
-  { brand: "Stovax & Gazco", name: "Sheraton 5", kw: null, rrp: 1590 },
-  { brand: "Stovax & Gazco", name: "Sheraton 5 Wide", kw: null, rrp: 1915 },
+  { brand: "Stovax", name: "Sheraton 5", kw: null, rrp: 1590 },
+  { brand: "Stovax", name: "Sheraton 5 Wide", kw: null, rrp: 1915 },
   // County Stoves
-  { brand: "Stovax & Gazco", name: "County 3", kw: null, rrp: 954 },
-  { brand: "Stovax & Gazco", name: "County 5", kw: null, rrp: 1090 },
-  { brand: "Stovax & Gazco", name: "County 5 Wide", kw: null, rrp: 1299 },
-  { brand: "Stovax & Gazco", name: "County 8", kw: null, rrp: 1504 },
+  { brand: "Stovax", name: "County 3", kw: null, rrp: 954 },
+  { brand: "Stovax", name: "County 5", kw: null, rrp: 1090 },
+  { brand: "Stovax", name: "County 5 Wide", kw: null, rrp: 1299 },
+  { brand: "Stovax", name: "County 8", kw: null, rrp: 1504 },
   // Stockton Stoves
-  { brand: "Stovax & Gazco", name: "Stockton 3", kw: null, rrp: 1045 },
-  { brand: "Stovax & Gazco", name: "Stockton 4", kw: null, rrp: 1195 },
-  { brand: "Stovax & Gazco", name: "Stockton 5", kw: null, rrp: 1320 },
-  { brand: "Stovax & Gazco", name: "Stockton 5 Wide", kw: null, rrp: 1504 },
-  { brand: "Stovax & Gazco", name: "Stockton 8", kw: null, rrp: 1750 },
-  { brand: "Stovax & Gazco", name: "Stockton 11", kw: null, rrp: 1962 },
+  { brand: "Stovax", name: "Stockton 3", kw: null, rrp: 1045 },
+  { brand: "Stovax", name: "Stockton 4", kw: null, rrp: 1195 },
+  { brand: "Stovax", name: "Stockton 5", kw: null, rrp: 1320 },
+  { brand: "Stovax", name: "Stockton 5 Wide", kw: null, rrp: 1504 },
+  { brand: "Stovax", name: "Stockton 8", kw: null, rrp: 1750 },
+  { brand: "Stovax", name: "Stockton 11", kw: null, rrp: 1962 },
   // Futura Stoves
-  { brand: "Stovax & Gazco", name: "Futura 4", kw: null, rrp: 1045 },
-  { brand: "Stovax & Gazco", name: "Futura 5", kw: null, rrp: 1195 },
-  { brand: "Stovax & Gazco", name: "Futura 8", kw: null, rrp: 1504 },
+  { brand: "Stovax", name: "Futura 4", kw: null, rrp: 1045 },
+  { brand: "Stovax", name: "Futura 5", kw: null, rrp: 1195 },
+  { brand: "Stovax", name: "Futura 8", kw: null, rrp: 1504 },
   // Vogue Stoves
-  { brand: "Stovax & Gazco", name: "Vogue Small", kw: null, rrp: 1632 },
-  { brand: "Stovax & Gazco", name: "Vogue Small T", kw: null, rrp: 1824 },
-  { brand: "Stovax & Gazco", name: "Vogue Midi", kw: null, rrp: 1915 },
-  { brand: "Stovax & Gazco", name: "Vogue Midi T", kw: null, rrp: 2079 },
-  { brand: "Stovax & Gazco", name: "Vogue Medium", kw: null, rrp: 2345 },
-  { brand: "Stovax & Gazco", name: "Vogue Medium Slimline", kw: null, rrp: 2520 },
+  { brand: "Stovax", name: "Vogue Small", kw: null, rrp: 1632 },
+  { brand: "Stovax", name: "Vogue Small T", kw: null, rrp: 1824 },
+  { brand: "Stovax", name: "Vogue Midi", kw: null, rrp: 1915 },
+  { brand: "Stovax", name: "Vogue Midi T", kw: null, rrp: 2079 },
+  { brand: "Stovax", name: "Vogue Medium", kw: null, rrp: 2345 },
+  { brand: "Stovax", name: "Vogue Medium Slimline", kw: null, rrp: 2520 },
 ];
 
 // ─────────────────────────────────────────────
@@ -593,6 +599,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     price: 2657.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -603,6 +615,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     price: 2412.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Riva2 750HL — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -613,6 +631,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     price: 3099.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 1 — Manual / Remote, no trim
   {
@@ -623,6 +647,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2462.00,
     remoteControlNg: 2732.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 2 — Manual / Remote, no trim
   {
@@ -633,6 +663,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2729.00,
     remoteControlNg: 2999.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 3 — Manual / Remote, no trim
   {
@@ -643,6 +679,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 3629.00,
     remoteControlNg: 3899.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 1 Slimline — Manual / Remote, no trim
   {
@@ -653,6 +695,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2570.00,
     remoteControlNg: 2840.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 2 Slimline — Manual / Remote, no trim
   {
@@ -663,6 +711,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2924.00,
     remoteControlNg: 3194.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 2 Duplex (2-sided) — Manual / Remote, no trim
   {
@@ -673,6 +727,12 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 4187.00,
     remoteControlNg: 4457.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // ── Onyx BF ───────────────────────────────────
   {
@@ -746,6 +806,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     price: 1665.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Riva2 500 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -756,6 +822,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     price: 2062.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -766,6 +838,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     price: 2065.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Riva2 600HL — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -776,6 +854,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     price: 2412.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 1 — Manual / Remote, no trim
   {
@@ -786,6 +870,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2212.00,
     remoteControlNg: 2482.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // Studio 2 — Manual / Remote, no trim
   {
@@ -796,6 +886,12 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     slideControlNg: 2554.00,
     remoteControlNg: 2824.00,
     noTrimOptions: true,
+    linings: [
+      { name: "Black Reeded", priceExVat: 0 },
+      { name: "Black Glass", priceExVat: 125.00 },
+      { name: "Brick Effect", priceExVat: 125.00 },
+      { name: "Ledgestone Effect", priceExVat: 125.00 },
+    ],
   },
   // ── Onyx CF ───────────────────────────────────
   {
