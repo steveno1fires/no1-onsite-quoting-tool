@@ -3,7 +3,7 @@ import { QuoteData, initialQuoteData } from "@/types/quote";
 import { StepIndicator } from "./StepIndicator";
 import { StepCustomer } from "./StepCustomer";
 import { StepJobType } from "./StepJobType";
-import { StepFires } from "./StepFires";
+import { StepFire } from "./StepFire";
 import { StepFireplace } from "./StepFireplace";
 import { StepExtras } from "./StepExtras";
 import { StepLinerKit } from "./StepLinerKit";
@@ -19,26 +19,20 @@ export function QuoteWizard() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<QuoteData>(initialQuoteData);
 
+  // Always 8 steps
+  const totalSteps = 8;
+  const actualStep = step;
+
   const isWoodburner = data.jobType?.startsWith("Woodburner");
   const isTwinWall = data.jobType === "Woodburner — Twin Wall";
   const isGasCF = data.jobType === "Gas Fire — Inset (Conventional Flue)";
-  // Gas Stove CF variants need a liner step; BF variants get the BF fittings step
   const isGasStoveBF = data.jobType === "Gas Stove" && (
     data.products.fire.model.includes("Balanced Flue") || data.products.fire.model.includes(" BF ")
   );
   const isGasSoveCF = data.jobType === "Gas Stove" && (
     data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
   );
-  const hasFlueStep = isWoodburner || isGasCF || isGasSoveCF || isGasStoveBF;
-  const totalSteps = hasFlueStep ? 8 : 7;
-
-  // Map logical step to actual step (skip flue kit if not woodburner)
-  const getActualStep = (s: number) => {
-    if (!hasFlueStep && s >= 5) return s + 1;
-    return s;
-  };
-
-  const actualStep = getActualStep(step);
+  const isElectric = data.jobType === "Electric Fire/Media Wall";
 
   const validateStep = (): boolean => {
     switch (actualStep) {
@@ -85,25 +79,13 @@ export function QuoteWizard() {
       case 2:
         return <StepJobType value={data.jobType} onChange={(jobType) => setData({ ...data, jobType })} />;
       case 3:
-        return <StepFires data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
+        return <StepFire data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 4:
         return <StepFireplace data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 5:
         return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
       case 6:
-        if (!hasFlueStep) {
-          return (
-            <StepNotes
-              value={data.notes}
-              onChange={(notes) => setData({ ...data, notes })}
-              photos={data.photos}
-              onPhotosChange={(photos) => setData({ ...data, photos })}
-              labourDays={data.labourDays}
-              onLabourDaysChange={(labourDays) => setData({ ...data, labourDays })}
-            />
-          );
-        }
-        // Has flue step, so show flue UI
+        // Liner Kit — show different modes based on job type
         if (isTwinWall) {
           return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />;
         }
@@ -134,7 +116,11 @@ export function QuoteWizard() {
             />
           );
         }
-        // woodburner liner (also covers gas stove CF)
+        if (isElectric) {
+          // Electric doesn't need a liner kit, but we still show this step (could be empty or show info)
+          return <div className="text-muted-foreground text-sm">No liner kit required for electric fires.</div>;
+        }
+        // Default: woodburner liner (also covers gas stove CF and other cases)
         return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       case 7:
         return (
@@ -155,14 +141,14 @@ export function QuoteWizard() {
   };
 
   const stepTitles: Record<number, string> = {
-    1: "Customer Details",
+    1: "Customer",
     2: "Job Type",
-    3: "Fires",
+    3: "Fire",
     4: "Fireplace",
     5: "Extras",
-    6: hasFlueStep ? (isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit") : "Notes",
-    7: hasFlueStep ? "Notes" : "Quote Summary",
-    8: "Quote Summary",
+    6: "Liner Kit",
+    7: "Notes",
+    8: "Summary",
   };
 
   return (
@@ -200,7 +186,7 @@ export function QuoteWizard() {
           <ChevronLeft className="w-4 h-4 mr-1" />
           Back
         </Button>
-        {actualStep !== 7 && (
+        {actualStep < totalSteps && (
           <Button onClick={next} className="flex-1">
             Next
             <ChevronRight className="w-4 h-4 ml-1" />
