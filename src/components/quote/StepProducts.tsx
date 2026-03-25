@@ -17,7 +17,9 @@ import {
   BEAM_OPTIONS,
   SURROUND_OPTIONS,
   WOODBURNER_OPTIONS,
+  CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
+import React from "react";
 
 interface Props {
   data: Products;
@@ -66,6 +68,8 @@ function OptionalSection({
 
 export function StepProducts({ data, jobType, onChange }: Props) {
   const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
+  const [hearthMaterial, setHearthMaterial] = React.useState("");
+  const [hearthType, setHearthType] = React.useState("");
 
   // Fire: cascading brand → model
   const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
@@ -241,35 +245,90 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </div>
 
-      {/* Hearth */}
+      {/* Capital Hearths */}
       <OptionalSection
-        title="Hearth"
+        title="Hearth (Capital)"
         enabled={data.hearth.enabled}
-        onToggle={(v) => onChange({ ...data, hearth: { ...data.hearth, enabled: v } })}
+        onToggle={(v) => {
+          onChange({ ...data, hearth: { ...data.hearth, enabled: v } });
+          if (!v) { setHearthMaterial(""); setHearthType(""); }
+        }}
       >
         <div>
-          <Label className="text-xs">Select Hearth</Label>
+          <Label className="text-xs">Material</Label>
           <Select
-            value={data.hearth.description || undefined}
+            value={hearthMaterial || undefined}
             onValueChange={(val) => {
-              const item = HEARTH_OPTIONS.find((h) => h.label === val);
-              if (item) {
-                onChange({ ...data, hearth: { ...data.hearth, description: item.label, price: item.price } });
-              }
+              setHearthMaterial(val);
+              setHearthType("");
+              onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose a hearth" />
+              <SelectValue placeholder="Choose material" />
             </SelectTrigger>
             <SelectContent>
-              {HEARTH_OPTIONS.map((h) => (
-                <SelectItem key={h.label} value={h.label}>
-                  {h.label} — £{h.price}
+              {CAPITAL_HEARTHS.map((c) => (
+                <SelectItem key={c.material} value={c.material}>
+                  {c.material}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        {hearthMaterial && (
+          <div>
+            <Label className="text-xs">Type</Label>
+            <Select
+              value={hearthType || undefined}
+              onValueChange={(val) => {
+                setHearthType(val);
+                onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose type" />
+              </SelectTrigger>
+              <SelectContent>
+                {CAPITAL_HEARTHS.find((c) => c.material === hearthMaterial)?.types.map((t) => (
+                  <SelectItem key={t.type} value={t.type}>
+                    {t.type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {hearthMaterial && hearthType && (() => {
+          const products = CAPITAL_HEARTHS
+            .find((c) => c.material === hearthMaterial)
+            ?.types.find((t) => t.type === hearthType)?.products || [];
+          return (
+            <div>
+              <Label className="text-xs">Product</Label>
+              <Select
+                value={data.hearth.description || undefined}
+                onValueChange={(val) => {
+                  const item = products.find((p) => p.name === val);
+                  if (item) {
+                    onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p) => (
+                    <SelectItem key={p.name} value={p.name}>
+                      {p.name} — £{p.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })()}
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.hearth.price} onChange={(v) => onChange({ ...data, hearth: { ...data.hearth, price: v } })} />
