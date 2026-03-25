@@ -20,11 +20,14 @@ export function QuoteWizard() {
   const isWoodburner = data.jobType?.startsWith("Woodburner");
   const isTwinWall = data.jobType === "Woodburner — Twin Wall";
   const isGasCF = data.jobType === "Gas Fire — Inset (Conventional Flue)";
-  // Gas Stove CF variants need a liner step; BF variants do not
+  // Gas Stove CF variants need a liner step; BF variants get the BF fittings step
+  const isGasStoveBF = data.jobType === "Gas Stove" && (
+    data.products.fire.model.includes("Balanced Flue") || data.products.fire.model.includes(" BF ")
+  );
   const isGasSoveCF = data.jobType === "Gas Stove" && (
     data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
   );
-  const hasFlueStep = isWoodburner || isGasCF || isGasSoveCF;
+  const hasFlueStep = isWoodburner || isGasCF || isGasSoveCF || isGasStoveBF;
   const totalSteps = hasFlueStep ? 7 : 6;
 
   // Map logical step to actual step (skip flue kit if not woodburner)
@@ -81,9 +84,14 @@ export function QuoteWizard() {
       case 4:
         return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
       case 5:
-        return isTwinWall
-          ? <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />
-          : <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />; // covers both woodburner liner and gas CF
+        if (isTwinWall) {
+          return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />;
+        }
+        if (isGasStoveBF) {
+          return <StepLinerKit mode="gasstovebf" bfFittings={data.products.bfFittings} onBfFittingsChange={(bfFittings) => setData({ ...data, products: { ...data.products, bfFittings } })} />;
+        }
+        // covers both woodburner liner and gas CF
+        return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       case 6:
         return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
       case 7:
@@ -98,7 +106,7 @@ export function QuoteWizard() {
     2: "Job Type",
     3: "Products",
     4: "Extras",
-    5: isTwinWall ? "Twin Wall Kit" : "Liner Kit",
+    5: isTwinWall ? "Twin Wall Kit" : isGasStoveBF ? "BF Fittings" : "Liner Kit",
     6: "Notes",
     7: "Quote Summary",
   };

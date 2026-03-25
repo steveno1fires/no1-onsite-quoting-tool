@@ -284,14 +284,6 @@ function GasFireSection({
 //  GAS STOVE section (conventional flue or balanced flue)
 // ─────────────────────────────────────────────
 function GasStoveSection({ data, onChange }: { data: Products; onChange: (d: Products) => void }) {
-  const isBF = data.fire.model.includes("Balanced Flue") || data.fire.model.includes(" BF ");
-  const isCF = data.fire.model.includes("Conventional Flue") || data.fire.model.includes(" CF ");
-
-  const toggleBfFitting = (index: number, enabled: boolean) => {
-    const updated = data.bfFittings.map((f, i) => i === index ? { ...f, enabled } : f);
-    onChange({ ...data, bfFittings: updated });
-  };
-
   return (
     <>
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
@@ -323,26 +315,6 @@ function GasStoveSection({ data, onChange }: { data: Products; onChange: (d: Pro
         </div>
       </div>
 
-      {/* BF fittings — show only when a BF stove is selected */}
-      {isBF && (
-        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-          <Label className="text-sm font-semibold">Balanced Flue Fittings</Label>
-          <p className="text-xs text-muted-foreground">Select any additional BF fittings required</p>
-          {data.bfFittings.map((fitting, i) => (
-            <div key={fitting.label} className="flex items-center gap-3">
-              <Checkbox
-                id={`bf-fitting-${i}`}
-                checked={fitting.enabled}
-                onCheckedChange={(v) => toggleBfFitting(i, !!v)}
-              />
-              <label htmlFor={`bf-fitting-${i}`} className="text-sm cursor-pointer flex-1">
-                {fitting.label}
-                <span className="text-muted-foreground ml-2">— £{fitting.price.toFixed(2)}</span>
-              </label>
-            </div>
-          ))}
-        </div>
-      )}
     </>
   );
 }

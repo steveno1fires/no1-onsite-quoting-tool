@@ -1,12 +1,13 @@
-import { LinerKit, TwinWallKit } from "@/types/quote";
+import { LinerKit, TwinWallKit, BfFitting } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Props =
-  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never }
-  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void };
+  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never }
+  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never }
+  | { mode: "gasstovebf"; data?: never; onChange?: never; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void };
 
 const KIT_PRICES: Record<string, number> = {
   "Bungalow (6m)": 350,
@@ -231,9 +232,41 @@ function LinerSection({ data, onChange }: { data: LinerKit; onChange: (d: LinerK
   );
 }
 
+function BfFittingsSection({ fittings, onChange }: { fittings: BfFitting[]; onChange: (fittings: BfFitting[]) => void }) {
+  const toggle = (index: number, enabled: boolean) => {
+    const updated = fittings.map((f, i) => (i === index ? { ...f, enabled } : f));
+    onChange(updated);
+  };
+
+  return (
+    <div className="animate-slide-in space-y-4">
+      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+        <Label className="text-sm font-semibold">Balanced Flue Fittings</Label>
+        <p className="text-xs text-muted-foreground">Select any additional BF fittings required for this installation.</p>
+        {fittings.map((fitting, i) => (
+          <div key={fitting.label} className="flex items-center gap-3">
+            <Checkbox
+              id={`bf-fitting-${i}`}
+              checked={fitting.enabled}
+              onCheckedChange={(v) => toggle(i, !!v)}
+            />
+            <label htmlFor={`bf-fitting-${i}`} className="text-sm cursor-pointer flex-1">
+              {fitting.label}
+              <span className="text-muted-foreground ml-2">— £{fitting.price.toFixed(2)}</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function StepLinerKit(props: Props) {
   if (props.mode === "twinwall") {
     return <TwinWallSection data={props.twinWallData} onChange={props.onTwinWallChange} />;
+  }
+  if (props.mode === "gasstovebf") {
+    return <BfFittingsSection fittings={props.bfFittings} onChange={props.onBfFittingsChange} />;
   }
   return <LinerSection data={props.data} onChange={props.onChange} />;
 }
