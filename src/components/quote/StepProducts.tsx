@@ -3,6 +3,7 @@ import { Products, JobType } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,11 @@ import {
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
   CAPITAL_HEARTHS,
+  CHAMBER_BOARD_VARIANTS,
+  CHAMBER_BOARD_NOTE,
+  REEDED_PANELS_PRICE,
+  CHAMBER_TRIM_KIT_PRICE,
+  FERMACELL_BOARD_PRICE,
 } from "@/data/productCatalog";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
