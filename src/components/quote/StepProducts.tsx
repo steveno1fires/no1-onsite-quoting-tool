@@ -15,7 +15,6 @@ import {
   HEARTH_OPTIONS,
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
-  SURROUND_OPTIONS,
   CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
