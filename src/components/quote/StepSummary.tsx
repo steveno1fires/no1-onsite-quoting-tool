@@ -35,6 +35,10 @@ function getLineItems(data: QuoteData): LineItem[] {
     });
   }
 
+  if (data.products.fireplace.enabled) {
+    items.push({ label: "Fireplace", detail: data.products.fireplace.description, price: data.products.fireplace.price });
+  }
+
   if (data.products.hearth.enabled) {
     items.push({ label: "Hearth", detail: data.products.hearth.description, price: data.products.hearth.price });
   }
