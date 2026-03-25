@@ -27,6 +27,14 @@ function getLineItems(data: QuoteData): LineItem[] {
     });
   }
 
+  if (data.products.woodburner.brand || data.products.woodburner.model) {
+    items.push({
+      label: "Wood Burning Stove",
+      detail: `${data.products.woodburner.brand} ${data.products.woodburner.model}`.trim() + (data.products.woodburner.kw ? ` (${data.products.woodburner.kw}kW)` : ""),
+      price: data.products.woodburner.price,
+    });
+  }
+
   if (data.products.hearth.enabled) {
     items.push({ label: "Hearth", detail: data.products.hearth.description, price: data.products.hearth.price });
   }
