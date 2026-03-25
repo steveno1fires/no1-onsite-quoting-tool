@@ -34,6 +34,7 @@ import {
   ONYX_ELECTRIC_PRODUCTS,
   ONYX_ELECTRIC_ADDONS,
   ONYX_CF_FRAME_OPTIONS,
+  CJ_16_INCH_TRIM_OPTIONS,
 } from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
@@ -714,23 +715,90 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
             onValueChange={(name) => {
               const item = CJ_16_INCH_FIRES.find((p) => p.name === name);
               if (item) {
-                onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price: item.priceExVat } });
+                onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price: item.priceExVat }, gasFireTrim: null });
               }
             }}
           >
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent className="max-h-[300px] overflow-y-auto">
-              {CJ_16_INCH_FIRES.map((p) => (
-                <SelectItem key={p.name} value={p.name}>
-                  {p.name} — £{p.priceExVat.toFixed(2)}
-                </SelectItem>
-              ))}
+              {/* Group by type */}
+              {(() => {
+                const groups: Record<string, typeof CJ_16_INCH_FIRES> = {
+                  "3D Ecoflame 16\"": [],
+                  "4D Ecoflame 16\"": [],
+                  "4D Ecoflame 22\" Maxi": [],
+                  "Opulus 16\" RFT": [],
+                  "Electric Stoves": [],
+                };
+                for (const p of CJ_16_INCH_FIRES) {
+                  if (p.name.startsWith("3D Ecoflame 16")) groups["3D Ecoflame 16\""].push(p);
+                  else if (p.name.startsWith("4D Ecoflame 22")) groups["4D Ecoflame 22\" Maxi"].push(p);
+                  else if (p.name.startsWith("4D Ecoflame 16")) groups["4D Ecoflame 16\""].push(p);
+                  else if (p.name.startsWith("Opulus")) groups["Opulus 16\" RFT"].push(p);
+                  else groups["Electric Stoves"].push(p);
+                }
+                return Object.entries(groups).map(([groupName, items]) =>
+                  items.length === 0 ? null : (
+                    <SelectGroup key={groupName}>
+                      <SelectLabel className="font-bold text-foreground">{groupName}</SelectLabel>
+                      {items.map((p) => (
+                        <SelectItem key={p.name} value={p.name}>
+                          {p.name} — £{p.priceExVat.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )
+                );
+              })()}
             </SelectContent>
           </Select>
           {data.fire.model && (() => {
             const item = CJ_16_INCH_FIRES.find((p) => p.name === data.fire.model);
             return item ? <p className="text-xs text-muted-foreground">{item.description}</p> : null;
           })()}
+
+          {/* Optional standalone trim — shown when an engine-only product is selected */}
+          {data.fire.model && (data.fire.model.includes("Engine Only") || data.fire.model.includes("Engine only")) && (
+            <div className="pt-2 border-t border-border space-y-2">
+              <Label className="text-xs font-semibold">Optional Trim / Fascia (engine-only)</Label>
+              <p className="text-xs text-muted-foreground">Add a boxed trim, Prestige fascia, or decorative fret</p>
+              <Select
+                value={data.gasFireTrim?.name ?? "__none__"}
+                onValueChange={(val) => {
+                  if (val === "__none__") {
+                    onChange({ ...data, gasFireTrim: null });
+                  } else {
+                    const item = CJ_16_INCH_TRIM_OPTIONS.find((t) => t.name === val);
+                    if (item) onChange({ ...data, gasFireTrim: { name: item.name, priceExVat: item.priceExVat } });
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="No trim / fascia" /></SelectTrigger>
+                <SelectContent className="max-h-[280px] overflow-y-auto">
+                  <SelectItem value="__none__">No trim / fascia</SelectItem>
+                  {(["Boxed Trim", "Prestige Fascia", "Fret"] as const).map((cat) => {
+                    const items = CJ_16_INCH_TRIM_OPTIONS.filter((t) => t.category === cat);
+                    return (
+                      <SelectGroup key={cat}>
+                        <SelectLabel>{cat}</SelectLabel>
+                        {items.map((t) => (
+                          <SelectItem key={t.name} value={t.name}>
+                            {t.name} — £{t.priceExVat.toFixed(2)}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              {data.gasFireTrim && (
+                <p className="text-xs text-muted-foreground">
+                  Selected: {data.gasFireTrim.name} — £{data.gasFireTrim.priceExVat.toFixed(2)} ex VAT
+                </p>
+              )}
+            </div>
+          )}
+
           <div>
             <Label className="text-xs">Price ex VAT</Label>
             <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />

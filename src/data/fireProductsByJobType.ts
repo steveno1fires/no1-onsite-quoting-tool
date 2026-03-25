@@ -27,7 +27,7 @@ export interface GasStoveProduct {
 
 export interface ElectricFireProduct {
   name: string;
-  widthMm: number;
+  widthMm?: number; // omit for stoves / products where width isn't relevant
   priceExVat: number;
 }
 
@@ -772,28 +772,28 @@ export interface CJ16FireProduct {
 }
 
 export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
-  // 3D Ecoflame
+  // ── 3D Ecoflame 16" (A-0635) ─────────────────────────────
   { name: "3D Ecoflame 16\" Engine Only", description: "Engine only, fascia sold separately", priceExVat: 335.00 },
   { name: "3D Ecoflame 16\" — Elite Satin/Black Fascia", description: "Complete with Elite fascia", priceExVat: 420.00 },
   { name: "3D Ecoflame 16\" — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 420.00 },
   { name: "3D Ecoflame 16\" — Elite Brass/Black Fascia", description: "Complete with Elite fascia", priceExVat: 420.00 },
   { name: "3D Ecoflame 16\" — Elite Chrome/Chrome Fascia", description: "Complete with Elite fascia", priceExVat: 420.00 },
-  { name: "3D Ecoflame 16\" — Prestige Nickel/Black Fascia", description: "Complete with Prestige fascia", priceExVat: 425.00 },
   { name: "3D Ecoflame 16\" — Prestige Nickel/Chrome Fascia", description: "Complete with Prestige fascia", priceExVat: 425.00 },
+  { name: "3D Ecoflame 16\" — Prestige Nickel/Black Fascia", description: "Complete with Prestige fascia", priceExVat: 425.00 },
   { name: "3D Ecoflame 16\" — Cast Arch Fascia Black", description: "Complete with Cast Arch fascia", priceExVat: 507.50 },
   { name: "3D Ecoflame 16\" — Cast Arch Fascia Chrome", description: "Complete with Cast Arch fascia", priceExVat: 507.50 },
   { name: "3D Ecoflame 16\" — Cast Arch Fascia Brass", description: "Complete with Cast Arch fascia", priceExVat: 507.50 },
   { name: "3D Ecoflame 16\" — Square Cast Fascia Pewter", description: "Complete with Square Cast fascia", priceExVat: 628.33 },
   { name: "3D Ecoflame 16\" — Square Cast Fascia Brass", description: "Complete with Square Cast fascia", priceExVat: 628.33 },
   { name: "3D Ecoflame 16\" — Square Cast Fascia Gun Metal", description: "Complete with Square Cast fascia", priceExVat: 628.33 },
-  // 4D Ecoflame
+  // ── 4D Ecoflame 16" (A-0710) ─────────────────────────────
   { name: "4D Ecoflame 16\" Engine Only", description: "Engine only, fascia sold separately", priceExVat: 379.17 },
-  { name: "4D Ecoflame 16\" — Elite Brass/Black Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
-  { name: "4D Ecoflame 16\" — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
   { name: "4D Ecoflame 16\" — Elite Satin/Black Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
+  { name: "4D Ecoflame 16\" — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
+  { name: "4D Ecoflame 16\" — Elite Brass/Black Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
   { name: "4D Ecoflame 16\" — Elite Chrome/Chrome Fascia", description: "Complete with Elite fascia", priceExVat: 455.00 },
-  { name: "4D Ecoflame 16\" — Prestige Nickel/Black Fascia", description: "Complete with Prestige fascia", priceExVat: 457.50 },
   { name: "4D Ecoflame 16\" — Prestige Nickel/Chrome Fascia", description: "Complete with Prestige fascia", priceExVat: 457.50 },
+  { name: "4D Ecoflame 16\" — Prestige Nickel/Black Fascia", description: "Complete with Prestige fascia", priceExVat: 457.50 },
   { name: "4D Ecoflame 16\" — Cast Arch Fascia Black", description: "Complete with Cast Arch fascia", priceExVat: 539.17 },
   { name: "4D Ecoflame 16\" — Cast Arch Fascia Chrome", description: "Complete with Cast Arch fascia", priceExVat: 539.17 },
   { name: "4D Ecoflame 16\" — Cast Arch Fascia Brass", description: "Complete with Cast Arch fascia", priceExVat: 539.17 },
@@ -804,11 +804,11 @@ export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
   { name: "4D Ecoflame 16\" — Elite Chrome/Black + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
   { name: "4D Ecoflame 16\" — Elite Brass/Black + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
   { name: "4D Ecoflame 16\" — Elite Chrome/Chrome + Lights", description: "Complete with Elite fascia & trim lights", priceExVat: 565.83 },
-  // 4D Ecoflame 22" Maxi (NEW — fits 16" or 22" openings)
+  // ── 4D Ecoflame 22" Maxi (A-1070) — fits 16" or 22" openings ──
   { name: "4D Ecoflame 22\" Maxi — Engine Only", description: "Fits standard 16\" or 22\" wide opening; fascia sold separately", priceExVat: 499.17 },
   { name: "4D Ecoflame 22\" Maxi — Eclipse Fascia Black/Nickel Black", description: "Fascia only for 22\" Maxi engine", priceExVat: 165.83 },
   { name: "4D Ecoflame 22\" Maxi — Eclipse Fascia Chrome/Nickel Black", description: "Fascia only for 22\" Maxi engine", priceExVat: 165.83 },
-  // Opulus Real Flame Technology
+  // ── Opulus Real Flame Technology 16" (A-1029) ─────────────
   { name: "Opulus 16\" RFT Engine Only", description: "Real Flame Technology, engine only", priceExVat: 832.50 },
   { name: "Opulus 16\" RFT — Prestige Nickel/Chrome Fascia", description: "Complete with Prestige fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Prestige Nickel/Black Fascia", description: "Complete with Prestige fascia", priceExVat: 957.50 },
@@ -816,6 +816,46 @@ export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
   { name: "Opulus 16\" RFT — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Satin/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Chrome/Chrome Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
+  // ── Electric Stoves ───────────────────────────────────────
+  { name: "Electric Stove — Curved Door", description: "Electric stove, curved door style", priceExVat: 882.50 },
+  { name: "Electric Stove — Square Door", description: "Electric stove, square door style", priceExVat: 882.50 },
+  { name: "Alcaston Electric Stove — Tracery Door", description: "Alcaston electric stove, tracery door", priceExVat: 882.50 },
+];
+
+// ─────────────────────────────────────────────
+//  TRIM OPTIONS FOR STANDALONE 16" ELECTRIC FIRE ENGINES
+//  (3D Ecoflame, 4D Ecoflame, Opulus — engine-only purchases)
+//  Prices ex VAT from C&J Gas Fire Price List Oct 2025
+// ─────────────────────────────────────────────
+
+export interface CJ16TrimOption {
+  name: string;
+  priceExVat: number;
+  category: "Boxed Trim" | "Prestige Fascia" | "Fret";
+}
+
+/**
+ * Standalone fascias/trims/frets sold separately for 16" fire engines.
+ * Shown when an engine-only product is selected to let the user add a trim.
+ */
+export const CJ_16_INCH_TRIM_OPTIONS: CJ16TrimOption[] = [
+  // ── Boxed Standard Trims ─────────────────────────────────
+  { name: "Boxed Trim — Brass",         category: "Boxed Trim",    priceExVat: 70.83 },
+  { name: "Boxed Trim — Black",         category: "Boxed Trim",    priceExVat: 70.83 },
+  { name: "Boxed Trim — Chrome",        category: "Boxed Trim",    priceExVat: 70.83 },
+  { name: "Boxed Trim — Brushed Steel", category: "Boxed Trim",    priceExVat: 70.83 },
+  // ── Prestige Fascias (standalone) ────────────────────────
+  { name: "Prestige Fascia — Nickel/Chrome", category: "Prestige Fascia", priceExVat: 140.83 },
+  { name: "Prestige Fascia — Nickel/Black",  category: "Prestige Fascia", priceExVat: 140.83 },
+  // ── Frets ────────────────────────────────────────────────
+  { name: "Wellington Fret — Brass",             category: "Fret", priceExVat: 100.00 },
+  { name: "Wellington Fret — Antique",            category: "Fret", priceExVat: 105.00 },
+  { name: "Bayswater Fret — Brass",              category: "Fret", priceExVat: 105.00 },
+  { name: "Bayswater Fret — Chrome",             category: "Fret", priceExVat: 105.00 },
+  { name: "Gate Cast Iron Fret — Black",         category: "Fret", priceExVat:  75.00 },
+  { name: "Gate Cast Iron Fret — Brass",         category: "Fret", priceExVat: 107.50 },
+  { name: "Gate Cast Iron Fret — Chrome",        category: "Fret", priceExVat: 107.50 },
+  { name: "Gate Cast Iron Fret — Brushed Steel", category: "Fret", priceExVat: 107.50 },
 ];
 
 // ─────────────────────────────────────────────
