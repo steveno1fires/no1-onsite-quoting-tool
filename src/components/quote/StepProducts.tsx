@@ -397,6 +397,69 @@ function GasFireSection({
         </div>
       </div>
 
+      {/* ── Gazco Lining Selector ── */}
+      {data.fire.model && selectedProduct?.linings && selectedProduct.linings.length > 0 && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-blue-300/30">
+          <Label className="text-sm font-semibold">Lining Finish (optional)</Label>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Choose a finish</Label>
+            <Select
+              value={data.gasFireLining || "__none__"}
+              onValueChange={(val) => {
+                if (val === "__none__") {
+                  onChange({ ...data, gasFireLining: undefined });
+                } else {
+                  const lining = selectedProduct.linings!.find((l) => l.name === val);
+                  if (lining) {
+                    onChange({ ...data, gasFireLining: lining.name });
+                  }
+                }
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Choose lining" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Black Reeded (no upgrade)</SelectItem>
+                {selectedProduct.linings!.map((l) => (
+                  <SelectItem key={l.name} value={l.name}>
+                    {l.name}{l.priceExVat > 0 ? ` — +£${l.priceExVat.toFixed(2)}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
+      {/* ── Gazco Frame Selector ── */}
+      {data.fire.model && selectedProduct?.frames && Object.keys(selectedProduct.frames).length > 0 && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-green-300/30">
+          <Label className="text-sm font-semibold">Frame Style (optional)</Label>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Choose a frame</Label>
+            <Select
+              value={data.gasFireFrame || "__none__"}
+              onValueChange={(val) => {
+                if (val === "__none__") {
+                  onChange({ ...data, gasFireFrame: undefined });
+                } else {
+                  onChange({ ...data, gasFireFrame: val });
+                }
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Choose frame" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Edge (no upgrade)</SelectItem>
+                {Object.entries(selectedProduct.frames!).map(([name, price]) => (
+                  <SelectItem key={name} value={name}>
+                    {name}{price > 0 ? ` — +£${price.toFixed(2)}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
       {/* ── Large Format: Trim/Fascia OR C&J Fireplace Package toggle ── */}
       {data.fire.model && isLargeFormat && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/30">

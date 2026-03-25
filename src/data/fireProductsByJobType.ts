@@ -24,6 +24,7 @@ export interface GasFireProduct {
   noTrimOptions?: boolean; // true for Gazco products (fixed design, no trim selector)
   programmableRemoteUpgrade?: number; // optional upgrade price for Riva2 (ex VAT)
   linings?: LiningOption[]; // optional lining finishes for Gazco products
+  frames?: Record<string, number>; // optional frame upgrades (name → price in ex VAT)
 }
 
 export interface GasStoveProduct {
@@ -605,6 +606,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+    },
   },
   // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -621,6 +625,13 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Icon XS - Black Glass": 654.17,
+      "Verve XS - Graphite": 432.50,
+      "Designio2 - Steel": 387.50,
+      "Designio2 - Glass": 620.83,
+    },
   },
   // Riva2 750HL — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -637,6 +648,10 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Evoke Glass - White Glass front & Graphite rear": 1279.17,
+    },
   },
   // Studio 1 — Manual / Remote, no trim
   {
@@ -653,6 +668,15 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Edge+": 132.50,
+      "Profil - Anthracite": 257.50,
+      "Steel 2 - Graphite": 465.83,
+      "Glass - Black": 907.50,
+      "Verve - Graphite": 540.83,
+      "Expression - Graphite": 307.50,
+    },
   },
   // Studio 2 — Manual / Remote, no trim
   {
@@ -669,6 +693,15 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Edge+": 162.50,
+      "Profil - Anthracite": 299.17,
+      "Steel 2 - Graphite": 529.17,
+      "Glass - Black": 1040.83,
+      "Verve - Graphite": 612.50,
+      "Expression - Graphite": 340.83,
+    },
   },
   // Studio 3 — Manual / Remote, no trim
   {
@@ -685,6 +718,10 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge+": 229.17,
+      "Profil - Polished Stainless Steel": 615.83,
+    },
   },
   // Studio 1 Slimline — Manual / Remote, no trim
   {
@@ -701,6 +738,14 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Profil - Anthracite": 257.50,
+      "Steel 2 - Graphite": 465.83,
+      "Glass - Black": 907.50,
+      "Verve - Graphite": 540.83,
+      "Expression - Graphite": 307.50,
+    },
   },
   // Studio 2 Slimline — Manual / Remote, no trim
   {
@@ -717,6 +762,14 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Profil - Anthracite": 299.17,
+      "Steel 2 - Graphite": 529.17,
+      "Glass - Black": 1040.83,
+      "Verve - Graphite": 612.50,
+      "Expression - Graphite": 340.83,
+    },
   },
   // Studio 2 Duplex (2-sided) — Manual / Remote, no trim
   {
@@ -733,6 +786,15 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Edge+": 162.50,
+      "Profil - Anthracite": 299.17,
+      "Steel 2 - Graphite": 529.17,
+      "Glass - Black": 1040.83,
+      "Verve - Graphite": 612.50,
+      "Expression - Graphite": 340.83,
+    },
   },
   // ── Onyx BF ───────────────────────────────────
   {
@@ -812,6 +874,11 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Evoke XS - Black Glass front & Graphite rear": 540.83,
+      "Icon XS - Black Glass": 540.83,
+    },
   },
   // Riva2 500 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -828,6 +895,13 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Icon XS - Black Glass": 745.83,
+      "Verve XS - Graphite": 507.50,
+      "Evoke Steel - Graphite front & rear": 457.50,
+      "Ellingham - Matt Black Cast Iron": 612.50,
+    },
   },
   // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -844,6 +918,13 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Icon XS - Black Glass": 654.17,
+      "Verve XS - Graphite": 432.50,
+      "Designio2 - Steel": 387.50,
+      "Designio2 - Glass": 620.83,
+    },
   },
   // Riva2 600HL — Remote only, no trim, Programmable Remote upgrade available
   {
@@ -860,6 +941,9 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+    },
   },
   // Studio 1 — Manual / Remote, no trim
   {
@@ -876,6 +960,15 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Edge+": 137.50,
+      "Profil - Anthracite": 257.50,
+      "Steel 2 - Graphite": 465.83,
+      "Glass - Black": 907.50,
+      "Verve - Graphite": 540.83,
+      "Expression - Graphite": 307.50,
+    },
   },
   // Studio 2 — Manual / Remote, no trim
   {
@@ -892,6 +985,15 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
       { name: "Brick Effect", priceExVat: 125.00 },
       { name: "Ledgestone Effect", priceExVat: 125.00 },
     ],
+    frames: {
+      "Edge": 0,
+      "Edge+": 162.50,
+      "Profil - Anthracite": 299.17,
+      "Steel 2 - Graphite": 529.17,
+      "Glass - Black": 1040.83,
+      "Verve - Graphite": 612.50,
+      "Expression - Graphite": 340.83,
+    },
   },
   // ── Onyx CF ───────────────────────────────────
   {

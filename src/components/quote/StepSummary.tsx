@@ -1,6 +1,7 @@
 import { QuoteData } from "@/types/quote";
 import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE } from "@/data/productCatalog";
 import { EXTRAS_CONFIG } from "@/data/extrasConfig";
+import { GAS_BF_PRODUCTS, GAS_CF_PRODUCTS } from "@/data/fireProductsByJobType";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -59,6 +60,30 @@ function getLineItems(data: QuoteData): LineItem[] {
   // Gas Firebox (CF only)
   if (data.products.gasFirebox) {
     items.push({ label: "Gas Firebox", price: 250 });
+  }
+
+  // Gazco Lining Upgrade
+  if (data.products.gasFireLining) {
+    const allProducts = [...GAS_BF_PRODUCTS, ...GAS_CF_PRODUCTS];
+    const selectedProduct = allProducts.find((p) => p.name === data.products.fire.model);
+    if (selectedProduct?.linings) {
+      const lining = selectedProduct.linings.find((l) => l.name === data.products.gasFireLining);
+      if (lining && lining.priceExVat > 0) {
+        items.push({ label: "Lining Upgrade", detail: lining.name, price: lining.priceExVat });
+      }
+    }
+  }
+
+  // Gazco Frame Upgrade
+  if (data.products.gasFireFrame) {
+    const allProducts = [...GAS_BF_PRODUCTS, ...GAS_CF_PRODUCTS];
+    const selectedProduct = allProducts.find((p) => p.name === data.products.fire.model);
+    if (selectedProduct?.frames) {
+      const framePrice = selectedProduct.frames[data.products.gasFireFrame];
+      if (framePrice !== undefined && framePrice > 0) {
+        items.push({ label: "Frame Upgrade", detail: data.products.gasFireFrame, price: framePrice });
+      }
+    }
   }
 
   // Gas Fire Trim / Fascia

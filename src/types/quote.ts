@@ -99,6 +99,8 @@ export interface Products {
   gasFireTrim: GasFireTrim | null;
   gasFireGatherHood: GasFireGatherHood;
   cjFireplace: CJFireplaceItem | null;
+  gasFireLining?: string; // Gazco lining option (e.g., "Black Glass", "Brick Effect")
+  gasFireFrame?: string; // Gazco frame option (e.g., "Icon XS - Black Glass")
   electricStyle: ElectricStyle;
   bfFittings: BfFitting[];
   mediaWallItems: MediaWallItems;
@@ -170,6 +172,8 @@ export const initialQuoteData: QuoteData = {
     gasFireTrim: null,
     gasFireGatherHood: { enabled: false, priceExVat: 0 },
     cjFireplace: null,
+    gasFireLining: undefined,
+    gasFireFrame: undefined,
     electricStyle: "Media Wall",
     bfFittings: [
       { label: "Flue Terminal / Cowl", enabled: false, price: 85 },
