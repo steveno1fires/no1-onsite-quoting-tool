@@ -19,6 +19,8 @@ import {
   WOODBURNER_OPTIONS,
   CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
+import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
+import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
 import React from "react";
 
 interface Props {
@@ -70,6 +72,8 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
   const [hearthMaterial, setHearthMaterial] = React.useState("");
   const [hearthType, setHearthType] = React.useState("");
+  const [fireplaceMaterial, setFireplaceMaterial] = React.useState("");
+  const [beamCategory, setBeamCategory] = React.useState("");
 
   // Fire: cascading brand → model
   const fireBrands = [...new Set(FIRE_OPTIONS.map((f) => f.brand))];
@@ -245,6 +249,70 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </div>
 
+      {/* Capital Fireplaces */}
+      <OptionalSection
+        title="Fireplace (Capital)"
+        enabled={data.fireplace.enabled}
+        onToggle={(v) => {
+          onChange({ ...data, fireplace: { ...data.fireplace, enabled: v } });
+          if (!v) setFireplaceMaterial("");
+        }}
+      >
+        <div>
+          <Label className="text-xs">Material</Label>
+          <Select
+            value={fireplaceMaterial || undefined}
+            onValueChange={(val) => {
+              setFireplaceMaterial(val);
+              onChange({ ...data, fireplace: { ...data.fireplace, description: "", price: 0 } });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choose material" />
+            </SelectTrigger>
+            <SelectContent>
+              {CAPITAL_FIREPLACE_MATERIALS.map((m) => (
+                <SelectItem key={m.material} value={m.material}>
+                  {m.material}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {fireplaceMaterial && (() => {
+          const products = CAPITAL_FIREPLACE_MATERIALS.find((m) => m.material === fireplaceMaterial)?.products || [];
+          return (
+            <div>
+              <Label className="text-xs">Product</Label>
+              <Select
+                value={data.fireplace.description || undefined}
+                onValueChange={(val) => {
+                  const item = products.find((p) => p.name === val);
+                  if (item) {
+                    onChange({ ...data, fireplace: { ...data.fireplace, description: `${item.name} (${item.rebate} rebate)`, price: item.price } });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p, i) => (
+                    <SelectItem key={`${p.name}-${p.rebate}-${i}`} value={p.name}>
+                      {p.name} (Rebate: {p.rebate}) — £{p.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })()}
+        <div>
+          <Label className="text-xs">Price</Label>
+          <PriceInput value={data.fireplace.price} onChange={(v) => onChange({ ...data, fireplace: { ...data.fireplace, price: v } })} />
+        </div>
+      </OptionalSection>
+
       {/* Capital Hearths */}
       <OptionalSection
         title="Hearth (Capital)"
@@ -370,41 +438,68 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </OptionalSection>
 
-      {/* Beam */}
+      {/* Beam (Capital Geocast) */}
       <OptionalSection
-        title="Beam"
+        title="Beam (Capital Geocast)"
         enabled={data.beam.enabled}
-        onToggle={(v) =>
+        onToggle={(v) => {
           onChange({
             ...data,
             beam: { ...data.beam, enabled: v },
             surround: { ...data.surround, enabled: v ? false : data.surround.enabled },
-          })
-        }
+          });
+          if (!v) setBeamCategory("");
+        }}
       >
         <div>
-          <Label className="text-xs">Select Beam</Label>
+          <Label className="text-xs">Category</Label>
           <Select
-            value={data.beam.description || undefined}
+            value={beamCategory || undefined}
             onValueChange={(val) => {
-              const item = BEAM_OPTIONS.find((b) => b.label === val);
-              if (item) {
-                onChange({ ...data, beam: { ...data.beam, description: item.label, material: item.material, price: item.price } });
-              }
+              setBeamCategory(val);
+              onChange({ ...data, beam: { ...data.beam, description: "", material: val, price: 0 } });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose a beam" />
+              <SelectValue placeholder="Choose category" />
             </SelectTrigger>
             <SelectContent>
-              {BEAM_OPTIONS.map((b) => (
-                <SelectItem key={b.label} value={b.label}>
-                  {b.label} — £{b.price}
+              {CAPITAL_BEAM_CATEGORIES.map((c) => (
+                <SelectItem key={c.category} value={c.category}>
+                  {c.category}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        {beamCategory && (() => {
+          const products = CAPITAL_BEAM_CATEGORIES.find((c) => c.category === beamCategory)?.products || [];
+          return (
+            <div>
+              <Label className="text-xs">Product</Label>
+              <Select
+                value={data.beam.description || undefined}
+                onValueChange={(val) => {
+                  const item = products.find((p) => `${p.name} (${p.finish})` === val);
+                  if (item) {
+                    onChange({ ...data, beam: { ...data.beam, description: `${item.name} (${item.finish})`, material: beamCategory, price: item.price } });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose beam" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p, i) => (
+                    <SelectItem key={`${p.name}-${p.finish}-${i}`} value={`${p.name} (${p.finish})`}>
+                      {p.name} — {p.finish} — £{p.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })()}
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.beam.price} onChange={(v) => onChange({ ...data, beam: { ...data.beam, price: v } })} />
