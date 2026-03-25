@@ -19,7 +19,12 @@ export function QuoteWizard() {
 
   const isWoodburner = data.jobType?.startsWith("Woodburner");
   const isTwinWall = data.jobType === "Woodburner — Twin Wall";
-  const hasFlueStep = isWoodburner; // both liner and twin wall
+  const isGasCF = data.jobType === "Gas Fire — Inset (Conventional Flue)";
+  // Gas Stove CF variants need a liner step; BF variants do not
+  const isGasSoveCF = data.jobType === "Gas Stove" && (
+    data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
+  );
+  const hasFlueStep = isWoodburner || isGasCF || isGasSoveCF;
   const totalSteps = hasFlueStep ? 7 : 6;
 
   // Map logical step to actual step (skip flue kit if not woodburner)
@@ -74,11 +79,11 @@ export function QuoteWizard() {
       case 3:
         return <StepProducts data={data.products} jobType={data.jobType} onChange={(products) => setData({ ...data, products })} />;
       case 4:
-        return <StepExtras data={data.extras} onChange={(extras) => setData({ ...data, extras })} />;
+        return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
       case 5:
         return isTwinWall
           ? <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />
-          : <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
+          : <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />; // covers both woodburner liner and gas CF
       case 6:
         return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
       case 7:

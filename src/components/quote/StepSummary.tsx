@@ -55,9 +55,38 @@ function getLineItems(data: QuoteData): LineItem[] {
     }
   }
 
+  // Gas Firebox (CF only)
+  if (data.products.gasFirebox) {
+    items.push({ label: "Gas Firebox", price: 250 });
+  }
+
+  // BF Fittings (Gas Stove BF)
+  if (data.jobType === "Gas Stove") {
+    data.products.bfFittings.filter((f) => f.enabled).forEach((f) => {
+      items.push({ label: f.label, price: f.price });
+    });
+  }
+
+  // Media Wall items (Electric)
+  if (data.jobType === "Electric Fire / Media Wall" && data.products.electricStyle === "Media Wall") {
+    const mw = data.products.mediaWallItems;
+    if (mw.clsTimberQty > 0) items.push({ label: "CLS Timber", detail: `${mw.clsTimberQty} lengths`, price: mw.clsTimberQty });
+    if (mw.plasterboardQty > 0) items.push({ label: "Plasterboard", detail: `${mw.plasterboardQty} sheets`, price: mw.plasterboardQty });
+    if (mw.cornerBeadQty > 0) items.push({ label: "Corner Bead", detail: `${mw.cornerBeadQty} lengths`, price: mw.cornerBeadQty });
+    if (mw.tvBracket) items.push({ label: "TV Bracket", price: 150 });
+    if (mw.plastered) items.push({ label: "Plastered", price: 450 });
+  }
+
   data.extras.filter((e) => e.enabled).forEach((e) => {
     items.push({ label: e.label, price: e.price });
   });
+
+  // Liner kit for Gas CF and Gas Stove CF variants
+  const isGasCFLiner =
+    data.jobType === "Gas Fire — Inset (Conventional Flue)" ||
+    (data.jobType === "Gas Stove" && (
+      data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
+    ));
 
   if (data.jobType === "Woodburner — Twin Wall" && data.twinWallKit.price > 0) {
     let twPrice = data.twinWallKit.price;
@@ -75,7 +104,7 @@ function getLineItems(data: QuoteData): LineItem[] {
         price: data.twinWallKit.additionalItemPrice,
       });
     }
-  } else if (data.jobType === "Woodburner — Chimney Liner" && data.linerKit.price > 0) {
+  } else if ((data.jobType === "Woodburner — Chimney Liner" || isGasCFLiner) && data.linerKit.price > 0) {
     let linerPrice = data.linerKit.price;
     const surcharges: string[] = [];
     if (data.linerKit.flueSize === '6"') {

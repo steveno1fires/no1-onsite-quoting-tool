@@ -1,5 +1,6 @@
 import { Extra } from "@/types/extra";
 import { EXTRAS_CONFIG } from "@/data/extrasConfig";
+import { JobType } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -11,12 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const WOODBURNER_ONLY_EXTRAS = ["Starter Bundle", "Log Kit", "Log Store"];
+
 interface Props {
   data: Extra[];
+  jobType: JobType | "";
   onChange: (data: Extra[]) => void;
 }
 
-export function StepExtras({ data, onChange }: Props) {
+export function StepExtras({ data, jobType, onChange }: Props) {
+  const isWoodburner = jobType === "Woodburner — Chimney Liner" || jobType === "Woodburner — Twin Wall";
   const toggle = (index: number, enabled: boolean) => {
     const updated = [...data];
     const config = EXTRAS_CONFIG[index];
@@ -64,6 +69,8 @@ export function StepExtras({ data, onChange }: Props) {
         {data.map((extra, i) => {
           const config = EXTRAS_CONFIG[i];
           if (!config) return null;
+          // Hide woodburner-only extras on non-woodburner jobs
+          if (!isWoodburner && WOODBURNER_ONLY_EXTRAS.includes(config.label)) return null;
 
           return (
             <div key={extra.label} className="space-y-2">
