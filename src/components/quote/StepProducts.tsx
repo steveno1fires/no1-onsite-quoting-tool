@@ -38,6 +38,7 @@ import {
 } from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
+import { calculateProductSubtotal } from "@/lib/subtotalCalculator";
 import React from "react";
 
 interface Props {
@@ -306,33 +307,35 @@ function GasFireSection({
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
               {(() => {
-                // Group products by manufacturer → series → product type hierarchy
-                const brandMap = new Map<string, Map<string, typeof productsInCat>>();
+                // Group products by Manufacturer → Type/Series → Model (3-level hierarchy)
+                const manufacturerMap = new Map<string, Map<string, typeof productsInCat>>();
+                
                 for (const p of productsInCat) {
-                  const brand = p.brand ?? "Charlton & Jenrick";
-                  if (!brandMap.has(brand)) brandMap.set(brand, new Map());
+                  const manufacturer = p.brand ?? "Charlton & Jenrick";
+                  if (!manufacturerMap.has(manufacturer)) {
+                    manufacturerMap.set(manufacturer, new Map());
+                  }
                   
-                  const seriesMap = brandMap.get(brand)!;
-                  const series = p.subCategory || brand; // Use subCategory as series if available
-                  if (!seriesMap.has(series)) seriesMap.set(series, []);
-                  seriesMap.get(series)!.push(p);
+                  // Use typeCategory if available, otherwise fall back to subCategory
+                  const typeCategory = p.typeCategory || p.subCategory || manufacturer;
+                  const typeMap = manufacturerMap.get(manufacturer)!;
+                  
+                  if (!typeMap.has(typeCategory)) {
+                    typeMap.set(typeCategory, []);
+                  }
+                  typeMap.get(typeCategory)!.push(p);
                 }
 
-                // Flatten to brand groups with nested series
-                return Array.from(brandMap.entries()).map(([brand, seriesMap]) => (
-                  <React.Fragment key={brand}>
-                    {Array.from(seriesMap.entries()).map(([series, items]) => {
-                      const showSeriesLabel = seriesMap.size > 1;
+                // Render: Manufacturer → Type/Series → Models
+                return Array.from(manufacturerMap.entries()).map(([manufacturer, typeMap]) => (
+                  <React.Fragment key={manufacturer}>
+                    {Array.from(typeMap.entries()).map(([typeCategory, items]) => {
+                      const multipleTypes = typeMap.size > 1;
                       return (
-                        <SelectGroup key={`${brand}-${series}`}>
-                          {showSeriesLabel && (
-                            <SelectLabel className="font-bold text-foreground">
-                              {brand} — {series}
-                            </SelectLabel>
-                          )}
-                          {!showSeriesLabel && (
-                            <SelectLabel className="font-bold text-foreground">{brand}</SelectLabel>
-                          )}
+                        <SelectGroup key={`${manufacturer}-${typeCategory}`}>
+                          <SelectLabel className="font-bold text-foreground">
+                            {multipleTypes ? `${manufacturer} — ${typeCategory}` : manufacturer}
+                          </SelectLabel>
                           {items.map((p) => (
                             <SelectItem key={p.name} value={p.name}>
                               {p.name}{p.description ? ` — ${p.description}` : ""}
@@ -1529,6 +1532,16 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           </div>
         </OptionalSection>
       )}
+
+      {/* Subtotal for Products Section */}
+      <div className="bg-card rounded-lg p-4 shadow-sm border-t-2 border-primary mt-6">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-foreground">Subtotal (Products):</span>
+          <span className="text-lg font-bold text-primary">
+            £{calculateProductSubtotal(data, jobType as string).toFixed(2)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

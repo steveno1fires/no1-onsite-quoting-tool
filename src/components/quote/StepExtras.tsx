@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { calculateExtrasSubtotal } from "@/lib/subtotalCalculator";
 
 // woodburnerOnly flag is now on EXTRAS_CONFIG items directly
 
@@ -147,6 +148,16 @@ export function StepExtras({ data, jobType, onChange }: Props) {
             </div>
           );
         })}
+      </div>
+
+      {/* Subtotal for Extras */}
+      <div className="bg-card rounded-lg p-4 shadow-sm border-t-2 border-primary mt-4">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-foreground">Subtotal (Extras):</span>
+          <span className="text-lg font-bold text-primary">
+            £{calculateExtrasSubtotal(data).toFixed(2)}
+          </span>
+        </div>
       </div>
     </div>
   );

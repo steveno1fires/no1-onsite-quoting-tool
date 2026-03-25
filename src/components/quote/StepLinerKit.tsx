@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GATHER_HOOD_PRICES } from "@/data/fireProductsByJobType";
+import { calculateLinerKitSubtotal } from "@/lib/subtotalCalculator";
 
 type Props =
   | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: boolean; gasFirebox?: boolean; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
@@ -118,6 +119,16 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
             value={data.additionalItemPrice}
             onChange={(v) => onChange({ ...data, additionalItemPrice: v })}
           />
+        </div>
+      </div>
+
+      {/* Subtotal for Twin Wall Kit */}
+      <div className="bg-card rounded-lg p-4 shadow-sm border-t-2 border-primary">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-foreground">Subtotal (Liner Kit):</span>
+          <span className="text-lg font-bold text-primary">
+            £{(data.price + data.additionalItemPrice).toFixed(2)}
+          </span>
         </div>
       </div>
     </div>
@@ -277,6 +288,16 @@ function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFirebox
             </label>
           </div>
         ))}
+      </div>
+
+      {/* Subtotal for Liner Kit */}
+      <div className="bg-card rounded-lg p-4 shadow-sm border-t-2 border-primary">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-foreground">Subtotal (Liner Kit):</span>
+          <span className="text-lg font-bold text-primary">
+            £{calculateLinerKitSubtotal(data).toFixed(2)}
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ export interface GasFireProduct {
   name: string;
   description: string;
   subCategory: string;
+  typeCategory?: string; // e.g., "Riva", "Studio", "Open Flame", "Glass Fronted", "Large Format" — for hierarchy grouping
   slideControlNg?: number;
   remoteControlNg?: number;
   price?: number; // used when no control options
@@ -597,6 +598,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 500HL BF",
     description: "Balanced Flue, Slimline, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 2657.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -616,6 +618,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 600 BF",
     description: "Balanced Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 2412.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -639,6 +642,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 750HL BF",
     description: "Balanced Flue, Large, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 3099.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -659,6 +663,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 1 BF",
     description: "Balanced Flue, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2462.00,
     remoteControlNg: 2732.00,
     noTrimOptions: true,
@@ -684,6 +689,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 2 BF",
     description: "Balanced Flue, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2729.00,
     remoteControlNg: 2999.00,
     noTrimOptions: true,
@@ -709,6 +715,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 3 BF",
     description: "Balanced Flue, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 3629.00,
     remoteControlNg: 3899.00,
     noTrimOptions: true,
@@ -729,6 +736,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 1 Slimline BF",
     description: "Balanced Flue, Slimline, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2570.00,
     remoteControlNg: 2840.00,
     noTrimOptions: true,
@@ -753,6 +761,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 2 Slimline BF",
     description: "Balanced Flue, Slimline, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2924.00,
     remoteControlNg: 3194.00,
     noTrimOptions: true,
@@ -777,6 +786,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 2 Duplex BF",
     description: "Balanced Flue, 2-sided, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 4187.00,
     remoteControlNg: 4457.00,
     noTrimOptions: true,
@@ -802,6 +812,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 65 BF (NG)",
     description: "Balanced Flue, Natural Gas",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2704.17, // £3,245 inc VAT ÷ 1.2
   },
   {
@@ -809,6 +820,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 85 BF (NG)",
     description: "Balanced Flue, Natural Gas",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 3037.50, // £3,645 inc VAT ÷ 1.2
   },
   {
@@ -816,6 +828,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 85 BF (LPG)",
     description: "Balanced Flue, LPG",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 3037.50, // £3,645 inc VAT ÷ 1.2
   },
   // Glass Fronted
@@ -823,6 +836,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon Focus RS Plus BF",
     description: "Glass Fronted, Coal",
     subCategory: "Glass Fronted Fires",
+    typeCategory: "Glass Fronted",
     slideControlNg: 1157.50,
     remoteControlNg: 1240.83,
   },
@@ -830,6 +844,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon Core BF",
     description: "Glass Fronted, Flat Bed, Mixed Logs, Black Glass Liners",
     subCategory: "Glass Fronted Fires",
+    typeCategory: "Glass Fronted",
     slideControlNg: 1449.17,
     remoteControlNg: 1624.17,
   },
@@ -838,18 +853,21 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon P5 BF — Black Ribbed Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 2390.83,
   },
   {
     name: "Paragon P5 BF — Black Glass Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 2582.50,
   },
   {
     name: "Infinity 890HD BF",
     description: "Large Format, Mixed Logs, Black Glass Liners, inc. Snorkel Flue",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 2249.17,
   },
 ];
@@ -865,6 +883,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 400 CF",
     description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 1665.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -886,6 +905,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 500 CF",
     description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 2062.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -909,6 +929,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 600 CF",
     description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 2065.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -932,6 +953,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Riva2 600HL CF",
     description: "Conventional Flue, Large, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
+    typeCategory: "Riva",
     price: 2412.00,
     noTrimOptions: true,
     programmableRemoteUpgrade: 324.00,
@@ -951,6 +973,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 1 CF",
     description: "Conventional Flue, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2212.00,
     remoteControlNg: 2482.00,
     noTrimOptions: true,
@@ -976,6 +999,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Studio 2 CF",
     description: "Conventional Flue, Manual / Remote Control",
     subCategory: "Gazco Studio",
+    typeCategory: "Studio",
     slideControlNg: 2554.00,
     remoteControlNg: 2824.00,
     noTrimOptions: true,
@@ -1001,6 +1025,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 65 CF (NG)",
     description: "Conventional Flue, Natural Gas",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2495.83, // £2,995 inc VAT ÷ 1.2
   },
   {
@@ -1008,6 +1033,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 65 CF (LPG)",
     description: "Conventional Flue, LPG",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2495.83,
   },
   {
@@ -1015,6 +1041,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 85 CF (NG)",
     description: "Conventional Flue, Natural Gas",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2854.17, // £3,425 inc VAT ÷ 1.2
   },
   {
@@ -1022,6 +1049,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Avanti 85 CF (LPG)",
     description: "Conventional Flue, LPG",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2854.17,
   },
   {
@@ -1029,6 +1057,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Eclipse 60HL CF (NG)",
     description: "Conventional Flue, Natural Gas",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2495.83, // £2,995 inc VAT ÷ 1.2
   },
   {
@@ -1036,6 +1065,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Eclipse 60HL CF (LPG)",
     description: "Conventional Flue, LPG",
     subCategory: "Onyx Fires",
+    typeCategory: "Onyx",
     price: 2495.83,
   },
   // Open Flame
@@ -1043,6 +1073,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon 2000 Plus CF",
     description: "Open Flame, Coal",
     subCategory: "Open Flame Fires",
+    typeCategory: "Open Flame",
     slideControlNg: 515.83,
     remoteControlNg: 682.50,
   },
@@ -1050,12 +1081,14 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon Slimline 3 CF",
     description: "Open Flame, Coal",
     subCategory: "Open Flame Fires",
+    typeCategory: "Open Flame",
     slideControlNg: 499.17,
   },
   {
     name: "Paragon One Evolution CF — Coal Fuel Bed",
     description: "Open Flame",
     subCategory: "Open Flame Fires",
+    typeCategory: "Open Flame",
     slideControlNg: 524.17,
     remoteControlNg: 665.83,
   },
@@ -1063,6 +1096,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon One Evolution CF — Mixed Logs Fuel Bed",
     description: "Open Flame",
     subCategory: "Open Flame Fires",
+    typeCategory: "Open Flame",
     slideControlNg: 582.50,
     remoteControlNg: 724.17,
   },
@@ -1071,6 +1105,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon Focus HE CF",
     description: "Glass Fronted, Coal",
     subCategory: "Glass Fronted Fires",
+    typeCategory: "Glass Fronted",
     slideControlNg: 787.50,
     remoteControlNg: 907.50,
   },
@@ -1078,6 +1113,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon Core HE CF",
     description: "Glass Fronted, Flat Bed, Mixed Logs, Black Glass Liners",
     subCategory: "Glass Fronted Fires",
+    typeCategory: "Glass Fronted",
     slideControlNg: 1066.67,
     remoteControlNg: 1224.17,
   },
@@ -1086,6 +1122,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon P11 CF — Black Ribbed Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     slideControlNg: 1082.50,
     remoteControlNg: 1540.83,
   },
@@ -1093,6 +1130,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon P11 CF — Black Glass Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     slideControlNg: 1165.83,
     remoteControlNg: 1624.17,
   },
@@ -1100,30 +1138,35 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     name: "Paragon P5 CF — Black Ribbed Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 1624.17,
   },
   {
     name: "Paragon P5 CF — Black Glass Liners",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 1807.50,
   },
   {
     name: "Infinity 890HD CF Mk2",
     description: "Large Format, Mixed Logs",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 2082.50,
   },
   {
     name: "Panache 620 Hybrid CF",
     description: "Hybrid Gas Fire",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 1999.17,
   },
   {
     name: "Panache 8040 CF",
     description: "Large Format",
     subCategory: "Large Format Fires",
+    typeCategory: "Large Format",
     price: 1582.50,
   },
 ];
