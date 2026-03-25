@@ -1,13 +1,14 @@
-import { LinerKit, TwinWallKit, BfFitting } from "@/types/quote";
+import { LinerKit, TwinWallKit, BfFitting, Products } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Props =
-  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never }
-  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never }
-  | { mode: "gasstovebf"; data?: never; onChange?: never; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void };
+  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: boolean; gasFirebox?: boolean; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
+  | { mode: "liner-gas-cf"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox: true; gasFirebox: boolean; onGasFireboxChange: (v: boolean) => void; products?: never; onProductsChange?: never }
+  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
+  | { mode: "gasstovebf"; data?: never; onChange?: never; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never };
 
 const KIT_PRICES: Record<string, number> = {
   "Bungalow (6m)": 350,
@@ -122,7 +123,13 @@ function TwinWallSection({ data, onChange }: { data: TwinWallKit; onChange: (d: 
   );
 }
 
-function LinerSection({ data, onChange }: { data: LinerKit; onChange: (d: LinerKit) => void }) {
+function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFireboxChange }: {
+  data: LinerKit;
+  onChange: (d: LinerKit) => void;
+  showGasFirebox?: boolean;
+  gasFirebox?: boolean;
+  onGasFireboxChange?: (v: boolean) => void;
+}) {
   const handleKitType = (v: string) => {
     const kitType = v as LinerKit["kitType"];
     const price = KIT_PRICES[kitType] ?? data.price;
@@ -193,7 +200,8 @@ function LinerSection({ data, onChange }: { data: LinerKit; onChange: (d: LinerK
         )}
       </div>
 
-      {/* Reg Plate */}
+      {/* Reg Plate — woodburner only, not shown for gas CF */}
+      {!showGasFirebox && (
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">
           Reg Plate — £{data.regPlateSize.trim() ? "40" : "0"}
@@ -211,6 +219,24 @@ function LinerSection({ data, onChange }: { data: LinerKit; onChange: (d: LinerK
           />
         </div>
       </div>
+      )}
+
+      {/* Gas Firebox — CF only */}
+      {showGasFirebox && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+          <Label className="text-sm font-semibold">Gas Firebox</Label>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="gas-firebox"
+              checked={gasFirebox ?? false}
+              onCheckedChange={(v) => onGasFireboxChange?.(v === true)}
+            />
+            <Label htmlFor="gas-firebox" className="text-sm cursor-pointer font-medium">
+              Gas Firebox (+£250.00 ex VAT)
+            </Label>
+          </div>
+        </div>
+      )}
 
       {/* Accessories */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
@@ -267,6 +293,17 @@ export function StepLinerKit(props: Props) {
   }
   if (props.mode === "gasstovebf") {
     return <BfFittingsSection fittings={props.bfFittings} onChange={props.onBfFittingsChange} />;
+  }
+  if (props.mode === "liner-gas-cf") {
+    return (
+      <LinerSection
+        data={props.data}
+        onChange={props.onChange}
+        showGasFirebox
+        gasFirebox={props.gasFirebox}
+        onGasFireboxChange={props.onGasFireboxChange}
+      />
+    );
   }
   return <LinerSection data={props.data} onChange={props.onChange} />;
 }

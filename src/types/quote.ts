@@ -22,7 +22,7 @@ export const JOB_TYPES = [
 
 export type JobType = (typeof JOB_TYPES)[number];
 
-export type ElectricStyle = "Media Wall" | "Hole in the Wall" | "With Fireplace";
+export type ElectricStyle = "Media Wall" | "Hole in the Wall" | "With Fireplace" | "16 Inch Fire with Fireplace";
 
 export interface Product {
   brand: string;
@@ -69,6 +69,11 @@ export interface MediaWallItems {
   electricSockets: boolean;
 }
 
+export interface GasFireTrim {
+  name: string;
+  priceExVat: number;
+}
+
 export interface Products {
   fire: Product;
   hearth: HearthSelection;
@@ -76,6 +81,7 @@ export interface Products {
   surround: OptionalProduct;
   chamberBoard: ChamberBoardSelection;
   gasFirebox: boolean;
+  gasFireTrim: GasFireTrim | null;
   electricStyle: ElectricStyle;
   bfFittings: BfFitting[];
   mediaWallItems: MediaWallItems;
@@ -143,6 +149,7 @@ export const initialQuoteData: QuoteData = {
       chamberTrimColour: "Black",
     },
     gasFirebox: false,
+    gasFireTrim: null,
     electricStyle: "Media Wall",
     bfFittings: [
       { label: "Flue Terminal / Cowl", enabled: false, price: 85 },

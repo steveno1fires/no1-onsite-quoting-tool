@@ -90,7 +90,19 @@ export function QuoteWizard() {
         if (isGasStoveBF) {
           return <StepLinerKit mode="gasstovebf" bfFittings={data.products.bfFittings} onBfFittingsChange={(bfFittings) => setData({ ...data, products: { ...data.products, bfFittings } })} />;
         }
-        // covers both woodburner liner and gas CF
+        if (isGasCF) {
+          return (
+            <StepLinerKit
+              mode="liner-gas-cf"
+              data={data.linerKit}
+              onChange={(linerKit) => setData({ ...data, linerKit })}
+              showGasFirebox
+              gasFirebox={data.products.gasFirebox}
+              onGasFireboxChange={(gasFirebox) => setData({ ...data, products: { ...data.products, gasFirebox } })}
+            />
+          );
+        }
+        // woodburner liner (also covers gas stove CF)
         return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       case 6:
         return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;

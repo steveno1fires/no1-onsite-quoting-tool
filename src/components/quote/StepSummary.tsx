@@ -60,6 +60,11 @@ function getLineItems(data: QuoteData): LineItem[] {
     items.push({ label: "Gas Firebox", price: 250 });
   }
 
+  // Gas Fire Trim / Fascia
+  if (data.products.gasFireTrim) {
+    items.push({ label: "Trim / Fascia", detail: data.products.gasFireTrim.name, price: data.products.gasFireTrim.priceExVat });
+  }
+
   // BF Fittings (Gas Stove BF)
   if (data.jobType === "Gas Stove") {
     data.products.bfFittings.filter((f) => f.enabled).forEach((f) => {

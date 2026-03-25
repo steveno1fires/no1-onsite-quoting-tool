@@ -26,6 +26,8 @@ import {
   GAS_CF_PRODUCTS,
   GAS_STOVE_PRODUCTS,
   ELECTRIC_FIRE_TABS,
+  GAS_FIRE_TRIMS,
+  CJ_16_INCH_FIRES,
 } from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
 import { CAPITAL_BEAM_CATEGORIES } from "@/data/capitalBeams";
@@ -151,13 +153,11 @@ function GasFireSection({
   onChange,
   products,
   title,
-  showFirebox,
 }: {
   data: Products;
   onChange: (d: Products) => void;
   products: typeof GAS_BF_PRODUCTS;
   title: string;
-  showFirebox?: boolean;
 }) {
   const subCategories = [...new Set(products.map((p) => p.subCategory))];
   const [selectedSubCat, setSelectedSubCat] = React.useState(subCategories[0] || "");
@@ -176,6 +176,7 @@ function GasFireSection({
     onChange({
       ...data,
       fire: { brand: "C&J", model: item.name, kw: "", price },
+      gasFireTrim: null,
     });
   };
 
@@ -203,7 +204,7 @@ function GasFireSection({
           value={selectedSubCat}
           onValueChange={(val) => {
             setSelectedSubCat(val);
-            onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 } });
+            onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 }, gasFireTrim: null });
           }}
         >
           <SelectTrigger><SelectValue /></SelectTrigger>
@@ -263,17 +264,36 @@ function GasFireSection({
         <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
       </div>
 
-      {/* Gas Firebox — CF only */}
-      {showFirebox && (
-        <div className="flex items-center gap-2 pt-1">
-          <Checkbox
-            id="gas-firebox"
-            checked={data.gasFirebox}
-            onCheckedChange={(v) => onChange({ ...data, gasFirebox: v === true })}
-          />
-          <Label htmlFor="gas-firebox" className="text-xs cursor-pointer font-medium">
-            Gas Firebox (+£250.00 ex VAT)
-          </Label>
+      {/* Trim / Fascia selector — shown when a model is selected and trims exist */}
+      {data.fire.model && GAS_FIRE_TRIMS[data.fire.model] && GAS_FIRE_TRIMS[data.fire.model].length > 0 && (
+        <div className="space-y-1 pt-1 border-t border-border">
+          <Label className="text-xs font-semibold">Trim / Fascia (optional)</Label>
+          <Select
+            value={data.gasFireTrim?.name || "__none__"}
+            onValueChange={(val) => {
+              if (val === "__none__") {
+                onChange({ ...data, gasFireTrim: null });
+              } else {
+                const trim = GAS_FIRE_TRIMS[data.fire.model]?.find((t) => t.name === val);
+                onChange({ ...data, gasFireTrim: trim ?? null });
+              }
+            }}
+          >
+            <SelectTrigger><SelectValue placeholder="No trim selected" /></SelectTrigger>
+            <SelectContent className="max-h-[300px] overflow-y-auto">
+              <SelectItem value="__none__">No trim</SelectItem>
+              {GAS_FIRE_TRIMS[data.fire.model].map((t) => (
+                <SelectItem key={t.name} value={t.name}>
+                  {t.name} — £{t.priceExVat.toFixed(2)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {data.gasFireTrim && (
+            <p className="text-xs text-muted-foreground">
+              Trim: {data.gasFireTrim.name} — £{data.gasFireTrim.priceExVat.toFixed(2)} ex VAT
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -356,10 +376,10 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
         <Label className="text-sm font-semibold">Installation Style *</Label>
         <RadioGroup
           value={data.electricStyle}
-          onValueChange={(v) => onChange({ ...data, electricStyle: v as ElectricStyle })}
+          onValueChange={(v) => onChange({ ...data, electricStyle: v as ElectricStyle, fire: { brand: "", model: "", kw: "", price: 0 } })}
           className="space-y-2"
         >
-          {(["Media Wall", "Hole in the Wall", "With Fireplace"] as ElectricStyle[]).map((style) => (
+          {(["Media Wall", "Hole in the Wall", "With Fireplace", "16 Inch Fire with Fireplace"] as ElectricStyle[]).map((style) => (
             <div key={style} className="flex items-center gap-2">
               <RadioGroupItem value={style} id={`style-${style}`} />
               <Label htmlFor={`style-${style}`} className="text-sm cursor-pointer">{style}</Label>
@@ -368,7 +388,42 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
         </RadioGroup>
       </div>
 
-      {/* Fire product selector */}
+      {/* 16 Inch Fire product selector */}
+      {data.electricStyle === "16 Inch Fire with Fireplace" && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+          <Label className="text-sm font-semibold">C&J 16" Electric Fire *</Label>
+          <p className="text-xs text-muted-foreground">Choose model complete with fascia — prices ex VAT</p>
+          <Select
+            value={data.fire.model || undefined}
+            onValueChange={(name) => {
+              const item = CJ_16_INCH_FIRES.find((p) => p.name === name);
+              if (item) {
+                onChange({ ...data, fire: { brand: "C&J", model: item.name, kw: "", price: item.priceExVat } });
+              }
+            }}
+          >
+            <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+            <SelectContent className="max-h-[300px] overflow-y-auto">
+              {CJ_16_INCH_FIRES.map((p) => (
+                <SelectItem key={p.name} value={p.name}>
+                  {p.name} — £{p.priceExVat.toFixed(2)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {data.fire.model && (() => {
+            const item = CJ_16_INCH_FIRES.find((p) => p.name === data.fire.model);
+            return item ? <p className="text-xs text-muted-foreground">{item.description}</p> : null;
+          })()}
+          <div>
+            <Label className="text-xs">Price ex VAT</Label>
+            <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+          </div>
+        </div>
+      )}
+
+      {/* Fire product selector — iRange / Luminosa (not shown for 16 inch style) */}
+      {data.electricStyle !== "16 Inch Fire with Fireplace" && (
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">Electric Fire *</Label>
         <Tabs
@@ -446,6 +501,7 @@ function ElectricFireSection({ data, onChange }: { data: Products; onChange: (d:
           <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
         </div>
       </div>
+      )}
 
       {/* Media Wall extras — only when Media Wall style is selected */}
       {data.electricStyle === "Media Wall" && (
@@ -535,8 +591,8 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const electricStyle = data.electricStyle;
 
   // Which optional sections to show
-  const showHearth = !isElectric || electricStyle === "Hole in the Wall" || electricStyle === "With Fireplace";
-  const showSurround = !isElectric || electricStyle === "With Fireplace";
+  const showHearth = !isElectric || electricStyle === "Hole in the Wall" || electricStyle === "With Fireplace" || electricStyle === "16 Inch Fire with Fireplace";
+  const showSurround = !isElectric || electricStyle === "With Fireplace" || electricStyle === "16 Inch Fire with Fireplace";
   const showBeam = !isElectric || electricStyle === "Hole in the Wall";
   const showChamberBoard = !isElectric;
 
@@ -562,7 +618,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             onChange={onChange}
             products={GAS_CF_PRODUCTS}
             title="Gas Fire — Inset (CF)"
-            showFirebox
           />
         );
       case "Gas Stove":
