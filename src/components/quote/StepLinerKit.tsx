@@ -225,8 +225,8 @@ function LinerSection({ data, onChange, showGasFirebox, gasFirebox, onGasFirebox
       </div>
       )}
 
-      {/* Gas Firebox — CF only */}
-      {showGasFirebox && (
+      {/* Gas Firebox — CF only, not shown for large format fires (P11, P5, Infinity 890HD) */}
+      {showGasFirebox && !(fireModel && GATHER_HOOD_PRICES[fireModel] !== undefined) && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
           <Label className="text-sm font-semibold">Gas Firebox</Label>
           <div className="flex items-center gap-2">
