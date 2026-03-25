@@ -41,6 +41,21 @@ function getLineItems(data: QuoteData): LineItem[] {
     items.push({ label: "Surround", detail: data.products.surround.description, price: data.products.surround.price });
   }
 
+  if (data.products.chamberBoard.enabled) {
+    if (data.products.chamberBoard.boardName) {
+      items.push({ label: "Chamber Board", detail: data.products.chamberBoard.boardName, price: data.products.chamberBoard.boardPrice });
+    }
+    if (data.products.chamberBoard.reededPanels) {
+      items.push({ label: "Cast Reeded Infill Panels", price: REEDED_PANELS_PRICE });
+    }
+    if (data.products.chamberBoard.chamberTrimKit) {
+      items.push({ label: "Chamber Trim Kit", detail: data.products.chamberBoard.chamberTrimColour, price: CHAMBER_TRIM_KIT_PRICE });
+    }
+    if (data.products.chamberBoard.fermacellQty > 0) {
+      items.push({ label: `Fermacell Board ×${data.products.chamberBoard.fermacellQty}`, price: data.products.chamberBoard.fermacellQty * FERMACELL_BOARD_PRICE });
+    }
+  }
+
   data.extras.filter((e) => e.enabled).forEach((e) => {
     items.push({ label: e.label, price: e.price });
   });
