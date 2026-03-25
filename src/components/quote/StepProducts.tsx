@@ -15,7 +15,6 @@ import {
   HEARTH_OPTIONS,
   CHAMBER_OPTIONS,
   BEAM_OPTIONS,
-  SURROUND_OPTIONS,
   CAPITAL_HEARTHS,
 } from "@/data/productCatalog";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
@@ -79,12 +78,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
   const fireModelsForBrand = FIRE_OPTIONS.filter((f) => f.brand === data.fire.brand);
 
 
-  // Surround: cascading brand → model
-  const surroundBrands = [...new Set(SURROUND_OPTIONS.map((s) => s.brand))];
-  const surroundModelsForBrand = SURROUND_OPTIONS.filter(
-    (s) => s.brand === (data.surround as any).brand
-  );
-  const surroundBrand = (data.surround as any).brand || "";
 
   return (
     <div className="space-y-4 animate-slide-in">
@@ -171,70 +164,6 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           />
         </div>
       </div>
-
-      {/* Capital Fireplaces */}
-      <OptionalSection
-        title="Fireplace (Capital)"
-        enabled={data.fireplace.enabled}
-        onToggle={(v) => {
-          onChange({ ...data, fireplace: { ...data.fireplace, enabled: v } });
-          if (!v) setFireplaceMaterial("");
-        }}
-      >
-        <div>
-          <Label className="text-xs">Material</Label>
-          <Select
-            value={fireplaceMaterial || undefined}
-            onValueChange={(val) => {
-              setFireplaceMaterial(val);
-              onChange({ ...data, fireplace: { ...data.fireplace, description: "", price: 0 } });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose material" />
-            </SelectTrigger>
-            <SelectContent>
-              {CAPITAL_FIREPLACE_MATERIALS.map((m) => (
-                <SelectItem key={m.material} value={m.material}>
-                  {m.material}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {fireplaceMaterial && (() => {
-          const products = CAPITAL_FIREPLACE_MATERIALS.find((m) => m.material === fireplaceMaterial)?.products || [];
-          return (
-            <div>
-              <Label className="text-xs">Product</Label>
-              <Select
-                value={data.fireplace.description || undefined}
-                onValueChange={(val) => {
-                  const item = products.find((p) => p.name === val);
-                  if (item) {
-                    onChange({ ...data, fireplace: { ...data.fireplace, description: `${item.name} (${item.rebate} rebate)`, price: item.price } });
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {products.map((p, i) => (
-                    <SelectItem key={`${p.name}-${p.rebate}-${i}`} value={p.name}>
-                      {p.name} (Rebate: {p.rebate}) — £{p.price}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          );
-        })()}
-        <div>
-          <Label className="text-xs">Price</Label>
-          <PriceInput value={data.fireplace.price} onChange={(v) => onChange({ ...data, fireplace: { ...data.fireplace, price: v } })} />
-        </div>
-      </OptionalSection>
 
       {/* Capital Hearths */}
       <OptionalSection
@@ -429,77 +358,68 @@ export function StepProducts({ data, jobType, onChange }: Props) {
         </div>
       </OptionalSection>
 
-      {/* Surround */}
+      {/* Surround (Capital Fireplaces) */}
       <OptionalSection
-        title="Surround"
+        title="Surround (Capital)"
         enabled={data.surround.enabled}
-        onToggle={(v) =>
+        onToggle={(v) => {
           onChange({
             ...data,
             surround: { ...data.surround, enabled: v },
             beam: { ...data.beam, enabled: v ? false : data.beam.enabled },
-          })
-        }
+          });
+          if (!v) setFireplaceMaterial("");
+        }}
       >
         <div>
-          <Label className="text-xs">Supplier</Label>
+          <Label className="text-xs">Material</Label>
           <Select
-            value={surroundBrand || undefined}
-            onValueChange={(brand) => {
-              onChange({
-                ...data,
-                surround: { enabled: true, description: "", price: 0, brand, model: "" } as any,
-              });
+            value={fireplaceMaterial || undefined}
+            onValueChange={(val) => {
+              setFireplaceMaterial(val);
+              onChange({ ...data, surround: { ...data.surround, description: "", price: 0 } });
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choose supplier" />
+              <SelectValue placeholder="Choose material" />
             </SelectTrigger>
             <SelectContent>
-              {surroundBrands.map((b) => (
-                <SelectItem key={b} value={b}>
-                  {b}
+              {CAPITAL_FIREPLACE_MATERIALS.map((m) => (
+                <SelectItem key={m.material} value={m.material}>
+                  {m.material}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        {surroundBrand && (
-          <div>
-            <Label className="text-xs">Model</Label>
-            <Select
-              value={(data.surround as any).model || undefined}
-              onValueChange={(model) => {
-                const item = SURROUND_OPTIONS.find(
-                  (s) => s.brand === surroundBrand && s.model === model
-                );
-                if (item) {
-                  onChange({
-                    ...data,
-                    surround: {
-                      enabled: true,
-                      description: item.label,
-                      price: item.price,
-                      brand: item.brand,
-                      model: item.model,
-                    } as any,
-                  });
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose model" />
-              </SelectTrigger>
-              <SelectContent>
-                {surroundModelsForBrand.map((s) => (
-                  <SelectItem key={s.model} value={s.model}>
-                    {s.model} — £{s.price}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        {fireplaceMaterial && (() => {
+          const products = CAPITAL_FIREPLACE_MATERIALS.find((m) => m.material === fireplaceMaterial)?.products || [];
+          return (
+            <div>
+              <Label className="text-xs">Product</Label>
+              <Select
+                value={data.surround.description || undefined}
+                onValueChange={(val) => {
+                  const item = products.find((p) => p.name === val);
+                  if (item) {
+                    onChange({ ...data, surround: { ...data.surround, description: `${item.name} (${item.rebate} rebate)`, price: item.price } });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p, i) => (
+                    <SelectItem key={`${p.name}-${p.rebate}-${i}`} value={p.name}>
+                      {p.name} (Rebate: {p.rebate}) — £{p.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })()}
         <div>
           <Label className="text-xs">Price</Label>
           <PriceInput value={data.surround.price} onChange={(v) => onChange({ ...data, surround: { ...data.surround, price: v } })} />
