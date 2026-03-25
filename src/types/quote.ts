@@ -47,7 +47,6 @@ export interface ChamberBoardSelection {
   reededPanels: boolean;
   chamberTrimKit: boolean;
   chamberTrimColour: "Black" | "Stainless Steel";
-  fermacellQty: number;
 }
 
 export interface Products {
