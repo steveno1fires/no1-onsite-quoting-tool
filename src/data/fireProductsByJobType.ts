@@ -37,298 +37,365 @@ export interface ElectricFireTab {
   note?: string;
 }
 
-export interface GasFireTrim {
+// ─────────────────────────────────────────────
+//  GAS FIRE TRIM / FASCIA TYPES
+// ─────────────────────────────────────────────
+
+export interface TrimItem {
   name: string;
   priceExVat: number;
 }
 
-// Map from gas fire model name → compatible trims (ex VAT)
-export const GAS_FIRE_TRIMS: Record<string, GasFireTrim[]> = {
-  // ─── Open Flame — Slide Control ───
-  "Paragon 2000 Plus CF": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  "Paragon Slimline 3 CF": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  "Paragon One Evolution CF — Coal Fuel Bed": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Standard Trim Remote — Brass", priceExVat: 56.67 },
-    { name: "Standard Trim Remote — Black", priceExVat: 56.67 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 60.00 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 60.00 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  "Paragon One Evolution CF — Mixed Logs Fuel Bed": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Standard Trim Remote — Brass", priceExVat: 56.67 },
-    { name: "Standard Trim Remote — Black", priceExVat: 56.67 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 60.00 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 60.00 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  // ─── Glass Fronted CF ───
-  "Paragon Focus HE CF": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Standard Trim Remote — Brass", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Black", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 70.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Prestige 4-Sided Fascia Slide — Nickel/Chrome", priceExVat: 162.50 },
-    { name: "Prestige 4-Sided Fascia Slide — Nickel/Black", priceExVat: 162.50 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  "Paragon Core HE CF": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Standard Trim Remote — Brass", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Black", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 70.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Prestige 4-Sided Fascia Slide — Nickel/Chrome", priceExVat: 162.50 },
-    { name: "Prestige 4-Sided Fascia Slide — Nickel/Black", priceExVat: 162.50 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-    { name: "Wellington Fret — Brass", priceExVat: 100.00 },
-    { name: "Wellington Fret — Antique", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Brass", priceExVat: 105.00 },
-    { name: "Bayswater Fret — Chrome", priceExVat: 105.00 },
-    { name: "Gate Cast Iron Fret — Black", priceExVat: 75.00 },
-    { name: "Gate Cast Iron Fret — Brass", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Chrome", priceExVat: 107.50 },
-    { name: "Gate Cast Iron Fret — Brushed Steel", priceExVat: 107.50 },
-  ],
-  // ─── Large Format CF ───
+/**
+ * For a given control type:
+ * - fascias:      all-in-one products — select one, done
+ * - frets:        decorative grilles — selecting one requires also picking a standardTrim
+ * - standardTrims: paired with frets (mandatory when fret is chosen)
+ */
+export interface GasFireTrimControlConfig {
+  fascias: TrimItem[];
+  frets: TrimItem[];
+  standardTrims: TrimItem[];
+}
+
+export interface GasFireTrimConfig {
+  slide: GasFireTrimControlConfig;
+  remote: GasFireTrimControlConfig;
+}
+
+// ─── Shared frets (same for all 16" fires) ────────────────
+const FRETS_16: TrimItem[] = [
+  { name: "Wellington Fret — Brass",            priceExVat: 100.00 },
+  { name: "Wellington Fret — Antique",           priceExVat: 105.00 },
+  { name: "Bayswater Fret — Brass",             priceExVat: 105.00 },
+  { name: "Bayswater Fret — Chrome",            priceExVat: 105.00 },
+  { name: "Gate Cast Iron Fret — Black",        priceExVat:  75.00 },
+  { name: "Gate Cast Iron Fret — Brass",        priceExVat: 107.50 },
+  { name: "Gate Cast Iron Fret — Chrome",       priceExVat: 107.50 },
+  { name: "Gate Cast Iron Fret — Brushed Steel",priceExVat: 107.50 },
+];
+
+// ─── Fascias shared across slide & remote ─────────────────
+const FASCIAS_BOTH_CONTROLS: TrimItem[] = [
+  { name: "Cast Arch Fascia — Black",          priceExVat: 232.50 },
+  { name: "Cast Arch Fascia — Chrome Highlight",priceExVat: 249.17 },
+  { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
+  { name: "Square Cast Fascia — Pewter",        priceExVat: 415.83 },
+  { name: "Square Cast Fascia — Brass",         priceExVat: 415.83 },
+  { name: "Square Cast Fascia — Gun Metal",     priceExVat: 415.83 },
+];
+
+// ─── Slide-only fascias (open flame + glass fronted 16") ──
+const FASCIAS_SLIDE_ONLY: TrimItem[] = [
+  { name: "Edge Inset Fascia (Slide)",          priceExVat: 207.50 },
+  { name: "Prestige Fascia — Nickel/Chrome",    priceExVat: 145.83 },
+  { name: "Prestige Fascia — Nickel/Black",     priceExVat: 145.83 },
+  { name: "Elite Fascia — Satin/Black",         priceExVat: 170.00 },
+  { name: "Elite Fascia — Chrome/Black",        priceExVat: 170.00 },
+  { name: "Elite Fascia — Chrome/Chrome",       priceExVat: 170.00 },
+  { name: "Elite Fascia — Brass/Black",         priceExVat: 170.00 },
+];
+
+// ─── Remote-only fascias ───────────────────────────────────
+const FASCIAS_REMOTE_ONLY: TrimItem[] = [
+  { name: "Elite Fascia — Satin/Black",         priceExVat: 161.67 },
+  { name: "Elite Fascia — Chrome/Black",        priceExVat: 161.67 },
+  { name: "Elite Fascia — Chrome/Chrome",       priceExVat: 161.67 },
+  { name: "Elite Fascia — Brass/Black",         priceExVat: 161.67 },
+];
+
+// ─── Extra slide fascia for glass-fronted only ─────────────
+const FASCIAS_GLASS_FRONTED_SLIDE_EXTRA: TrimItem[] = [
+  { name: "Prestige 4-Sided Fascia — Nickel/Chrome", priceExVat: 162.50 },
+  { name: "Prestige 4-Sided Fascia — Nickel/Black",  priceExVat: 162.50 },
+];
+
+// ─── Standard trims (boxed, ordered separately from fire) ─────
+// Open Flame — slide
+const OPEN_FLAME_SLIDE_TRIMS: TrimItem[] = [
+  { name: "Standard Trim — Brass",        priceExVat: 65.83 },
+  { name: "Standard Trim — Black",        priceExVat: 65.83 },
+  { name: "Standard Trim — Chrome",       priceExVat: 65.83 },
+  { name: "Standard Trim — Brushed Steel",priceExVat: 65.83 },
+];
+// Open Flame — remote
+const OPEN_FLAME_REMOTE_TRIMS: TrimItem[] = [
+  { name: "Standard Trim — Black",        priceExVat: 56.67 },
+  { name: "Standard Trim — Brass",        priceExVat: 56.67 },
+  { name: "Standard Trim — Chrome",       priceExVat: 60.00 },
+  { name: "Standard Trim — Brushed Steel",priceExVat: 60.00 },
+];
+// Glass Fronted — slide (same boxed price as open flame slide)
+const GLASS_FRONTED_SLIDE_TRIMS: TrimItem[] = OPEN_FLAME_SLIDE_TRIMS;
+// Glass Fronted — remote (different boxed prices for HE/RS/Core)
+const GLASS_FRONTED_REMOTE_TRIMS: TrimItem[] = [
+  { name: "Standard Trim — Brass",        priceExVat: 70.83 },
+  { name: "Standard Trim — Black",        priceExVat: 70.83 },
+  { name: "Standard Trim — Chrome",       priceExVat: 70.83 },
+  { name: "Standard Trim — Brushed Steel",priceExVat: 70.83 },
+];
+
+// ─── Reusable configs ─────────────────────────────────────
+const OPEN_FLAME_CONFIG: GasFireTrimConfig = {
+  slide: {
+    fascias: [...FASCIAS_SLIDE_ONLY, ...FASCIAS_BOTH_CONTROLS],
+    frets: FRETS_16,
+    standardTrims: OPEN_FLAME_SLIDE_TRIMS,
+  },
+  remote: {
+    fascias: [...FASCIAS_REMOTE_ONLY, ...FASCIAS_BOTH_CONTROLS],
+    frets: FRETS_16,
+    standardTrims: OPEN_FLAME_REMOTE_TRIMS,
+  },
+};
+
+const GLASS_FRONTED_CONFIG: GasFireTrimConfig = {
+  slide: {
+    fascias: [...FASCIAS_SLIDE_ONLY, ...FASCIAS_GLASS_FRONTED_SLIDE_EXTRA, ...FASCIAS_BOTH_CONTROLS],
+    frets: FRETS_16,
+    standardTrims: GLASS_FRONTED_SLIDE_TRIMS,
+  },
+  remote: {
+    fascias: [...FASCIAS_REMOTE_ONLY, ...FASCIAS_BOTH_CONTROLS],
+    frets: FRETS_16,
+    standardTrims: GLASS_FRONTED_REMOTE_TRIMS,
+  },
+};
+
+const EMPTY_CONFIG: GasFireTrimConfig = {
+  slide: { fascias: [], frets: [], standardTrims: [] },
+  remote: { fascias: [], frets: [], standardTrims: [] },
+};
+
+// ─── Model → trim config map ──────────────────────────────
+// Open Flame fires
+export const GAS_FIRE_TRIMS: Record<string, GasFireTrimConfig> = {
+  // ── Open Flame CF ─────────────────────────────────────
+  "Paragon 2000 Plus CF":
+    OPEN_FLAME_CONFIG,
+
+  "Paragon Slimline 3 CF": {
+    // Slimline 3 is slide-only
+    slide: OPEN_FLAME_CONFIG.slide,
+    remote: { fascias: [], frets: [], standardTrims: [] },
+  },
+
+  "Paragon One Evolution CF — Coal Fuel Bed":
+    OPEN_FLAME_CONFIG,
+
+  "Paragon One Evolution CF — Mixed Logs Fuel Bed":
+    OPEN_FLAME_CONFIG,
+
+  // ── Glass Fronted CF ───────────────────────────────────
+  "Paragon Focus HE CF":
+    GLASS_FRONTED_CONFIG,
+
+  "Paragon Core HE CF":
+    GLASS_FRONTED_CONFIG,
+
+  // ── Glass Fronted BF ───────────────────────────────────
+  "Paragon Focus RS Plus BF":
+    GLASS_FRONTED_CONFIG,
+
+  "Paragon Core BF":
+    GLASS_FRONTED_CONFIG,
+
+  // ── Large Format CF — P11 ─────────────────────────────
+  "Paragon P11 CF — Black Ribbed Liners": {
+    slide: {
+      fascias: [
+        { name: "P11 Prestige Slide Trim — Nickel/Black",  priceExVat: 215.83 },
+        { name: "P11 Prestige Slide Trim — Nickel/Chrome", priceExVat: 215.83 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: {
+      fascias: [
+        { name: "P11 Prestige Trim — Nickel/Black",  priceExVat: 215.83 },
+        { name: "P11 Prestige Trim — Nickel/Chrome", priceExVat: 215.83 },
+      ],
+      frets: [], standardTrims: [],
+    },
+  },
+
+  "Paragon P11 CF — Black Glass Liners": {
+    slide: {
+      fascias: [
+        { name: "P11 Prestige Slide Trim — Nickel/Black",  priceExVat: 215.83 },
+        { name: "P11 Prestige Slide Trim — Nickel/Chrome", priceExVat: 215.83 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: {
+      fascias: [
+        { name: "P11 Prestige Trim — Nickel/Black",  priceExVat: 215.83 },
+        { name: "P11 Prestige Trim — Nickel/Chrome", priceExVat: 215.83 },
+      ],
+      frets: [], standardTrims: [],
+    },
+  },
+
+  // ── Large Format CF — P5 ──────────────────────────────
+  // No dedicated trim in pricelist (installed in limestone surrounds)
+  "Paragon P5 CF — Black Ribbed Liners": EMPTY_CONFIG,
+  "Paragon P5 CF — Black Glass Liners":  EMPTY_CONFIG,
+
+  // ── Large Format BF ───────────────────────────────────
+  "Paragon P5 BF — Black Ribbed Liners": EMPTY_CONFIG,
+  "Paragon P5 BF — Black Glass Liners":  EMPTY_CONFIG,
+
+  // ── Infinity 890HD CF ────────────────────────────────
+  "Infinity 890HD CF Mk2": {
+    slide: {
+      fascias: [
+        { name: "Prestige Trim — Nickel/Black",  priceExVat: 249.17 },
+        { name: "Prestige Trim — Nickel/Chrome", priceExVat: 249.17 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: { fascias: [], frets: [], standardTrims: [] },
+  },
+
+  // ── Infinity 890HD BF ────────────────────────────────
+  // Has installation kit options rather than decorative trims
+  "Infinity 890HD BF": {
+    slide: {
+      fascias: [
+        { name: "Slip Frame Kit",                                      priceExVat: 116.67 },
+        { name: "Zero Clearance Kit (incl. Satin/Black Elite Trim)",   priceExVat: 479.17 },
+        { name: "Limestone Slip Set",                                  priceExVat: 224.17 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: { fascias: [], frets: [], standardTrims: [] },
+  },
+
+  // ── Panache ───────────────────────────────────────────
+  "Panache 620 Hybrid CF": {
+    slide: {
+      fascias: [
+        { name: "Prestige Trim — Nickel/Black",  priceExVat: 282.50 },
+        { name: "Prestige Trim — Nickel/Chrome", priceExVat: 282.50 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: { fascias: [], frets: [], standardTrims: [] },
+  },
+
+  "Panache 8040 CF": {
+    slide: {
+      fascias: [
+        { name: "Prestige Trim — Nickel/Black",  priceExVat: 274.17 },
+        { name: "Prestige Trim — Nickel/Chrome", priceExVat: 274.17 },
+        { name: "Limestone Slips For 8040",       priceExVat: 207.50 },
+        { name: "Panache 50mm Spacer Kit (3\" Rebate)", priceExVat: 115.83 },
+      ],
+      frets: [], standardTrims: [],
+    },
+    remote: { fascias: [], frets: [], standardTrims: [] },
+  },
+};
+
+// ─────────────────────────────────────────────
+//  GATHER HOOD — model → price ex VAT
+// ─────────────────────────────────────────────
+// Only listed for large-format CF fires; BF/Panache not applicable
+export const GATHER_HOOD_PRICES: Record<string, number> = {
+  "Paragon P11 CF — Black Ribbed Liners": 37.50,  // A-0845 P11 Gather Hood
+  "Paragon P11 CF — Black Glass Liners":  37.50,
+  "Paragon P5 CF — Black Ribbed Liners":  107.50, // A-0662 Infinity HD / P5 Gather Hood Assembly
+  "Paragon P5 CF — Black Glass Liners":   107.50,
+  "Infinity 890HD CF Mk2":                107.50,
+};
+
+// ─────────────────────────────────────────────
+//  C&J COMPATIBLE PORTUGUESE LIMESTONE FIREPLACES
+//  (shown for large-format fires only)
+//  Source: "Fireplaces and Fireplace Elements for Gas Fires" page 17
+// ─────────────────────────────────────────────
+
+export interface CJFireplaceProduct {
+  name: string;
+  priceExVat: number;
+  description: string;
+}
+
+const AYLESBURY_OPTIONS: CJFireplaceProduct[] = [
+  {
+    name: "Aylesbury 54\" Surround Only",
+    priceExVat: 665.83,
+    description: "Portuguese Limestone — surround only, 80mm rebate",
+  },
+  {
+    name: "Aylesbury 54\" Complete Fireplace",
+    priceExVat: 874.17,
+    description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+  },
+  {
+    name: "Aylesbury 54\" Including Chamber",
+    priceExVat: 1057.50,
+    description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+  },
+];
+
+const BESPOKE_ELEMENTS: CJFireplaceProduct[] = [
+  {
+    name: "Bespoke 4 Piece Back Panel — Limestone",
+    priceExVat: 215.83,
+    description: "Cut to size",
+  },
+  {
+    name: "Rebate Alteration Strip",
+    priceExVat: 132.50,
+    description: "",
+  },
+  {
+    name: "Chamber Pieces 36\"×18\" (30mm thick)",
+    priceExVat: 340.83,
+    description: "Portuguese Limestone — use with rear hearth",
+  },
+  {
+    name: "Rear Hearth 36\"×18\"",
+    priceExVat: 207.50,
+    description: "Portuguese Limestone — for use with stone chambers above",
+  },
+];
+
+export const CJ_COMPATIBLE_FIREPLACES: Record<string, CJFireplaceProduct[]> = {
   "Paragon P11 CF — Black Ribbed Liners": [
-    { name: "P11 Prestige Trim — Nickel/Black", priceExVat: 215.83 },
-    { name: "P11 Prestige Trim — Nickel/Chrome", priceExVat: 215.83 },
-    { name: "P11 Prestige Slide Control Trim — Nickel/Black", priceExVat: 215.83 },
-    { name: "P11 Prestige Slide Control Trim — Nickel/Chrome", priceExVat: 215.83 },
-    { name: "P11 Gather Hood", priceExVat: 37.50 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Beckford Complete Fireplace", priceExVat: 749.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
   "Paragon P11 CF — Black Glass Liners": [
-    { name: "P11 Prestige Trim — Nickel/Black", priceExVat: 215.83 },
-    { name: "P11 Prestige Trim — Nickel/Chrome", priceExVat: 215.83 },
-    { name: "P11 Prestige Slide Control Trim — Nickel/Black", priceExVat: 215.83 },
-    { name: "P11 Prestige Slide Control Trim — Nickel/Chrome", priceExVat: 215.83 },
-    { name: "P11 Gather Hood", priceExVat: 37.50 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Beckford Complete Fireplace", priceExVat: 749.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
   "Paragon P5 CF — Black Ribbed Liners": [
-    { name: "Infinity HD / P5 Gather Hood Assembly", priceExVat: 107.50 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
   "Paragon P5 CF — Black Glass Liners": [
-    { name: "Infinity HD / P5 Gather Hood Assembly", priceExVat: 107.50 },
-  ],
-  "Infinity 890HD CF Mk2": [
-    { name: "Prestige Trim — Nickel/Black", priceExVat: 249.17 },
-    { name: "Prestige Trim — Nickel/Chrome", priceExVat: 249.17 },
-    { name: "Infinity HD / P5 Gather Hood Assembly", priceExVat: 107.50 },
-  ],
-  "Panache 620 Hybrid CF": [
-    { name: "Prestige Trim — Nickel/Black", priceExVat: 282.50 },
-    { name: "Prestige Trim — Nickel/Chrome", priceExVat: 282.50 },
-  ],
-  "Panache 8040 CF": [
-    { name: "Prestige Trim — Nickel/Black", priceExVat: 274.17 },
-    { name: "Prestige Trim — Nickel/Chrome", priceExVat: 274.17 },
-    { name: "Limestone Slips For 8040", priceExVat: 207.50 },
-    { name: "Panache 50mm Spacer Kit (3\" Rebate)", priceExVat: 115.83 },
-  ],
-  // ─── Glass Fronted BF ───
-  "Paragon Focus RS Plus BF": [
-    { name: "Standard Trim Slide — Brass", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Black", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Chrome", priceExVat: 65.83 },
-    { name: "Standard Trim Slide — Brushed Steel", priceExVat: 65.83 },
-    { name: "Standard Trim Remote — Brass", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Black", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 70.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Slide — Satin/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Brass/Black", priceExVat: 170.00 },
-    { name: "Elite Fascia Slide — Chrome/Chrome", priceExVat: 170.00 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
-  ],
-  "Paragon Core BF": [
-    { name: "Standard Trim Remote — Brass", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Black", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Chrome", priceExVat: 70.83 },
-    { name: "Standard Trim Remote — Brushed Steel", priceExVat: 70.83 },
-    { name: "Prestige Fascia Slide — Nickel/Chrome", priceExVat: 145.83 },
-    { name: "Prestige Fascia Slide — Nickel/Black", priceExVat: 145.83 },
-    { name: "Elite Fascia Remote — Satin/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Brass/Black", priceExVat: 161.67 },
-    { name: "Elite Fascia Remote — Chrome/Chrome", priceExVat: 161.67 },
-    { name: "Cast Arch Fascia — Black", priceExVat: 232.50 },
-    { name: "Cast Arch Fascia — Chrome Highlight", priceExVat: 249.17 },
-    { name: "Cast Arch Fascia — Brass Highlight", priceExVat: 290.83 },
-    { name: "Square Cast Fascia — Pewter", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Brass", priceExVat: 415.83 },
-    { name: "Square Cast Fascia — Gun Metal", priceExVat: 415.83 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
   "Paragon P5 BF — Black Ribbed Liners": [
-    { name: "Infinity HD / P5 Gather Hood Assembly", priceExVat: 107.50 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
   "Paragon P5 BF — Black Glass Liners": [
-    { name: "Infinity HD / P5 Gather Hood Assembly", priceExVat: 107.50 },
+    ...AYLESBURY_OPTIONS,
+    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
-  "Infinity 890HD BF": [
-    { name: "Slip Frame Kit", priceExVat: 116.67 },
-    { name: "Zero Clearance Kit (incl. Satin/Black Elite Trim)", priceExVat: 479.17 },
-    { name: "Limestone Slip Set", priceExVat: 224.17 },
+  "Infinity 890HD CF Mk2": [
+    ...AYLESBURY_OPTIONS,
+    { name: "Balmoral Complete Fireplace", priceExVat: 857.50, description: "Portuguese Limestone, 80mm rebate" },
+    ...BESPOKE_ELEMENTS,
   ],
 };
 
@@ -570,6 +637,8 @@ export const CJ_16_INCH_FIRES: CJ16FireProduct[] = [
   { name: "Opulus 16\" RFT — Elite Chrome/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Satin/Black Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
   { name: "Opulus 16\" RFT — Elite Chrome/Chrome Fascia", description: "Complete with Elite fascia", priceExVat: 957.50 },
+  // Gas fire: Panache 620 Hybrid (C&J — fits 16" with fireplace installations)
+  { name: "Panache 620 Hybrid CF (Gas)", description: "C&J Panache 620 Hybrid Conventional Flue gas fire", priceExVat: 1999.17 },
 ];
 
 // ─────────────────────────────────────────────

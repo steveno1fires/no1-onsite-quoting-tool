@@ -62,7 +62,26 @@ function getLineItems(data: QuoteData): LineItem[] {
 
   // Gas Fire Trim / Fascia
   if (data.products.gasFireTrim) {
-    items.push({ label: "Trim / Fascia", detail: data.products.gasFireTrim.name, price: data.products.gasFireTrim.priceExVat });
+    const t = data.products.gasFireTrim;
+    if (t.pairedTrimName !== undefined) {
+      // Fret + standard trim combo
+      items.push({ label: "Fret", detail: t.name, price: t.priceExVat });
+      if (t.pairedTrimName && t.pairedTrimPrice) {
+        items.push({ label: "Standard Trim", detail: t.pairedTrimName, price: t.pairedTrimPrice });
+      }
+    } else {
+      items.push({ label: "Fascia", detail: t.name, price: t.priceExVat });
+    }
+  }
+
+  // Gather Hood
+  if (data.products.gasFireGatherHood?.enabled) {
+    items.push({ label: "Gather Hood", price: data.products.gasFireGatherHood.priceExVat });
+  }
+
+  // C&J Compatible Fireplace
+  if (data.products.cjFireplace) {
+    items.push({ label: "C&J Fireplace", detail: data.products.cjFireplace.name, price: data.products.cjFireplace.priceExVat });
   }
 
   // BF Fittings (Gas Stove BF)
@@ -132,6 +151,15 @@ function getLineItems(data: QuoteData): LineItem[] {
     }
     data.linerKit.accessories.filter((a) => a.enabled).forEach((a) => {
       items.push({ label: a.label, price: a.price });
+    });
+  }
+
+  // Labour
+  if (data.labourDays > 0) {
+    items.push({
+      label: "Labour",
+      detail: `${data.labourDays} day${data.labourDays !== 1 ? "s" : ""} × £800/day`,
+      price: data.labourDays * 800,
     });
   }
 

@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const WOODBURNER_ONLY_EXTRAS = ["Starter Bundle", "Log Kit", "Log Store"];
+// woodburnerOnly flag is now on EXTRAS_CONFIG items directly
 
 interface Props {
   data: Extra[];
@@ -70,7 +70,7 @@ export function StepExtras({ data, jobType, onChange }: Props) {
           const config = EXTRAS_CONFIG[i];
           if (!config) return null;
           // Hide woodburner-only extras on non-woodburner jobs
-          if (!isWoodburner && WOODBURNER_ONLY_EXTRAS.includes(config.label)) return null;
+          if (!isWoodburner && config.woodburnerOnly) return null;
 
           return (
             <div key={extra.label} className="space-y-2">

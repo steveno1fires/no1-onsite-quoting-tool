@@ -1,4 +1,4 @@
-import { Products, JobType, ElectricStyle, BfFitting } from "@/types/quote";
+import { Products, JobType, ElectricStyle, BfFitting, GasFireTrim } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -27,6 +27,8 @@ import {
   GAS_STOVE_PRODUCTS,
   ELECTRIC_FIRE_TABS,
   GAS_FIRE_TRIMS,
+  GATHER_HOOD_PRICES,
+  CJ_COMPATIBLE_FIREPLACES,
   CJ_16_INCH_FIRES,
 } from "@/data/fireProductsByJobType";
 import { CAPITAL_FIREPLACE_MATERIALS } from "@/data/capitalFireplaces";
@@ -164,6 +166,21 @@ function GasFireSection({
   const [controlType, setControlType] = React.useState<"slide" | "remote">("slide");
 
   const productsInCat = products.filter((p) => p.subCategory === selectedSubCat);
+  const selectedProduct = products.find((p) => p.name === data.fire.model);
+  const hasControlOptions = selectedProduct && selectedProduct.price === undefined;
+
+  // Trim config for current model + control type
+  const trimConfig = data.fire.model ? GAS_FIRE_TRIMS[data.fire.model]?.[controlType] : undefined;
+  const hasFascias      = (trimConfig?.fascias.length ?? 0) > 0;
+  const hasFrets        = (trimConfig?.frets.length ?? 0) > 0;
+  const hasStandardTrims = (trimConfig?.standardTrims.length ?? 0) > 0;
+  const hasTrimSection  = hasFascias || hasFrets;
+
+  // Gather hood
+  const gatherHoodPrice = data.fire.model ? GATHER_HOOD_PRICES[data.fire.model] : undefined;
+
+  // C&J compatible fireplaces
+  const cjFireplaceOptions = data.fire.model ? CJ_COMPATIBLE_FIREPLACES[data.fire.model] : undefined;
 
   const handleProductSelect = (productName: string) => {
     const item = productsInCat.find((p) => p.name === productName);
@@ -177,6 +194,8 @@ function GasFireSection({
       ...data,
       fire: { brand: "C&J", model: item.name, kw: "", price },
       gasFireTrim: null,
+      gasFireGatherHood: { enabled: false, priceExVat: 0 },
+      cjFireplace: null,
     });
   };
 
@@ -187,112 +206,275 @@ function GasFireSection({
       const price = ct === "remote" && item.remoteControlNg !== undefined
         ? item.remoteControlNg
         : item.slideControlNg || 0;
-      onChange({ ...data, fire: { ...data.fire, price } });
+      onChange({ ...data, fire: { ...data.fire, price }, gasFireTrim: null });
+    } else {
+      onChange({ ...data, gasFireTrim: null });
     }
   };
 
-  const selectedProduct = products.find((p) => p.name === data.fire.model);
-  const hasControlOptions = selectedProduct && selectedProduct.price === undefined;
+  // Which fret is currently selected (if any)
+  const selectedFret = data.gasFireTrim && !data.gasFireTrim.pairedTrimName
+    ? null
+    : data.gasFireTrim?.pairedTrimName !== undefined
+      ? data.gasFireTrim
+      : null;
+  const isFretSelected = !!data.gasFireTrim?.pairedTrimName !== undefined && data.gasFireTrim?.pairedTrimName !== undefined;
+  const currentFretName = data.gasFireTrim?.pairedTrimName !== undefined ? data.gasFireTrim?.name : undefined;
 
   return (
-    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-      <Label className="text-sm font-semibold">{title} *</Label>
+    <div className="space-y-3">
+      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+        <Label className="text-sm font-semibold">{title} *</Label>
 
-      <div>
-        <Label className="text-xs">Category</Label>
-        <Select
-          value={selectedSubCat}
-          onValueChange={(val) => {
-            setSelectedSubCat(val);
-            onChange({ ...data, fire: { brand: "", model: "", kw: "", price: 0 }, gasFireTrim: null });
-          }}
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label className="text-xs">Model</Label>
-        <Select
-          value={data.fire.model || undefined}
-          onValueChange={handleProductSelect}
-        >
-          <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
-          <SelectContent>
-            {productsInCat.map((p) => (
-              <SelectItem key={p.name} value={p.name}>
-                {p.name}
-                {p.description ? ` — ${p.description}` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {data.fire.model && hasControlOptions && (
-        <div className="space-y-1">
-          <Label className="text-xs">Control Type</Label>
-          <RadioGroup
-            value={controlType}
-            onValueChange={(v) => handleControlChange(v as "slide" | "remote")}
-            className="flex gap-4"
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="slide" id="ctrl-slide" />
-              <Label htmlFor="ctrl-slide" className="text-xs cursor-pointer">
-                Slide Control
-                {selectedProduct?.slideControlNg && ` — £${selectedProduct.slideControlNg.toFixed(2)}`}
-              </Label>
-            </div>
-            {selectedProduct?.remoteControlNg && (
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="remote" id="ctrl-remote" />
-                <Label htmlFor="ctrl-remote" className="text-xs cursor-pointer">
-                  Remote Control — £{selectedProduct.remoteControlNg.toFixed(2)}
-                </Label>
-              </div>
-            )}
-          </RadioGroup>
-        </div>
-      )}
-
-      <div>
-        <Label className="text-xs">Price ex VAT</Label>
-        <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
-      </div>
-
-      {/* Trim / Fascia selector — shown when a model is selected and trims exist */}
-      {data.fire.model && GAS_FIRE_TRIMS[data.fire.model] && GAS_FIRE_TRIMS[data.fire.model].length > 0 && (
-        <div className="space-y-1 pt-1 border-t border-border">
-          <Label className="text-xs font-semibold">Trim / Fascia (optional)</Label>
+        <div>
+          <Label className="text-xs">Category</Label>
           <Select
-            value={data.gasFireTrim?.name || "__none__"}
+            value={selectedSubCat}
             onValueChange={(val) => {
-              if (val === "__none__") {
-                onChange({ ...data, gasFireTrim: null });
-              } else {
-                const trim = GAS_FIRE_TRIMS[data.fire.model]?.find((t) => t.name === val);
-                onChange({ ...data, gasFireTrim: trim ?? null });
-              }
+              setSelectedSubCat(val);
+              onChange({
+                ...data,
+                fire: { brand: "", model: "", kw: "", price: 0 },
+                gasFireTrim: null,
+                gasFireGatherHood: { enabled: false, priceExVat: 0 },
+                cjFireplace: null,
+              });
             }}
           >
-            <SelectTrigger><SelectValue placeholder="No trim selected" /></SelectTrigger>
-            <SelectContent className="max-h-[300px] overflow-y-auto">
-              <SelectItem value="__none__">No trim</SelectItem>
-              {GAS_FIRE_TRIMS[data.fire.model].map((t) => (
-                <SelectItem key={t.name} value={t.name}>
-                  {t.name} — £{t.priceExVat.toFixed(2)}
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-xs">Model</Label>
+          <Select
+            value={data.fire.model || undefined}
+            onValueChange={handleProductSelect}
+          >
+            <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+            <SelectContent>
+              {productsInCat.map((p) => (
+                <SelectItem key={p.name} value={p.name}>
+                  {p.name}
+                  {p.description ? ` — ${p.description}` : ""}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {data.fire.model && hasControlOptions && (
+          <div className="space-y-1">
+            <Label className="text-xs">Control Type</Label>
+            <RadioGroup
+              value={controlType}
+              onValueChange={(v) => handleControlChange(v as "slide" | "remote")}
+              className="flex gap-4"
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="slide" id="ctrl-slide" />
+                <Label htmlFor="ctrl-slide" className="text-xs cursor-pointer">
+                  Slide Control
+                  {selectedProduct?.slideControlNg != null && ` — £${selectedProduct.slideControlNg.toFixed(2)}`}
+                </Label>
+              </div>
+              {selectedProduct?.remoteControlNg != null && (
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="remote" id="ctrl-remote" />
+                  <Label htmlFor="ctrl-remote" className="text-xs cursor-pointer">
+                    Remote Control — £{selectedProduct.remoteControlNg.toFixed(2)}
+                  </Label>
+                </div>
+              )}
+            </RadioGroup>
+          </div>
+        )}
+
+        <div>
+          <Label className="text-xs">Price ex VAT</Label>
+          <PriceInput value={data.fire.price} onChange={(v) => onChange({ ...data, fire: { ...data.fire, price: v } })} />
+        </div>
+      </div>
+
+      {/* ── Trim / Fascia selector ── */}
+      {data.fire.model && hasTrimSection && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
+          <Label className="text-sm font-semibold">Trim / Fascia (optional)</Label>
+
+          {/* ── FASCIAS — standalone, no fret needed ── */}
+          {hasFascias && (
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">All-in-one Fascias</Label>
+              <Select
+                value={(!data.gasFireTrim?.pairedTrimName && data.gasFireTrim?.name) ? data.gasFireTrim.name : "__none__"}
+                onValueChange={(val) => {
+                  if (val === "__none__") {
+                    onChange({ ...data, gasFireTrim: null });
+                  } else {
+                    const item = trimConfig!.fascias.find((f) => f.name === val);
+                    if (item) onChange({ ...data, gasFireTrim: { name: item.name, priceExVat: item.priceExVat } });
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="No fascia" /></SelectTrigger>
+                <SelectContent className="max-h-[280px] overflow-y-auto">
+                  <SelectItem value="__none__">No fascia</SelectItem>
+                  {trimConfig!.fascias.map((f) => (
+                    <SelectItem key={f.name} value={f.name}>
+                      {f.name} — £{f.priceExVat.toFixed(2)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* ── FRETS — selecting one reveals a mandatory standard trim ── */}
+          {hasFrets && (
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">
+                — or choose a Fret (then select matching Standard Trim below)
+              </Label>
+              <Select
+                value={data.gasFireTrim?.pairedTrimName !== undefined ? data.gasFireTrim?.name : "__none__"}
+                onValueChange={(val) => {
+                  if (val === "__none__") {
+                    onChange({ ...data, gasFireTrim: null });
+                  } else {
+                    const fret = trimConfig!.frets.find((f) => f.name === val);
+                    if (fret) {
+                      // Store fret, clear pairedTrim until user picks it
+                      onChange({
+                        ...data,
+                        gasFireTrim: {
+                          name: fret.name,
+                          priceExVat: fret.priceExVat,
+                          pairedTrimName: "",   // empty string = fret chosen but trim not yet picked
+                          pairedTrimPrice: 0,
+                        },
+                      });
+                    }
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="No fret" /></SelectTrigger>
+                <SelectContent className="max-h-[280px] overflow-y-auto">
+                  <SelectItem value="__none__">No fret</SelectItem>
+                  {trimConfig!.frets.map((f) => (
+                    <SelectItem key={f.name} value={f.name}>
+                      {f.name} — £{f.priceExVat.toFixed(2)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Standard Trim — only shown after a fret is selected */}
+              {data.gasFireTrim?.pairedTrimName !== undefined && hasStandardTrims && (
+                <div className="mt-2 space-y-1 pl-3 border-l-2 border-amber-400">
+                  <Label className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                    Standard Trim required with this fret *
+                  </Label>
+                  <Select
+                    value={data.gasFireTrim.pairedTrimName || "__pick__"}
+                    onValueChange={(val) => {
+                      const trim = trimConfig!.standardTrims.find((t) => t.name === val);
+                      if (trim && data.gasFireTrim) {
+                        onChange({
+                          ...data,
+                          gasFireTrim: {
+                            ...data.gasFireTrim,
+                            pairedTrimName: trim.name,
+                            pairedTrimPrice: trim.priceExVat,
+                          },
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="border-amber-400"><SelectValue placeholder="Choose standard trim…" /></SelectTrigger>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
+                      {trimConfig!.standardTrims.map((t) => (
+                        <SelectItem key={t.name} value={t.name}>
+                          {t.name} — £{t.priceExVat.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Summary of current selection */}
           {data.gasFireTrim && (
-            <p className="text-xs text-muted-foreground">
-              Trim: {data.gasFireTrim.name} — £{data.gasFireTrim.priceExVat.toFixed(2)} ex VAT
-            </p>
+            <div className="text-xs text-muted-foreground space-y-0.5 pt-1 border-t border-border">
+              {data.gasFireTrim.pairedTrimName !== undefined ? (
+                <>
+                  <p>Fret: {data.gasFireTrim.name} — £{data.gasFireTrim.priceExVat.toFixed(2)} ex VAT</p>
+                  {data.gasFireTrim.pairedTrimName
+                    ? <p>Standard Trim: {data.gasFireTrim.pairedTrimName} — £{(data.gasFireTrim.pairedTrimPrice ?? 0).toFixed(2)} ex VAT</p>
+                    : <p className="text-amber-600 font-medium">⚠ Standard trim not yet selected</p>
+                  }
+                </>
+              ) : (
+                <p>Fascia: {data.gasFireTrim.name} — £{data.gasFireTrim.priceExVat.toFixed(2)} ex VAT</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Gather Hood ── */}
+      {data.fire.model && gatherHoodPrice !== undefined && (
+        <div className="bg-card rounded-lg p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="gather-hood"
+              checked={data.gasFireGatherHood.enabled}
+              onCheckedChange={(v) =>
+                onChange({
+                  ...data,
+                  gasFireGatherHood: { enabled: v === true, priceExVat: v === true ? gatherHoodPrice : 0 },
+                })
+              }
+            />
+            <label htmlFor="gather-hood" className="text-sm font-medium cursor-pointer">
+              Gather Hood (+£{gatherHoodPrice.toFixed(2)} ex VAT)
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* ── C&J Compatible Limestone Fireplace ── */}
+      {data.fire.model && cjFireplaceOptions && cjFireplaceOptions.length > 0 && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
+          <Label className="text-sm font-semibold">C&J Portuguese Limestone Fireplace (optional)</Label>
+          <p className="text-xs text-muted-foreground">Designed to complement this fire — surround, hearth & back panel options</p>
+          <Select
+            value={data.cjFireplace?.name ?? "__none__"}
+            onValueChange={(val) => {
+              if (val === "__none__") {
+                onChange({ ...data, cjFireplace: null });
+              } else {
+                const item = cjFireplaceOptions.find((p) => p.name === val);
+                if (item) onChange({ ...data, cjFireplace: { name: item.name, priceExVat: item.priceExVat, description: item.description } });
+              }
+            }}
+          >
+            <SelectTrigger><SelectValue placeholder="No C&J fireplace" /></SelectTrigger>
+            <SelectContent className="max-h-[300px] overflow-y-auto">
+              <SelectItem value="__none__">No C&J fireplace</SelectItem>
+              {cjFireplaceOptions.map((p) => (
+                <SelectItem key={p.name} value={p.name}>
+                  {p.name} — £{p.priceExVat.toFixed(2)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {data.cjFireplace && (
+            <p className="text-xs text-muted-foreground">{data.cjFireplace.description}</p>
           )}
         </div>
       )}

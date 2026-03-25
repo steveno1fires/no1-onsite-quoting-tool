@@ -5,6 +5,8 @@ export interface ExtraOption {
   options?: { label: string; price: number }[];
   description?: string;
   excludes?: string;
+  /** If true, only shown for woodburner job types */
+  woodburnerOnly?: boolean;
 }
 
 export const EXTRAS_CONFIG: ExtraOption[] = [
@@ -33,6 +35,11 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
     excludes: "Scaffolding",
   },
   {
+    label: "Waste Removal",
+    type: "fixed",
+    price: 175,
+  },
+  {
     label: "Gas Disconnection",
     type: "fixed",
     price: 150,
@@ -52,16 +59,19 @@ export const EXTRAS_CONFIG: ExtraOption[] = [
     type: "fixed",
     price: 250,
     description: "Includes: gloves, companion set, moisture meter, kindling, firelighters & log basket",
+    woodburnerOnly: true,
   },
   {
     label: "Log Kit",
     type: "fixed",
     price: 250,
     description: "Includes: bulk bag of kiln-dried logs & kindling pack",
+    woodburnerOnly: true,
   },
   {
     label: "Log Store",
     type: "fixed",
     price: 350,
+    woodburnerOnly: true,
   },
 ];

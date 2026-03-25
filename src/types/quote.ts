@@ -70,8 +70,23 @@ export interface MediaWallItems {
 }
 
 export interface GasFireTrim {
+  /** The fascia name OR the fret name (when pairedTrim is set) */
   name: string;
   priceExVat: number;
+  /** Set when this is a fret+trim combo: the standard trim paired with the fret */
+  pairedTrimName?: string;
+  pairedTrimPrice?: number;
+}
+
+export interface GasFireGatherHood {
+  enabled: boolean;
+  priceExVat: number;
+}
+
+export interface CJFireplaceItem {
+  name: string;
+  priceExVat: number;
+  description: string;
 }
 
 export interface Products {
@@ -82,6 +97,8 @@ export interface Products {
   chamberBoard: ChamberBoardSelection;
   gasFirebox: boolean;
   gasFireTrim: GasFireTrim | null;
+  gasFireGatherHood: GasFireGatherHood;
+  cjFireplace: CJFireplaceItem | null;
   electricStyle: ElectricStyle;
   bfFittings: BfFitting[];
   mediaWallItems: MediaWallItems;
@@ -127,6 +144,7 @@ export interface QuoteData {
   extras: Extra[];
   linerKit: LinerKit;
   twinWallKit: TwinWallKit;
+  labourDays: number;
   notes: string;
   photos: SitePhotos;
   includeVat: boolean;
@@ -150,6 +168,8 @@ export const initialQuoteData: QuoteData = {
     },
     gasFirebox: false,
     gasFireTrim: null,
+    gasFireGatherHood: { enabled: false, priceExVat: 0 },
+    cjFireplace: null,
     electricStyle: "Media Wall",
     bfFittings: [
       { label: "Flue Terminal / Cowl", enabled: false, price: 85 },
@@ -169,6 +189,7 @@ export const initialQuoteData: QuoteData = {
     },
   },
   extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),
+  labourDays: 0,
   linerKit: {
     kitType: "House (12m)",
     flueSize: '5"',
