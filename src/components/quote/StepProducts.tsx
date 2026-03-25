@@ -184,10 +184,13 @@ function GasFireSection({
   const subCategories = [...new Set(products.map((p) => p.subCategory))];
   const [selectedSubCat, setSelectedSubCat] = React.useState(subCategories[0] || "");
   const [controlType, setControlType] = React.useState<"slide" | "remote">("slide");
+  const [programmableRemoteChecked, setProgrammableRemoteChecked] = React.useState(false);
 
   const productsInCat = products.filter((p) => p.subCategory === selectedSubCat);
   const selectedProduct = products.find((p) => p.name === data.fire.model);
   const hasControlOptions = selectedProduct && selectedProduct.price === undefined;
+  const isGazcoNoTrim = selectedProduct?.noTrimOptions === true;
+  const programmableRemotePrice = selectedProduct?.programmableRemoteUpgrade ?? 0;
 
   // Trim config for current model + control type
   const trimConfig = data.fire.model ? GAS_FIRE_TRIMS[data.fire.model]?.[controlType] : undefined;
@@ -217,14 +220,18 @@ function GasFireSection({
   const handleProductSelect = (productName: string) => {
     const item = productsInCat.find((p) => p.name === productName);
     if (!item) return;
-    const price = item.price !== undefined
-      ? item.price
-      : controlType === "remote" && item.remoteControlNg !== undefined
+    let basePrice = 0;
+    if (item.price !== undefined) {
+      basePrice = item.price;
+    } else {
+      basePrice = controlType === "remote" && item.remoteControlNg !== undefined
         ? item.remoteControlNg
         : item.slideControlNg || 0;
+    }
+    setProgrammableRemoteChecked(false);
     onChange({
       ...data,
-      fire: { brand: item.brand ?? "C&J", model: item.name, kw: "", price },
+      fire: { brand: item.brand ?? "C&J", model: item.name, kw: "", price: basePrice },
       gasFireTrim: null,
       gasFireGatherHood: { enabled: false, priceExVat: 0 },
       cjFireplace: null,
@@ -235,12 +242,22 @@ function GasFireSection({
     setControlType(ct);
     const item = products.find((p) => p.name === data.fire.model);
     if (item && item.price === undefined) {
-      const price = ct === "remote" && item.remoteControlNg !== undefined
+      const basePrice = ct === "remote" && item.remoteControlNg !== undefined
         ? item.remoteControlNg
         : item.slideControlNg || 0;
-      onChange({ ...data, fire: { ...data.fire, price }, gasFireTrim: null });
+      const extraPrice = programmableRemoteChecked ? (item.programmableRemoteUpgrade ?? 0) : 0;
+      onChange({ ...data, fire: { ...data.fire, price: basePrice + extraPrice }, gasFireTrim: null });
     } else {
       onChange({ ...data, gasFireTrim: null });
+    }
+  };
+
+  const handleProgrammableRemoteChange = (checked: boolean) => {
+    setProgrammableRemoteChecked(checked);
+    const item = products.find((p) => p.name === data.fire.model);
+    if (item && item.price !== undefined) {
+      const extraPrice = checked ? (item.programmableRemoteUpgrade ?? 0) : 0;
+      onChange({ ...data, fire: { ...data.fire, price: item.price + extraPrice } });
     }
   };
 
@@ -289,38 +306,49 @@ function GasFireSection({
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
               {(() => {
-                // Group products by brand for clearer manufacturer sections
-                const brandMap = new Map<string, typeof productsInCat>();
+                // Group products by manufacturer → series → product type hierarchy
+                const brandMap = new Map<string, Map<string, typeof productsInCat>>();
                 for (const p of productsInCat) {
-                  const b = p.brand ?? "Charlton & Jenrick";
-                  if (!brandMap.has(b)) brandMap.set(b, []);
-                  brandMap.get(b)!.push(p);
+                  const brand = p.brand ?? "Charlton & Jenrick";
+                  if (!brandMap.has(brand)) brandMap.set(brand, new Map());
+                  
+                  const seriesMap = brandMap.get(brand)!;
+                  const series = p.subCategory || brand; // Use subCategory as series if available
+                  if (!seriesMap.has(series)) seriesMap.set(series, []);
+                  seriesMap.get(series)!.push(p);
                 }
-                const groups = Array.from(brandMap.entries());
-                if (groups.length === 1) {
-                  // Single brand — no label overhead needed
-                  return groups[0][1].map((p) => (
-                    <SelectItem key={p.name} value={p.name}>
-                      {p.name}{p.description ? ` — ${p.description}` : ""}
-                    </SelectItem>
-                  ));
-                }
-                return groups.map(([brand, items]) => (
-                  <SelectGroup key={brand}>
-                    <SelectLabel className="font-bold text-foreground">{brand}</SelectLabel>
-                    {items.map((p) => (
-                      <SelectItem key={p.name} value={p.name}>
-                        {p.name}{p.description ? ` — ${p.description}` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
+
+                // Flatten to brand groups with nested series
+                return Array.from(brandMap.entries()).map(([brand, seriesMap]) => (
+                  <React.Fragment key={brand}>
+                    {Array.from(seriesMap.entries()).map(([series, items]) => {
+                      const showSeriesLabel = seriesMap.size > 1;
+                      return (
+                        <SelectGroup key={`${brand}-${series}`}>
+                          {showSeriesLabel && (
+                            <SelectLabel className="font-bold text-foreground">
+                              {brand} — {series}
+                            </SelectLabel>
+                          )}
+                          {!showSeriesLabel && (
+                            <SelectLabel className="font-bold text-foreground">{brand}</SelectLabel>
+                          )}
+                          {items.map((p) => (
+                            <SelectItem key={p.name} value={p.name}>
+                              {p.name}{p.description ? ` — ${p.description}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      );
+                    })}
+                  </React.Fragment>
                 ));
               })()}
             </SelectContent>
           </Select>
         </div>
 
-        {data.fire.model && hasControlOptions && (
+        {data.fire.model && hasControlOptions && !isGazcoNoTrim && (
           <div className="space-y-1">
             <Label className="text-xs">Control Type</Label>
             <RadioGroup
@@ -344,6 +372,22 @@ function GasFireSection({
                 </div>
               )}
             </RadioGroup>
+          </div>
+        )}
+
+        {/* ── Programmable Thermostatic Remote upgrade for Riva2 (no control toggle, fixed price base) ── */}
+        {data.fire.model && selectedProduct?.programmableRemoteUpgrade !== undefined && (
+          <div className="space-y-2 pt-2 border-t border-border">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="programmable-remote"
+                checked={programmableRemoteChecked}
+                onCheckedChange={handleProgrammableRemoteChange}
+              />
+              <Label htmlFor="programmable-remote" className="text-xs cursor-pointer">
+                Programmable Thermostatic Remote (+£{selectedProduct.programmableRemoteUpgrade.toFixed(2)} ex VAT)
+              </Label>
+            </div>
           </div>
         )}
 
@@ -375,8 +419,8 @@ function GasFireSection({
         </div>
       )}
 
-      {/* ── Trim / Fascia selector — hidden when large format C&J mode is active ── */}
-      {data.fire.model && hasTrimSection && (!isLargeFormat || largeFormatMode === "trim") && (
+      {/* ── Trim / Fascia selector — hidden when large format C&J mode is active OR for Gazco products ── */}
+      {data.fire.model && hasTrimSection && (!isLargeFormat || largeFormatMode === "trim") && !isGazcoNoTrim && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border-t-2 border-primary/20">
           <Label className="text-sm font-semibold">Trim / Fascia (optional)</Label>
 

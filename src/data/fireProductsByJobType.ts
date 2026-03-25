@@ -16,6 +16,8 @@ export interface GasFireProduct {
   slideControlNg?: number;
   remoteControlNg?: number;
   price?: number; // used when no control options
+  noTrimOptions?: boolean; // true for Gazco products (fixed design, no trim selector)
+  programmableRemoteUpgrade?: number; // optional upgrade price for Riva2 (ex VAT)
 }
 
 export interface GasStoveProduct {
@@ -582,34 +584,37 @@ export const WOODBURNER_PRODUCTS: WoodburnerProduct[] = [
 // ─────────────────────────────────────────────
 export const GAS_BF_PRODUCTS: GasFireProduct[] = [
   // ── Gazco BF ───────────────────────────────────
-  // Riva2 500HL Slimline
+  // Riva2 500HL Slimline — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 500HL BF",
-    description: "Balanced Flue, Slimline, Manual / Remote Control",
+    description: "Balanced Flue, Slimline, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 2657.00,
-    remoteControlNg: 2927.00,
+    price: 2657.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Riva2 600
+  // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 600 BF",
-    description: "Balanced Flue, Manual / Remote Control",
+    description: "Balanced Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 2412.00,
-    remoteControlNg: 2682.00,
+    price: 2412.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Riva2 750HL
+  // Riva2 750HL — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 750HL BF",
-    description: "Balanced Flue, Large, Manual / Remote Control",
+    description: "Balanced Flue, Large, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 3099.00,
-    remoteControlNg: 3369.00,
+    price: 3099.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Studio 1
+  // Studio 1 — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 1 BF",
@@ -617,8 +622,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2462.00,
     remoteControlNg: 2732.00,
+    noTrimOptions: true,
   },
-  // Studio 2
+  // Studio 2 — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 2 BF",
@@ -626,8 +632,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2729.00,
     remoteControlNg: 2999.00,
+    noTrimOptions: true,
   },
-  // Studio 3
+  // Studio 3 — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 3 BF",
@@ -635,8 +642,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 3629.00,
     remoteControlNg: 3899.00,
+    noTrimOptions: true,
   },
-  // Studio 1 Slimline
+  // Studio 1 Slimline — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 1 Slimline BF",
@@ -644,8 +652,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2570.00,
     remoteControlNg: 2840.00,
+    noTrimOptions: true,
   },
-  // Studio 2 Slimline
+  // Studio 2 Slimline — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 2 Slimline BF",
@@ -653,8 +662,9 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2924.00,
     remoteControlNg: 3194.00,
+    noTrimOptions: true,
   },
-  // Studio 2 Duplex (2-sided)
+  // Studio 2 Duplex (2-sided) — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 2 Duplex BF",
@@ -662,6 +672,7 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 4187.00,
     remoteControlNg: 4457.00,
+    noTrimOptions: true,
   },
   // ── Onyx BF ───────────────────────────────────
   {
@@ -726,43 +737,47 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
 // ─────────────────────────────────────────────
 export const GAS_CF_PRODUCTS: GasFireProduct[] = [
   // ── Gazco CF ───────────────────────────────────
-  // Riva2 400
+  // Riva2 400 — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 400 CF",
-    description: "Conventional Flue, Manual / Remote Control",
+    description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 1665.00,
-    remoteControlNg: 1935.00,
+    price: 1665.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Riva2 500
+  // Riva2 500 — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 500 CF",
-    description: "Conventional Flue, Manual / Remote Control",
+    description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 2062.00,
-    remoteControlNg: 2332.00,
+    price: 2062.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Riva2 600
+  // Riva2 600 — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 600 CF",
-    description: "Conventional Flue, Manual / Remote Control",
+    description: "Conventional Flue, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 2065.00,
-    remoteControlNg: 2335.00,
+    price: 2065.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Riva2 600HL
+  // Riva2 600HL — Remote only, no trim, Programmable Remote upgrade available
   {
     brand: "Gazco",
     name: "Riva2 600HL CF",
-    description: "Conventional Flue, Large, Manual / Remote Control",
+    description: "Conventional Flue, Large, Remote Control (Standard)",
     subCategory: "Gazco Riva2",
-    slideControlNg: 2412.00,
-    remoteControlNg: 2682.00,
+    price: 2412.00,
+    noTrimOptions: true,
+    programmableRemoteUpgrade: 324.00,
   },
-  // Studio 1
+  // Studio 1 — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 1 CF",
@@ -770,8 +785,9 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2212.00,
     remoteControlNg: 2482.00,
+    noTrimOptions: true,
   },
-  // Studio 2
+  // Studio 2 — Manual / Remote, no trim
   {
     brand: "Gazco",
     name: "Studio 2 CF",
@@ -779,6 +795,7 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Gazco Studio",
     slideControlNg: 2554.00,
     remoteControlNg: 2824.00,
+    noTrimOptions: true,
   },
   // ── Onyx CF ───────────────────────────────────
   {
