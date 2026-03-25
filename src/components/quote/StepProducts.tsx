@@ -72,7 +72,7 @@ function OptionalSection({
 
 export function StepProducts({ data, jobType, onChange }: Props) {
   const showKw = jobType?.startsWith("Woodburner") || jobType?.startsWith("Gas");
-  const [hearthMaterial, setHearthMaterial] = React.useState("");
+  const [hearthMaterial, setHearthMaterial] = React.useState(CAPITAL_HEARTHS[0]?.material || "");
   const [hearthType, setHearthType] = React.useState("");
   const [fireplaceMaterial, setFireplaceMaterial] = React.useState("");
   const [beamCategory, setBeamCategory] = React.useState("");
