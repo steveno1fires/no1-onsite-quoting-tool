@@ -183,7 +183,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
           onValueChange={(val) => {
             setHearthMaterial(val);
             setHearthType("");
-            onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
+            onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0, description2: "", price2: 0 } });
           }}
         >
           <TabsList className="w-full grid grid-cols-3">
@@ -193,63 +193,101 @@ export function StepProducts({ data, jobType, onChange }: Props) {
               </TabsTrigger>
             ))}
           </TabsList>
-          {CAPITAL_HEARTHS.map((cat) => (
-            <TabsContent key={cat.material} value={cat.material} className="space-y-3">
-              <div>
-                <Label className="text-xs">Type</Label>
-                <Select
-                  value={hearthMaterial === cat.material ? hearthType || undefined : undefined}
-                  onValueChange={(val) => {
-                    setHearthType(val);
-                    onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0 } });
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cat.types.map((t) => (
-                      <SelectItem key={t.type} value={t.type}>
-                        {t.type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {hearthType && cat.types.find((t) => t.type === hearthType) && (() => {
-                const products = cat.types.find((t) => t.type === hearthType)?.products || [];
-                return (
-                  <div>
-                    <Label className="text-xs">Product</Label>
-                    <Select
-                      value={data.hearth.description || undefined}
-                      onValueChange={(val) => {
-                        const item = products.find((p) => p.name === val);
-                        if (item) {
-                          onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
-                        }
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose product" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[300px] overflow-y-auto">
-                        {products.map((p) => (
-                          <SelectItem key={p.name} value={p.name}>
-                            {p.name} — £{p.price}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                );
-              })()}
-            </TabsContent>
-          ))}
+          {CAPITAL_HEARTHS.map((cat) => {
+            const isStoneTab = cat.material === "Granite" || cat.material === "Slate";
+            return (
+              <TabsContent key={cat.material} value={cat.material} className="space-y-3">
+                <div>
+                  <Label className="text-xs">Type</Label>
+                  <Select
+                    value={hearthMaterial === cat.material ? hearthType || undefined : undefined}
+                    onValueChange={(val) => {
+                      setHearthType(val);
+                      onChange({ ...data, hearth: { ...data.hearth, description: "", price: 0, description2: "", price2: 0 } });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cat.types.map((t) => (
+                        <SelectItem key={t.type} value={t.type}>
+                          {t.type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {hearthType && cat.types.find((t) => t.type === hearthType) && (() => {
+                  const products = cat.types.find((t) => t.type === hearthType)?.products || [];
+                  return (
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs">Product 1</Label>
+                        <Select
+                          value={data.hearth.description || undefined}
+                          onValueChange={(val) => {
+                            const item = products.find((p) => p.name === val);
+                            if (item) {
+                              onChange({ ...data, hearth: { ...data.hearth, description: item.name, price: item.price } });
+                            }
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose product" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[300px] overflow-y-auto">
+                            {products.map((p) => (
+                              <SelectItem key={p.name} value={p.name}>
+                                {p.name} — £{p.price}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {isStoneTab && data.hearth.description && (
+                        <div>
+                          <Label className="text-xs">Product 2 (optional)</Label>
+                          <Select
+                            value={data.hearth.description2 || undefined}
+                            onValueChange={(val) => {
+                              if (val === "__none__") {
+                                onChange({ ...data, hearth: { ...data.hearth, description2: "", price2: 0 } });
+                              } else {
+                                const item = products.find((p) => p.name === val);
+                                if (item) {
+                                  onChange({ ...data, hearth: { ...data.hearth, description2: item.name, price2: item.price } });
+                                }
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="None" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px] overflow-y-auto">
+                              <SelectItem value="__none__">None</SelectItem>
+                              {products.filter((p) => p.name !== data.hearth.description).map((p) => (
+                                <SelectItem key={p.name} value={p.name}>
+                                  {p.name} — £{p.price}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </TabsContent>
+            );
+          })}
         </Tabs>
         <div>
-          <Label className="text-xs">Price</Label>
-          <PriceInput value={data.hearth.price} onChange={(v) => onChange({ ...data, hearth: { ...data.hearth, price: v } })} />
+          <Label className="text-xs">Total Hearth Price</Label>
+          <PriceInput
+            value={data.hearth.price + data.hearth.price2}
+            onChange={(v) => onChange({ ...data, hearth: { ...data.hearth, price: v, price2: 0 } })}
+          />
         </div>
       </OptionalSection>
 
