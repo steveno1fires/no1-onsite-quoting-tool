@@ -320,82 +320,129 @@ export interface CJFireplaceProduct {
   description: string;
 }
 
-const AYLESBURY_OPTIONS: CJFireplaceProduct[] = [
-  {
-    name: "Aylesbury 54\" Surround Only",
-    priceExVat: 665.83,
-    description: "Portuguese Limestone — surround only, 80mm rebate",
-  },
-  {
-    name: "Aylesbury 54\" Complete Fireplace",
-    priceExVat: 874.17,
-    description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
-  },
-  {
-    name: "Aylesbury 54\" Including Chamber",
-    priceExVat: 1057.50,
-    description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
-  },
-];
-
-const BESPOKE_ELEMENTS: CJFireplaceProduct[] = [
-  {
-    name: "Bespoke 4 Piece Back Panel — Limestone",
-    priceExVat: 215.83,
-    description: "Cut to size",
-  },
-  {
-    name: "Rebate Alteration Strip",
-    priceExVat: 132.50,
-    description: "",
-  },
-  {
-    name: "Chamber Pieces 36\"×18\" (30mm thick)",
-    priceExVat: 340.83,
-    description: "Portuguese Limestone — use with rear hearth",
-  },
-  {
-    name: "Rear Hearth 36\"×18\"",
-    priceExVat: 207.50,
-    description: "Portuguese Limestone — for use with stone chambers above",
-  },
-];
-
+// ── Complete packages only — surround + back panel + hearth bundled.
+//    Bespoke individual elements (back panel, rebate strip, chamber pieces,
+//    rear hearth) are removed; customers who need bespoke work should be
+//    quoted separately.
 export const CJ_COMPATIBLE_FIREPLACES: Record<string, CJFireplaceProduct[]> = {
   "Paragon P11 CF — Black Ribbed Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Beckford Complete Fireplace", priceExVat: 749.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Beckford Complete Fireplace",
+      priceExVat: 749.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Paragon P11 CF — Black Glass Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Beckford Complete Fireplace", priceExVat: 749.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Beckford Complete Fireplace",
+      priceExVat: 749.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Paragon P5 CF — Black Ribbed Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Wenlock Complete Fireplace for P5",
+      priceExVat: 1199.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Paragon P5 CF — Black Glass Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Wenlock Complete Fireplace for P5",
+      priceExVat: 1199.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Paragon P5 BF — Black Ribbed Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Wenlock Complete Fireplace for P5",
+      priceExVat: 1199.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Paragon P5 BF — Black Glass Liners": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Wenlock Complete Fireplace for P5", priceExVat: 1199.17, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Wenlock Complete Fireplace for P5",
+      priceExVat: 1199.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
   "Infinity 890HD CF Mk2": [
-    ...AYLESBURY_OPTIONS,
-    { name: "Balmoral Complete Fireplace", priceExVat: 857.50, description: "Portuguese Limestone, 80mm rebate" },
-    ...BESPOKE_ELEMENTS,
+    {
+      name: "Aylesbury 54\" Complete Fireplace",
+      priceExVat: 874.17,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
+    {
+      name: "Aylesbury 54\" Including Chamber",
+      priceExVat: 1057.50,
+      description: "Portuguese Limestone — surround, back panel, hearth & chamber, 80mm rebate",
+    },
+    {
+      name: "Balmoral Complete Fireplace",
+      priceExVat: 857.50,
+      description: "Portuguese Limestone — surround, back panel & hearth, 80mm rebate",
+    },
   ],
 };
 

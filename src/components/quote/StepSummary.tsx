@@ -1,5 +1,6 @@
 import { QuoteData } from "@/types/quote";
 import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE } from "@/data/productCatalog";
+import { EXTRAS_CONFIG } from "@/data/extrasConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -102,7 +103,12 @@ function getLineItems(data: QuoteData): LineItem[] {
     if (mw.electricSockets) items.push({ label: "Electric (2x double sockets only)", price: 275 });
   }
 
-  data.extras.filter((e) => e.enabled).forEach((e) => {
+  const isWoodburnerJob = data.jobType === "Woodburner — Chimney Liner" || data.jobType === "Woodburner — Twin Wall";
+  data.extras.forEach((e, i) => {
+    if (!e.enabled) return;
+    const cfg = EXTRAS_CONFIG[i];
+    // Never show woodburner-only extras on non-woodburner jobs
+    if (cfg?.woodburnerOnly && !isWoodburnerJob) return;
     items.push({ label: e.label, price: e.price });
   });
 

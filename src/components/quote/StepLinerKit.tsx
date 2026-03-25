@@ -4,40 +4,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-/** Labour rate per day */
-const LABOUR_RATE = 800;
-
 type Props =
-  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; labourDays: number; onLabourDaysChange: (d: number) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: boolean; gasFirebox?: boolean; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
-  | { mode: "liner-gas-cf"; data: LinerKit; onChange: (data: LinerKit) => void; labourDays: number; onLabourDaysChange: (d: number) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox: true; gasFirebox: boolean; onGasFireboxChange: (v: boolean) => void; products?: never; onProductsChange?: never }
-  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; labourDays: number; onLabourDaysChange: (d: number) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
-  | { mode: "gasstovebf"; data?: never; onChange?: never; labourDays: number; onLabourDaysChange: (d: number) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never };
-
-function LabourSection({ days, onChange }: { days: number; onChange: (d: number) => void }) {
-  const total = days * LABOUR_RATE;
-  return (
-    <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-      <Label className="text-sm font-semibold">Labour</Label>
-      <div className="flex items-center gap-3">
-        <Input
-          type="number"
-          min={0}
-          step={0.5}
-          value={days || ""}
-          onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-          className="w-24 text-sm"
-          placeholder="0"
-        />
-        <span className="text-sm text-muted-foreground">
-          days × £{LABOUR_RATE.toFixed(0)}/day
-        </span>
-        {days > 0 && (
-          <span className="text-sm font-semibold">= £{total.toFixed(2)}</span>
-        )}
-      </div>
-    </div>
-  );
-}
+  | { mode: "liner"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: boolean; gasFirebox?: boolean; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
+  | { mode: "liner-gas-cf"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData?: never; onTwinWallChange?: never; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox: true; gasFirebox: boolean; onGasFireboxChange: (v: boolean) => void; products?: never; onProductsChange?: never }
+  | { mode: "twinwall"; data: LinerKit; onChange: (data: LinerKit) => void; twinWallData: TwinWallKit; onTwinWallChange: (data: TwinWallKit) => void; bfFittings?: never; onBfFittingsChange?: never; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never }
+  | { mode: "gasstovebf"; data?: never; onChange?: never; twinWallData?: never; onTwinWallChange?: never; bfFittings: BfFitting[]; onBfFittingsChange: (fittings: BfFitting[]) => void; showGasFirebox?: never; gasFirebox?: never; onGasFireboxChange?: never; products?: never; onProductsChange?: never };
 
 const KIT_PRICES: Record<string, number> = {
   "Bungalow (6m)": 350,
@@ -318,39 +289,21 @@ function BfFittingsSection({ fittings, onChange }: { fittings: BfFitting[]; onCh
 
 export function StepLinerKit(props: Props) {
   if (props.mode === "twinwall") {
-    return (
-      <div className="space-y-4">
-        <TwinWallSection data={props.twinWallData} onChange={props.onTwinWallChange} />
-        <LabourSection days={props.labourDays} onChange={props.onLabourDaysChange} />
-      </div>
-    );
+    return <TwinWallSection data={props.twinWallData} onChange={props.onTwinWallChange} />;
   }
   if (props.mode === "gasstovebf") {
-    return (
-      <div className="space-y-4">
-        <BfFittingsSection fittings={props.bfFittings} onChange={props.onBfFittingsChange} />
-        <LabourSection days={props.labourDays} onChange={props.onLabourDaysChange} />
-      </div>
-    );
+    return <BfFittingsSection fittings={props.bfFittings} onChange={props.onBfFittingsChange} />;
   }
   if (props.mode === "liner-gas-cf") {
     return (
-      <div className="space-y-4">
-        <LinerSection
-          data={props.data}
-          onChange={props.onChange}
-          showGasFirebox
-          gasFirebox={props.gasFirebox}
-          onGasFireboxChange={props.onGasFireboxChange}
-        />
-        <LabourSection days={props.labourDays} onChange={props.onLabourDaysChange} />
-      </div>
+      <LinerSection
+        data={props.data}
+        onChange={props.onChange}
+        showGasFirebox
+        gasFirebox={props.gasFirebox}
+        onGasFireboxChange={props.onGasFireboxChange}
+      />
     );
   }
-  return (
-    <div className="space-y-4">
-      <LinerSection data={props.data} onChange={props.onChange} />
-      <LabourSection days={props.labourDays} onChange={props.onLabourDaysChange} />
-    </div>
-  );
+  return <LinerSection data={props.data} onChange={props.onChange} />;
 }

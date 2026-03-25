@@ -84,15 +84,11 @@ export function QuoteWizard() {
       case 4:
         return <StepExtras data={data.extras} jobType={data.jobType} onChange={(extras) => setData({ ...data, extras })} />;
       case 5: {
-        const labourProps = {
-          labourDays: data.labourDays,
-          onLabourDaysChange: (labourDays: number) => setData({ ...data, labourDays }),
-        };
         if (isTwinWall) {
-          return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} {...labourProps} />;
+          return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="twinwall" twinWallData={data.twinWallKit} onTwinWallChange={(twinWallKit) => setData({ ...data, twinWallKit })} />;
         }
         if (isGasStoveBF) {
-          return <StepLinerKit mode="gasstovebf" bfFittings={data.products.bfFittings} onBfFittingsChange={(bfFittings) => setData({ ...data, products: { ...data.products, bfFittings } })} {...labourProps} />;
+          return <StepLinerKit mode="gasstovebf" bfFittings={data.products.bfFittings} onBfFittingsChange={(bfFittings) => setData({ ...data, products: { ...data.products, bfFittings } })} />;
         }
         if (isGasCF) {
           return (
@@ -103,15 +99,23 @@ export function QuoteWizard() {
               showGasFirebox
               gasFirebox={data.products.gasFirebox}
               onGasFireboxChange={(gasFirebox) => setData({ ...data, products: { ...data.products, gasFirebox } })}
-              {...labourProps}
             />
           );
         }
         // woodburner liner (also covers gas stove CF)
-        return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" {...labourProps} />;
+        return <StepLinerKit data={data.linerKit} onChange={(linerKit) => setData({ ...data, linerKit })} mode="liner" />;
       }
       case 6:
-        return <StepNotes value={data.notes} onChange={(notes) => setData({ ...data, notes })} photos={data.photos} onPhotosChange={(photos) => setData({ ...data, photos })} />;
+        return (
+          <StepNotes
+            value={data.notes}
+            onChange={(notes) => setData({ ...data, notes })}
+            photos={data.photos}
+            onPhotosChange={(photos) => setData({ ...data, photos })}
+            labourDays={data.labourDays}
+            onLabourDaysChange={(labourDays) => setData({ ...data, labourDays })}
+          />
+        );
       case 7:
         return <StepSummary data={data} onToggleVat={(includeVat) => setData({ ...data, includeVat })} />;
       default:

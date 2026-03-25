@@ -1,15 +1,20 @@
 import { useState, useRef, useCallback } from "react";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Camera, X } from "lucide-react";
 import { SitePhotos } from "@/types/quote";
+
+const LABOUR_RATE = 800;
 
 interface Props {
   value: string;
   onChange: (value: string) => void;
   photos: SitePhotos;
   onPhotosChange: (photos: SitePhotos) => void;
+  labourDays: number;
+  onLabourDaysChange: (days: number) => void;
 }
 
 const PHOTO_CATEGORIES: { key: keyof SitePhotos; label: string; hint: string }[] = [
@@ -85,7 +90,7 @@ function PhotoSection({
   );
 }
 
-export function StepNotes({ value, onChange, photos: rawPhotos, onPhotosChange }: Props) {
+export function StepNotes({ value, onChange, photos: rawPhotos, onPhotosChange, labourDays, onLabourDaysChange }: Props) {
   const photos: SitePhotos = rawPhotos ?? { current: [], upClose: [], outside: [] };
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -148,6 +153,28 @@ export function StepNotes({ value, onChange, photos: rawPhotos, onPhotosChange }
 
   return (
     <div className="animate-slide-in space-y-4">
+      {/* Labour */}
+      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
+        <Label className="text-sm font-semibold">Labour</Label>
+        <div className="flex items-center gap-3">
+          <Input
+            type="number"
+            min={0}
+            step={0.5}
+            value={labourDays || ""}
+            onChange={(e) => onLabourDaysChange(parseFloat(e.target.value) || 0)}
+            className="w-24 text-sm"
+            placeholder="0"
+          />
+          <span className="text-sm text-muted-foreground">
+            days × £{LABOUR_RATE.toFixed(0)}/day
+          </span>
+          {labourDays > 0 && (
+            <span className="text-sm font-semibold">= £{(labourDays * LABOUR_RATE).toFixed(2)}</span>
+          )}
+        </div>
+      </div>
+
       {/* Notes */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
