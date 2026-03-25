@@ -47,7 +47,6 @@ export interface ChamberBoardSelection {
   reededPanels: boolean;
   chamberTrimKit: boolean;
   chamberTrimColour: "Black" | "Stainless Steel";
-  fermacellQty: number;
 }
 
 export interface Products {
@@ -121,7 +120,7 @@ export const initialQuoteData: QuoteData = {
       reededPanels: false,
       chamberTrimKit: false,
       chamberTrimColour: "Black",
-      fermacellQty: 2,
+      
     },
   },
   extras: EXTRAS_CONFIG.map((c) => ({ label: c.label, enabled: false, price: 0 })),

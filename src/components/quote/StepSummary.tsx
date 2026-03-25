@@ -1,5 +1,5 @@
 import { QuoteData } from "@/types/quote";
-import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE, FERMACELL_BOARD_PRICE } from "@/data/productCatalog";
+import { REEDED_PANELS_PRICE, CHAMBER_TRIM_KIT_PRICE } from "@/data/productCatalog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -47,9 +47,6 @@ function getLineItems(data: QuoteData): LineItem[] {
     }
     if (data.products.chamberBoard.chamberTrimKit) {
       items.push({ label: "Chamber Trim Kit", detail: data.products.chamberBoard.chamberTrimColour, price: CHAMBER_TRIM_KIT_PRICE });
-    }
-    if (data.products.chamberBoard.fermacellQty > 0) {
-      items.push({ label: `Fermacell Board ×${data.products.chamberBoard.fermacellQty}`, price: data.products.chamberBoard.fermacellQty * FERMACELL_BOARD_PRICE });
     }
   }
 
