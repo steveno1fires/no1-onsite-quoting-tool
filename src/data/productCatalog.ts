@@ -59,11 +59,6 @@ export const FIRE_OPTIONS: FireCatalogItem[] = [
   { label: "Capital Woodrow 4", brand: "Capital", model: "Woodrow 4", kw: "4", price: 410 },
   { label: "Capital Woodrow 5", brand: "Capital", model: "Woodrow 5", kw: "5", price: 515 },
   { label: "Capital Woodrow 5 Quad", brand: "Capital", model: "Woodrow 5 Quad", kw: "5", price: 515 },
-  { label: "Gazco Huntingdon 30", brand: "Gazco", model: "Huntingdon 30", kw: "4.7", price: 1399 },
-  { label: "Gazco Studio 1 Gas", brand: "Gazco", model: "Studio 1 Gas", kw: "5.3", price: 1899 },
-  { label: "Gazco eReflex 70W", brand: "Gazco", model: "eReflex 70W", price: 2199 },
-  { label: "Celsi Electriflame VR", brand: "Celsi", model: "Electriflame VR", price: 649 },
-  { label: "Dimplex Opti-Myst Pro", brand: "Dimplex", model: "Opti-Myst Pro", price: 1299 },
 ];
 
 export interface CapitalHearthProduct {

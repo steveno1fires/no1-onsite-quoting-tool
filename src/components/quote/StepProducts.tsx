@@ -87,7 +87,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
     <div className="space-y-4 animate-slide-in">
       {/* Fire/Appliance */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
-        <Label className="text-sm font-semibold">Fire / Appliance *</Label>
+        <Label className="text-sm font-semibold">Woodburner *</Label>
         <div>
           <Label className="text-xs">Supplier</Label>
           <Select
