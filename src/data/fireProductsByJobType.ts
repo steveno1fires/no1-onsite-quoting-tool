@@ -114,31 +114,6 @@ export const GAS_BF_PRODUCTS: GasFireProduct[] = [
     subCategory: "Large Format Fires",
     price: 2249.17,
   },
-  // Gas Stoves (BF)
-  {
-    name: "Paragon Edge BF Gas Stove NG (With Snorkel Flue)",
-    description: "",
-    subCategory: "Gas Stoves (BF)",
-    price: 1974.17,
-  },
-  {
-    name: "Paragon Edge BF Gas Stove NG (With Top Vent Kit)",
-    description: "",
-    subCategory: "Gas Stoves (BF)",
-    price: 1974.17,
-  },
-  {
-    name: "Paragon Edge 3-Sided BF Gas Stove NG (With Snorkel Flue)",
-    description: "",
-    subCategory: "Gas Stoves (BF)",
-    price: 2190.83,
-  },
-  {
-    name: "Paragon Edge 3-Sided BF Gas Stove NG (With Top Vent Kit)",
-    description: "",
-    subCategory: "Gas Stoves (BF)",
-    price: 2190.83,
-  },
 ];
 
 // ─────────────────────────────────────────────
@@ -239,9 +214,15 @@ export const GAS_CF_PRODUCTS: GasFireProduct[] = [
 //  GAS STOVE (Conventional Flue)
 // ─────────────────────────────────────────────
 export const GAS_STOVE_PRODUCTS: GasStoveProduct[] = [
-  { name: "Paragon Edge Conventional Flue NG", fuel: "Natural Gas", priceExVat: 1499.17 },
-  { name: "Paragon Edge Conventional Flue LPG", fuel: "LPG", priceExVat: 1499.17 },
-  { name: "Paragon Edge CF NG with Vermiculite Liners", fuel: "Natural Gas", priceExVat: 1457.50 },
+  // Conventional Flue
+  { name: "Paragon Edge Conventional Flue NG", fuel: "Natural Gas (CF)", priceExVat: 1499.17 },
+  { name: "Paragon Edge Conventional Flue LPG", fuel: "LPG (CF)", priceExVat: 1499.17 },
+  { name: "Paragon Edge CF NG with Vermiculite Liners", fuel: "Natural Gas (CF)", priceExVat: 1457.50 },
+  // Balanced Flue
+  { name: "Paragon Edge BF Gas Stove NG (With Snorkel Flue)", fuel: "Natural Gas (BF)", priceExVat: 1974.17 },
+  { name: "Paragon Edge BF Gas Stove NG (With Top Vent Kit)", fuel: "Natural Gas (BF)", priceExVat: 1974.17 },
+  { name: "Paragon Edge 3-Sided BF Gas Stove NG (With Snorkel Flue)", fuel: "Natural Gas (BF)", priceExVat: 2190.83 },
+  { name: "Paragon Edge 3-Sided BF Gas Stove NG (With Top Vent Kit)", fuel: "Natural Gas (BF)", priceExVat: 2190.83 },
 ];
 
 // ─────────────────────────────────────────────
