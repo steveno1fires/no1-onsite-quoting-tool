@@ -477,7 +477,7 @@ export function StepProducts({ data, jobType, onChange }: Props) {
             <SelectTrigger>
               <SelectValue placeholder="Choose board design" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[300px] overflow-y-auto">
               {CHAMBER_BOARD_VARIANTS.map((v) => (
                 <SelectItem key={v.name} value={v.name}>
                   {v.name} — £{v.price.toFixed(2)}
