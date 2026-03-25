@@ -29,7 +29,12 @@ function getLineItems(data: QuoteData): LineItem[] {
   }
 
   if (data.products.hearth.enabled) {
-    items.push({ label: "Hearth", detail: data.products.hearth.description, price: data.products.hearth.price });
+    if (data.products.hearth.description) {
+      items.push({ label: "Hearth", detail: data.products.hearth.description, price: data.products.hearth.price });
+    }
+    if (data.products.hearth.description2) {
+      items.push({ label: "Hearth (2nd)", detail: data.products.hearth.description2, price: data.products.hearth.price2 });
+    }
   }
   if (data.products.beam.enabled) {
     items.push({ label: "Beam", detail: data.products.beam.material, price: data.products.beam.price });

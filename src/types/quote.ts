@@ -117,7 +117,7 @@ export const initialQuoteData: QuoteData = {
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },
-    hearth: { enabled: false, description: "", price: 0 },
+    hearth: { enabled: false, description: "", price: 0, description2: "", price2: 0 },
     
     beam: { enabled: false, description: "", material: "", price: 0 },
     surround: { enabled: false, description: "", price: 0 },
