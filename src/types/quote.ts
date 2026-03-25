@@ -40,12 +40,23 @@ export interface OptionalProduct {
   price: number;
 }
 
+export interface ChamberBoardSelection {
+  enabled: boolean;
+  boardName: string;
+  boardPrice: number;
+  reededPanels: boolean;
+  chamberTrimKit: boolean;
+  chamberTrimColour: "Black" | "Stainless Steel";
+  fermacellQty: number;
+}
+
 export interface Products {
   fire: Product;
   hearth: OptionalProduct;
   chamber: OptionalProduct & { size: string };
   beam: OptionalProduct & { material: string };
   surround: OptionalProduct;
+  chamberBoard: ChamberBoardSelection;
 }
 
 

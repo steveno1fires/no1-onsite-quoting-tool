@@ -278,3 +278,54 @@ export const BEAM_OPTIONS: (CatalogItem & { material: string })[] = [
   { label: 'Stone Effect Beam 48"', material: "Stone Effect", price: 195 },
   { label: 'Slate Beam 48"', material: "Slate", price: 250 },
 ];
+
+export interface ChamberBoardVariant {
+  name: string;
+  price: number;
+}
+
+export const CHAMBER_BOARD_VARIANTS: ChamberBoardVariant[] = [
+  { name: "ANDALUSIA*", price: 310 },
+  { name: "POMPEII", price: 250 },
+  { name: "ANTHRACITE*", price: 360 },
+  { name: "PORTUGUESE LIMESTONE*", price: 360 },
+  { name: "BRAZILIAN ANTIQUE RIVEN SLATE", price: 245 },
+  { name: "RAINBOW", price: 250 },
+  { name: "CHARCOAL GREY WATERFALL*", price: 310 },
+  { name: "RIVEN SLATE", price: 250 },
+  { name: "COBBLED RED", price: 250 },
+  { name: "RUSTIC", price: 250 },
+  { name: "CORINTHIAN STONE", price: 250 },
+  { name: "RUSTIC HERRINGBONE", price: 250 },
+  { name: "COSMIC BLACK QUARTZ*", price: 310 },
+  { name: "RUSTIC RIVEN STAGGERED*", price: 310 },
+  { name: "DOVE GREY*", price: 310 },
+  { name: "RUSTY SLATE", price: 250 },
+  { name: "FROSTED ICED GREY*", price: 310 },
+  { name: "SANTIAGO*", price: 310 },
+  { name: "FROSTED ICED GREY HERRINGBONE*", price: 360 },
+  { name: "SILVER GREY QUARTZ*", price: 310 },
+  { name: "GRAPHITE RIVEN SLATE", price: 250 },
+  { name: "SMOKE GREY*", price: 360 },
+  { name: "GREY BRICK BOND MONTAGE", price: 310 },
+  { name: "STORM GREY*", price: 360 },
+  { name: "GREY BRUSHED SLATE", price: 250 },
+  { name: "SUNSET RED*", price: 360 },
+  { name: "GREY HERRINGBONE", price: 360 },
+  { name: "TRAVARK GREY*", price: 310 },
+  { name: "LUCENA*", price: 310 },
+  { name: "TRAVERK WHITE*", price: 310 },
+  { name: "LUME BLUE*", price: 360 },
+  { name: "URBAN DUSK", price: 310 },
+  { name: "NAVARRA*", price: 310 },
+  { name: "URBAN DUSK HERRINGBONE", price: 360 },
+  { name: "OLIVE WATERFALL*", price: 310 },
+  { name: "ZAMORA*", price: 310 },
+  { name: "OYSTER SLATE*", price: 310 },
+];
+
+export const CHAMBER_BOARD_NOTE = "*Made to order. Allow up to 4 weeks. Minimum clearance distances apply. Chamber sizes vary between designs.";
+
+export const REEDED_PANELS_PRICE = 365;
+export const CHAMBER_TRIM_KIT_PRICE = 99;
+export const FERMACELL_BOARD_PRICE = 43.5;
