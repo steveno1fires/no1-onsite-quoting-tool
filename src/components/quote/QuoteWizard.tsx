@@ -32,7 +32,7 @@ export function QuoteWizard() {
   const isGasSoveCF = data.jobType === "Gas Stove" && (
     data.products.fire.model.includes("Conventional Flue") || data.products.fire.model.includes(" CF ")
   );
-  const isElectric = data.jobType === "Electric Fire/Media Wall";
+  const isElectric = data.jobType === "Electric Fire / Media Wall";
 
   const validateStep = (): boolean => {
     switch (actualStep) {
