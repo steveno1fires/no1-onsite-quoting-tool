@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { CustomerDetails } from "@/types/quote";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getJobDetails, extractCustomerDetails } from "@/lib/servicem8";
 
 interface Props {
   data: CustomerDetails;
@@ -8,11 +10,71 @@ interface Props {
 }
 
 export function StepCustomer({ data, onChange }: Props) {
+  const [jobNumber, setJobNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const update = (field: keyof CustomerDetails, value: string) =>
     onChange({ ...data, [field]: value });
 
+  const handleLoadJob = async () => {
+    if (!jobNumber.trim()) {
+      setError("Please enter a job number");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const job = await getJobDetails(jobNumber);
+      const customerDetails = extractCustomerDetails(job);
+      onChange(customerDetails);
+      setJobNumber("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load job");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-4 animate-slide-in">
+      {/* Job Lookup Section */}
+      <div className="bg-blue-50 rounded-lg p-4 shadow-sm space-y-3 border border-blue-200">
+        <h3 className="text-sm font-semibold text-gray-700">Load from ServiceM8 Job</h3>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Label htmlFor="jobNumber" className="text-xs font-medium">
+              Job Number
+            </Label>
+            <Input
+              id="jobNumber"
+              value={jobNumber}
+              onChange={(e) => {
+                setJobNumber(e.target.value);
+                setError("");
+              }}
+              placeholder="e.g. J12345"
+              disabled={loading}
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleLoadJob}
+              disabled={loading || !jobNumber.trim()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded transition-colors"
+            >
+              {loading ? "Loading..." : "Load Job"}
+            </button>
+          </div>
+        </div>
+        {error && (
+          <div className="text-red-600 text-sm bg-red-50 p-2 rounded border border-red-200">
+            {error}
+          </div>
+        )}
+      </div>
 
       {/* Customer Details Section */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-gray-200">
