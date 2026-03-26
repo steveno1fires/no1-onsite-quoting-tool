@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import { QuoteData } from '@/types/quote';
+import logoImage from '@/assets/logo.jpeg';
 
 export function generateQuotePDF(data: QuoteData): Blob {
   const doc = new jsPDF('p', 'mm', 'a4');
@@ -8,35 +9,65 @@ export function generateQuotePDF(data: QuoteData): Blob {
   const pageHeight = doc.internal.pageSize.getHeight();
   let yPosition = 20;
 
-  // Helper function to safely add text
-  const addText = (text: string, x: number, y: number, options: any = {}) => {
-    doc.setFont('helvetica', options.bold ? 'bold' : 'normal');
-    doc.setFontSize(options.size || 10);
-    doc.text(String(text).trim() || '', x, y);
-  };
+  // Add logo
+  try {
+    doc.addImage(logoImage, 'JPEG', 15, 10, 30, 15);
+  } catch (e) {
+    console.warn('Logo image failed to load');
+  }
 
-  // Header
-  doc.setFillColor(192, 40, 28); // No1 Fires red
-  doc.rect(0, 0, pageWidth, 30, 'F');
-  
-  addText('No1 Fires', 20, 15, { size: 24, bold: true });
-  doc.setTextColor(255, 255, 255);
-  addText('Quote', 20, 22, { size: 12 });
-  
+  // Header - No1 Fires branding
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(192, 40, 28); // Red
+  doc.text('NO1 FIRES', 50, 18);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
   doc.setTextColor(0, 0, 0);
-  yPosition = 40;
+  doc.text('QUOTE', 50, 26);
 
-  // Job Details
-  addText('SM8 Job Number: ' + (data.customer.jobNumber || 'N/A'), 20, yPosition, { bold: true });
-  yPosition += 8;
-  addText('Job Type: ' + (data.jobType || 'N/A'), 20, yPosition);
+  // Business details
+  yPosition = 50;
+  doc.setFontSize(9);
+  doc.text('No1 Fires Ltd', 15, yPosition);
+  yPosition += 5;
+  doc.text('Ringwood, Hampshire', 15, yPosition);
+  yPosition += 5;
+  doc.text('Phone: 01425 xxx xxx', 15, yPosition);
+  yPosition += 5;
+  doc.text('Email: info@no1fires.co.uk', 15, yPosition);
+  yPosition += 5;
+  doc.text('Website: no1fires.co.uk', 15, yPosition);
+  yPosition += 15;
+
+  // Quote details
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('Quote Details:', 15, yPosition);
+  yPosition += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text(`SM8 Job: ${data.customer.jobNumber || 'N/A'}`, 15, yPosition);
+  yPosition += 5;
+  doc.text(`Job Type: ${data.jobType || 'N/A'}`, 15, yPosition);
+  yPosition += 5;
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 15, yPosition);
   yPosition += 12;
 
-  // Line Items Header
-  addText('ITEMISED BREAKDOWN', 20, yPosition, { bold: true, size: 11 });
+  // Items table header
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setFillColor(240, 240, 240);
+  doc.rect(15, yPosition - 4, pageWidth - 30, 6, 'F');
+  
+  doc.text('Description', 15, yPosition);
+  doc.text('Unit Price', 130, yPosition);
+  doc.text('Total', 170, yPosition);
   yPosition += 8;
 
-  // Calculate items
+  // Collect items
   const items: Array<{ label: string; detail?: string; price: number }> = [];
   
   if (data.products.fire.brand || data.products.fire.model) {
@@ -55,7 +86,7 @@ export function generateQuotePDF(data: QuoteData): Blob {
     });
   }
 
-  if (data.products.beam.enabled) {
+  if (data.products.beam.enabled && data.products.beam.material) {
     items.push({
       label: 'Beam',
       detail: data.products.beam.material,
@@ -63,7 +94,7 @@ export function generateQuotePDF(data: QuoteData): Blob {
     });
   }
 
-  if (data.products.surround.enabled) {
+  if (data.products.surround.enabled && data.products.surround.description) {
     items.push({
       label: 'Surround',
       detail: data.products.surround.description,
@@ -100,15 +131,14 @@ export function generateQuotePDF(data: QuoteData): Blob {
   if (data.labourDays > 0) {
     items.push({
       label: 'Labour',
-      detail: `${data.labourDays} day(s) × £800/day`,
+      detail: `${data.labourDays} day(s) @ £800/day`,
       price: data.labourDays * 800,
     });
   }
 
   // Print items
-  const columnLabelX = 20;
-  const columnDetailX = 80;
-  const columnPriceX = 180;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
 
   items.forEach((item) => {
     if (yPosition > pageHeight - 40) {
@@ -116,51 +146,61 @@ export function generateQuotePDF(data: QuoteData): Blob {
       yPosition = 20;
     }
 
-    addText(item.label, columnLabelX, yPosition, { size: 9 });
-    if (item.detail) {
-      addText(`(${item.detail})`, columnDetailX, yPosition, { size: 8 });
-    }
-    addText(`£${item.price.toFixed(2)}`, columnPriceX, yPosition, { size: 9, bold: true });
-    yPosition += 6;
+    const label = item.detail ? `${item.label} (${item.detail})` : item.label;
+    doc.text(label.substring(0, 50), 15, yPosition);
+    doc.text(`£${item.price.toFixed(2)}`, 130, yPosition);
+    doc.text(`£${item.price.toFixed(2)}`, 170, yPosition);
+    yPosition += 5;
   });
 
-  yPosition += 4;
+  yPosition += 3;
 
-  // Totals
+  // Totals section
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const vat = data.includeVat ? subtotal * 0.2 : 0;
   const total = subtotal + vat;
 
-  addText('─'.repeat(60), 20, yPosition);
-  yPosition += 6;
-
-  addText('Subtotal', columnLabelX, yPosition);
-  addText(`£${subtotal.toFixed(2)}`, columnPriceX, yPosition, { bold: true });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  
+  doc.text('Subtotal (ex VAT):', 130, yPosition);
+  doc.text(`£${subtotal.toFixed(2)}`, 170, yPosition);
   yPosition += 6;
 
   if (data.includeVat) {
-    addText('VAT (20%)', columnLabelX, yPosition);
-    addText(`£${vat.toFixed(2)}`, columnPriceX, yPosition, { bold: true });
+    doc.text('VAT (20%):', 130, yPosition);
+    doc.text(`£${vat.toFixed(2)}`, 170, yPosition);
     yPosition += 6;
   }
 
-  addText('─'.repeat(60), 20, yPosition);
-  yPosition += 6;
+  // Total - bold and large
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(192, 40, 28); // Red
+  doc.text('TOTAL:', 130, yPosition);
+  doc.text(`£${total.toFixed(2)}`, 170, yPosition);
 
-  addText('TOTAL', columnLabelX, yPosition, { bold: true, size: 12 });
-  addText(`£${total.toFixed(2)}`, columnPriceX, yPosition, { bold: true, size: 12 });
   yPosition += 10;
 
-  // Payment Terms
-  addText('Payment Terms:', 20, yPosition, { bold: true });
+  // Payment terms
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text('Payment Terms:', 15, yPosition);
   yPosition += 5;
-  addText('45% deposit · 45% on materials arrival · 10% on completion', 20, yPosition, { size: 9 });
-  yPosition += 8;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.text('45% deposit on acceptance', 15, yPosition);
+  yPosition += 4;
+  doc.text('45% on materials arrival', 15, yPosition);
+  yPosition += 4;
+  doc.text('10% on completion', 15, yPosition);
 
   // Footer
-  doc.setFontSize(8);
+  doc.setFontSize(7);
   doc.setTextColor(100, 100, 100);
-  addText('No1 Fires | no1fires.co.uk', 20, pageHeight - 10, { size: 8 });
+  doc.text('This quote is valid for 30 days. Terms & Conditions apply.', 15, pageHeight - 10);
 
   return doc.output('blob');
 }
