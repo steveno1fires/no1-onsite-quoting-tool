@@ -62,13 +62,15 @@ export function StepCustomer({ data, onChange, onSM8JobLoad }: Props) {
             </Label>
             <Input
               id="jobNumber"
+              type="text"
               value={jobNumber}
               onChange={(e) => {
                 setJobNumber(e.target.value);
                 setError("");
               }}
-              placeholder="e.g. J12345"
+              placeholder="e.g. 2062"
               disabled={loading}
+              pattern={undefined}
             />
           </div>
           <div className="flex items-end">
