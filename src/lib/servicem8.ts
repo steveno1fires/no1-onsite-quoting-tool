@@ -20,9 +20,18 @@ export interface ServiceM8Response {
 }
 
 export async function getJobDetails(jobId: string): Promise<SM8Job> {
+  // Accept various formats and clean them up:
+  // - 2055 (just number)
+  // - #2055 (with hash)
+  // - J-2025-001234 (SM8 standard)
+  // - J2055 (without dash)
+  const cleanedId = jobId.trim().replace(/^#/, ""); // Remove leading # and whitespace
+
   // Use the backend API proxy instead of calling SM8 directly
   // This avoids CORS issues by proxying through our server
-  const response = await fetch(`/api/servicem8/job?id=${jobId}`);
+  const response = await fetch(
+    `/api/servicem8/job?id=${encodeURIComponent(cleanedId)}`
+  );
 
   if (!response.ok) {
     if (response.status === 404) {

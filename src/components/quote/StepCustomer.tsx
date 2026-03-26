@@ -19,24 +19,29 @@ export function StepCustomer({ data, onChange, onSM8JobLoad }: Props) {
     onChange({ ...data, [field]: value });
 
   const handleLoadJob = async () => {
-    if (!jobNumber.trim()) {
+    const trimmed = jobNumber.trim();
+
+    if (!trimmed) {
       setError("Please enter a job number");
       return;
     }
+
+    // Accept various formats - let the API handle validation
+    // Supported: 2055, #2055, J-2025-001234, J2055, etc.
 
     setLoading(true);
     setError("");
 
     try {
-      const job = await getJobDetails(jobNumber);
+      const job = await getJobDetails(trimmed);
       const customerDetails = extractCustomerDetails(job);
       onChange(customerDetails);
-      
+
       // IMPORTANT: Pass SM8 job ID back to parent
       if (onSM8JobLoad && job.id) {
         onSM8JobLoad(job.id, job);
       }
-      
+
       setJobNumber("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load job");
