@@ -75,7 +75,15 @@ export function QuoteWizard() {
   const renderStep = () => {
     switch (actualStep) {
       case 1:
-        return <StepCustomer data={data.customer} onChange={(customer) => setData({ ...data, customer })} />;
+        return (
+          <StepCustomer
+            data={data.customer}
+            onChange={(customer) => setData({ ...data, customer })}
+            onSM8JobLoad={(jobId, jobDetails) =>
+              setData({ ...data, sm8JobId: jobId, jobDetails })
+            }
+          />
+        );
       case 2:
         return <StepJobType value={data.jobType} onChange={(jobType) => setData({ ...data, jobType })} />;
       case 3:

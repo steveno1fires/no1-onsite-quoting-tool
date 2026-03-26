@@ -150,6 +150,8 @@ export interface QuoteData {
   notes: string;
   photos: SitePhotos;
   includeVat: boolean;
+  sm8JobId?: string;
+  jobDetails?: string;
 }
 
 export const initialQuoteData: QuoteData = {
