@@ -38,8 +38,8 @@ export function QuoteWizard() {
     switch (actualStep) {
       case 1: {
         const c = data.customer;
-        if (!c.firstName || !c.lastName || !c.email || !c.phone || !c.address) {
-          toast.error("Please fill in all customer details");
+        if (!c.jobNumber) {
+          toast.error("Please enter the SM8 Job Number");
           return false;
         }
         return true;
@@ -79,9 +79,6 @@ export function QuoteWizard() {
           <StepCustomer
             data={data.customer}
             onChange={(customer) => setData({ ...data, customer })}
-            onSM8JobLoad={(jobId, jobDetails) =>
-              setData({ ...data, sm8JobId: jobId, jobDetails })
-            }
           />
         );
       case 2:

@@ -4,11 +4,7 @@ import { EXTRAS_CONFIG } from "@/data/extrasConfig";
 export type { Extra };
 
 export interface CustomerDetails {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
+  jobNumber: string;
 }
 
 export const JOB_TYPES = [
@@ -155,7 +151,7 @@ export interface QuoteData {
 }
 
 export const initialQuoteData: QuoteData = {
-  customer: { firstName: "", lastName: "", email: "", phone: "", address: "" },
+  customer: { jobNumber: "" },
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },

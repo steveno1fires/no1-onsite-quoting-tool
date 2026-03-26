@@ -13,70 +13,22 @@ export function StepCustomer({ data, onChange }: Props) {
 
   return (
     <div className="space-y-4 animate-slide-in">
-      {/* Customer Details Section */}
+      {/* Job Number Section */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700">Customer Details</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="firstName" className="text-xs font-medium">
-              First Name *
-            </Label>
-            <Input
-              id="firstName"
-              value={data.firstName}
-              onChange={(e) => update("firstName", e.target.value)}
-              placeholder="John"
-            />
-          </div>
-          <div>
-            <Label htmlFor="lastName" className="text-xs font-medium">
-              Last Name *
-            </Label>
-            <Input
-              id="lastName"
-              value={data.lastName}
-              onChange={(e) => update("lastName", e.target.value)}
-              placeholder="Smith"
-            />
-          </div>
-        </div>
+        <h3 className="text-sm font-semibold text-gray-700">SM8 Job Number</h3>
         <div>
-          <Label htmlFor="email" className="text-xs font-medium">
-            Email *
+          <Label htmlFor="jobNumber" className="text-xs font-medium">
+            Job Number *
           </Label>
           <Input
-            id="email"
-            type="email"
-            value={data.email}
-            onChange={(e) => update("email", e.target.value)}
-            placeholder="john@example.com"
-          />
-        </div>
-        <div>
-          <Label htmlFor="phone" className="text-xs font-medium">
-            Phone *
-          </Label>
-          <Input
-            id="phone"
-            type="tel"
-            value={data.phone}
-            onChange={(e) => update("phone", e.target.value)}
-            placeholder="07700 900000"
-          />
-        </div>
-        <div>
-          <Label htmlFor="address" className="text-xs font-medium">
-            Address *
-          </Label>
-          <Input
-            id="address"
-            value={data.address}
-            onChange={(e) => update("address", e.target.value)}
-            placeholder="123 High Street, London"
+            id="jobNumber"
+            value={data.jobNumber}
+            onChange={(e) => update("jobNumber", e.target.value)}
+            placeholder="e.g. #1059"
           />
         </div>
       </div>
     </div>
   );
 }
-// Force rebuild Thu Mar 26 05:20:41 GMT 2026
+// Force rebuild Thu Mar 26 11:14:00 GMT 2026
