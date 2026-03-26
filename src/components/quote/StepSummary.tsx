@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, Send } from "lucide-react";
+import { Eye, Send, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { generateQuotePDF } from "@/lib/pdfGenerator";
+import { toast } from "sonner";
 
 interface Props {
   data: QuoteData;
@@ -202,10 +205,91 @@ function formatCurrency(value: number) {
 }
 
 export function StepSummary({ data, onToggleVat }: Props) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   const items = getLineItems(data);
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const vat = data.includeVat ? subtotal * 0.2 : 0;
   const total = subtotal + vat;
+
+  const handleGenerateAndSend = async () => {
+    try {
+      setIsGenerating(true);
+
+      // Generate PDF
+      const pdfBlob = generateQuotePDF(data);
+      const pdfBase64 = await blobToBase64(pdfBlob);
+      const filename = `Quote_${data.customer.lastName}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Send email
+      if (data.customer.email) {
+        try {
+          await fetch('/api/email/send-quote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: data.customer.email,
+              filename,
+              fileContent: pdfBase64,
+              customerName: `${data.customer.firstName} ${data.customer.lastName}`,
+            }),
+          });
+          toast.success('Quote email sent!');
+        } catch (emailError) {
+          console.error('Email send failed:', emailError);
+          toast.error('Failed to send email');
+        }
+      }
+
+      // Upload to ServiceM8 if job ID is present
+      if (data.sm8JobId) {
+        try {
+          await fetch('/api/servicem8/upload-quote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jobId: data.sm8JobId,
+              filename,
+              fileContent: pdfBase64,
+            }),
+          });
+          toast.success('Quote uploaded to ServiceM8!');
+        } catch (sm8Error) {
+          console.error('SM8 upload failed:', sm8Error);
+          toast.error('Failed to upload to ServiceM8');
+        }
+      }
+
+      // Always allow download as fallback
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      toast.success('Quote PDF generated and downloaded!');
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to generate quote PDF');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  async function blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        // Remove the data:application/pdf;base64, prefix
+        const base64 = result.split(',')[1] || result;
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 
   return (
     <div className="space-y-4 animate-slide-in">
@@ -275,13 +359,27 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
       {/* Actions */}
       <div className="space-y-3 pt-2">
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full" disabled={isGenerating}>
           <Eye className="w-4 h-4 mr-2" />
           Preview Before Sending
         </Button>
-        <Button className="w-full" size="lg">
-          <Send className="w-4 h-4 mr-2" />
-          Generate & Send Quote
+        <Button 
+          className="w-full" 
+          size="lg"
+          onClick={handleGenerateAndSend}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4 mr-2" />
+              Generate & Send Quote
+            </>
+          )}
         </Button>
       </div>
     </div>
