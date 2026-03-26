@@ -206,18 +206,43 @@ function formatCurrency(value: number) {
 
 export function StepSummary({ data, onToggleVat }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewPdf, setPreviewPdf] = useState<string | null>(null);
   
   const items = getLineItems(data);
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const vat = data.includeVat ? subtotal * 0.2 : 0;
   const total = subtotal + vat;
 
-  const handleGenerateAndSend = async () => {
+  const handlePreview = async () => {
     try {
       setIsGenerating(true);
+      const summaryElement = document.querySelector('[data-summary-content]');
+      if (!summaryElement) {
+        throw new Error('Summary content not found');
+      }
 
-      // Generate PDF from quote data
-      const pdfBlob = generateQuotePDF(data);
+      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      setPreviewPdf(pdfUrl);
+      setShowPreview(true);
+    } catch (error) {
+      console.error('Preview error:', error);
+      toast.error('Failed to generate preview');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      setIsGenerating(true);
+      const summaryElement = document.querySelector('[data-summary-content]');
+      if (!summaryElement) {
+        throw new Error('Summary content not found');
+      }
+
+      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
       const filename = `Quote_Job${data.customer.jobNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
 
       // Download PDF
@@ -228,10 +253,11 @@ export function StepSummary({ data, onToggleVat }: Props) {
       link.click();
       URL.revokeObjectURL(url);
       
-      toast.success('Quote PDF generated and downloaded!');
+      setShowPreview(false);
+      toast.success('Quote PDF downloaded!');
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to generate quote PDF');
+      console.error('Download error:', error);
+      toast.error('Failed to generate PDF');
     } finally {
       setIsGenerating(false);
     }
@@ -240,8 +266,27 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
 
   return (
-    <div className="space-y-4 animate-slide-in">
-      {/* Job Number */}
+    <>
+      {showPreview && previewPdf && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-lg font-bold">Quote Preview</h2>
+              <button onClick={() => setShowPreview(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <iframe src={previewPdf} className="w-full h-full" />
+            </div>
+            <div className="flex gap-2 p-4 border-t">
+              <button onClick={() => setShowPreview(false)} className="flex-1 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+              <button onClick={handleDownload} disabled={isGenerating} className="flex-1 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 disabled:opacity-50">Download</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-4 animate-slide-in" data-summary-content>
+        {/* Job Number */}
       <div className="bg-card rounded-lg p-4 shadow-sm">
         <p className="text-xs text-muted-foreground mb-1">SM8 Job Number</p>
         <p className="font-semibold text-sm">{data.customer.jobNumber}</p>
@@ -303,31 +348,32 @@ export function StepSummary({ data, onToggleVat }: Props) {
         </div>
       )}
 
-      {/* Actions */}
-      <div className="space-y-3 pt-2">
-        <Button variant="outline" className="w-full" disabled={isGenerating}>
-          <Eye className="w-4 h-4 mr-2" />
-          Preview Before Sending
-        </Button>
-        <Button 
-          className="w-full" 
-          size="lg"
-          onClick={handleGenerateAndSend}
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Send className="w-4 h-4 mr-2" />
-              Generate & Send Quote
-            </>
-          )}
-        </Button>
+        {/* Actions */}
+        <div className="space-y-3 pt-2">
+          <Button variant="outline" className="w-full" onClick={handlePreview} disabled={isGenerating}>
+            <Eye className="w-4 h-4 mr-2" />
+            {isGenerating ? 'Generating...' : 'Preview Before Sending'}
+          </Button>
+          <Button 
+            className="w-full" 
+            size="lg"
+            onClick={handleDownload}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4 mr-2" />
+                Generate & Download Quote
+              </>
+            )}
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
