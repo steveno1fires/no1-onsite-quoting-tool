@@ -289,6 +289,28 @@ function GasFireSection({
         </div>
 
         <div>
+          <Label className="text-xs">Category</Label>
+          <Select
+            value={selectedSubCat}
+            onValueChange={(val) => {
+              setSelectedSubCat(val);
+              onChange({
+                ...data,
+                fire: { brand: "", model: "", kw: "", price: 0 },
+                gasFireTrim: null,
+                gasFireGatherHood: { enabled: false, priceExVat: 0 },
+                cjFireplace: null,
+              });
+            }}
+          >
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
           <Label className="text-xs">Model</Label>
           <Select
             value={data.fire.model || undefined}
@@ -297,44 +319,27 @@ function GasFireSection({
             <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
             <SelectContent>
               {(() => {
-                // Group products by Manufacturer → Type/Series → Model (3-level hierarchy)
-                const manufacturerMap = new Map<string, Map<string, typeof productsInCat>>();
+                // Group products in the selected category by Manufacturer → Models
+                const manufacturerMap = new Map<string, typeof productsInCat>();
                 
                 for (const p of productsInCat) {
                   const manufacturer = p.brand ?? "Charlton & Jenrick";
                   if (!manufacturerMap.has(manufacturer)) {
-                    manufacturerMap.set(manufacturer, new Map());
+                    manufacturerMap.set(manufacturer, []);
                   }
-                  
-                  // Use typeCategory if available, otherwise fall back to subCategory
-                  const typeCategory = p.typeCategory || p.subCategory || manufacturer;
-                  const typeMap = manufacturerMap.get(manufacturer)!;
-                  
-                  if (!typeMap.has(typeCategory)) {
-                    typeMap.set(typeCategory, []);
-                  }
-                  typeMap.get(typeCategory)!.push(p);
+                  manufacturerMap.get(manufacturer)!.push(p);
                 }
 
-                // Render: Manufacturer → Type/Series → Models
-                return Array.from(manufacturerMap.entries()).map(([manufacturer, typeMap]) => (
-                  <React.Fragment key={manufacturer}>
-                    {Array.from(typeMap.entries()).map(([typeCategory, items]) => {
-                      const multipleTypes = typeMap.size > 1;
-                      return (
-                        <SelectGroup key={`${manufacturer}-${typeCategory}`}>
-                          <SelectLabel className="font-bold text-foreground">
-                            {multipleTypes ? `${manufacturer} — ${typeCategory}` : manufacturer}
-                          </SelectLabel>
-                          {items.map((p) => (
-                            <SelectItem key={p.name} value={p.name}>
-                              {p.name}{p.description ? ` — ${p.description}` : ""}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      );
-                    })}
-                  </React.Fragment>
+                // Render: Manufacturer groups, then models within each
+                return Array.from(manufacturerMap.entries()).map(([manufacturer, items]) => (
+                  <SelectGroup key={manufacturer}>
+                    <SelectLabel className="font-bold text-foreground">{manufacturer}</SelectLabel>
+                    {items.map((p) => (
+                      <SelectItem key={p.name} value={p.name}>
+                        {p.name}{p.description ? ` — ${p.description}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 ));
               })()}
             </SelectContent>
