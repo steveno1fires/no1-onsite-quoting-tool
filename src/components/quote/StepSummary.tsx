@@ -216,8 +216,14 @@ export function StepSummary({ data, onToggleVat }: Props) {
     try {
       setIsGenerating(true);
 
+      // Get the summary element to capture as PDF
+      const summaryElement = document.querySelector('[data-summary-content]');
+      if (!summaryElement) {
+        throw new Error('Summary content not found');
+      }
+
       // Generate PDF
-      const pdfBlob = generateQuotePDF(data);
+      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
       const pdfBase64 = await blobToBase64(pdfBlob);
       const filename = `Quote_${data.customer.lastName}_${new Date().toISOString().split('T')[0]}.pdf`;
 
@@ -297,7 +303,7 @@ export function StepSummary({ data, onToggleVat }: Props) {
   }
 
   return (
-    <div className="space-y-4 animate-slide-in">
+    <div className="space-y-4 animate-slide-in" data-summary-content>
       {/* Job Number */}
       <div className="bg-card rounded-lg p-4 shadow-sm">
         <p className="text-xs text-muted-foreground mb-1">SM8 Job Number</p>
