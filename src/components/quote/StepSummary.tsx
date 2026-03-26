@@ -241,21 +241,21 @@ export function StepSummary({ data, onToggleVat }: Props) {
         }
       }
 
-      // Upload to ServiceM8 if job ID is present
-      if (data.sm8JobId) {
+      // Upload to ServiceM8 via Zapier if job number is present
+      if (data.customer.jobNumber) {
         try {
-          await fetch('/api/servicem8/upload-quote', {
+          const formData = new FormData();
+          formData.append('jobNumber', data.customer.jobNumber);
+          formData.append('filename', filename);
+          formData.append('pdfFile', pdfBlob);
+
+          await fetch('https://hooks.zapier.com/hooks/catch/16533264/unuyrz2/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jobId: data.sm8JobId,
-              filename,
-              fileContent: pdfBase64,
-            }),
+            body: formData,
           });
           toast.success('Quote uploaded to ServiceM8!');
-        } catch (sm8Error) {
-          console.error('SM8 upload failed:', sm8Error);
+        } catch (zapierError) {
+          console.error('Zapier upload failed:', zapierError);
           toast.error('Failed to upload to ServiceM8');
         }
       }
