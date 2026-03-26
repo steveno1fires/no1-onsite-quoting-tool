@@ -4,7 +4,8 @@ import { Check } from "lucide-react";
 const STEP_LABELS = [
   "Customer",
   "Job Type",
-  "Products",
+  "Fire",
+  "Fireplace",
   "Extras",
   "Liner Kit",
   "Notes",
