@@ -172,12 +172,32 @@ function GasFireSection({
   products: typeof GAS_BF_PRODUCTS;
   title: string;
 }) {
-  const subCategories = [...new Set(products.map((p) => p.subCategory))];
-  const [selectedSubCat, setSelectedSubCat] = React.useState(subCategories[0] || "");
+  // ─────────────────────────────────────────────
+  // MANUFACTURER → CATEGORY → MODEL hierarchy
+  // ─────────────────────────────────────────────
+  const [selectedManufacturer, setSelectedManufacturer] = React.useState<string>("");
+  const [selectedCategory, setSelectedCategory] = React.useState<string>("");
   const [controlType, setControlType] = React.useState<"slide" | "remote">("slide");
   const [programmableRemoteChecked, setProgrammableRemoteChecked] = React.useState(false);
 
-  const productsInCat = products.filter((p) => p.subCategory === selectedSubCat);
+  // Get unique manufacturers from products
+  const manufacturers = [...new Set(products.map((p) => p.brand ?? "Charlton & Jenrick"))].sort();
+
+  // Get categories (subCategory) for selected manufacturer
+  const categoriesForMfr = selectedManufacturer
+    ? [...new Set(products
+        .filter((p) => (p.brand ?? "Charlton & Jenrick") === selectedManufacturer)
+        .map((p) => p.subCategory))]
+        .sort()
+    : [];
+
+  // Get products for selected category
+  const productsInCat = selectedCategory
+    ? products.filter((p) =>
+        (p.brand ?? "Charlton & Jenrick") === selectedManufacturer &&
+        p.subCategory === selectedCategory
+      )
+    : [];
   const selectedProduct = products.find((p) => p.name === data.fire.model);
   const hasControlOptions = selectedProduct && selectedProduct.price === undefined;
   const isGazcoNoTrim = selectedProduct?.noTrimOptions === true;
@@ -222,7 +242,7 @@ function GasFireSection({
     setProgrammableRemoteChecked(false);
     onChange({
       ...data,
-      fire: { brand: item.brand ?? "C&J", model: item.name, kw: "", price: basePrice },
+      fire: { brand: selectedManufacturer, model: item.name, kw: "", price: basePrice },
       gasFireTrim: null,
       gasFireGatherHood: { enabled: false, priceExVat: 0 },
       cjFireplace: null,
@@ -266,85 +286,74 @@ function GasFireSection({
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3">
         <Label className="text-sm font-semibold">{title} *</Label>
 
+        {/* Dropdown 1: Manufacturer */}
         <div>
-          <Label className="text-xs">Category</Label>
+          <Label className="text-xs">Manufacturer</Label>
           <Select
-            value={selectedSubCat}
-            onValueChange={(val) => {
-              setSelectedSubCat(val);
+            value={selectedManufacturer}
+            onValueChange={(mfr) => {
+              setSelectedManufacturer(mfr);
+              setSelectedCategory(""); // reset category
               onChange({
                 ...data,
-                fire: { brand: "", model: "", kw: "", price: 0 },
+                fire: { brand: mfr, model: "", kw: "", price: 0 },
                 gasFireTrim: null,
                 gasFireGatherHood: { enabled: false, priceExVat: 0 },
                 cjFireplace: null,
               });
             }}
           >
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Choose manufacturer" /></SelectTrigger>
             <SelectContent>
-              {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+              {manufacturers.map((mfr) => <SelectItem key={mfr} value={mfr}>{mfr}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
-        <div>
-          <Label className="text-xs">Category</Label>
-          <Select
-            value={selectedSubCat}
-            onValueChange={(val) => {
-              setSelectedSubCat(val);
-              onChange({
-                ...data,
-                fire: { brand: "", model: "", kw: "", price: 0 },
-                gasFireTrim: null,
-                gasFireGatherHood: { enabled: false, priceExVat: 0 },
-                cjFireplace: null,
-              });
-            }}
-          >
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {subCategories.map((sc) => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Dropdown 2: Category (only shown if manufacturer selected) */}
+        {selectedManufacturer && (
+          <div>
+            <Label className="text-xs">Category</Label>
+            <Select
+              value={selectedCategory}
+              onValueChange={(cat) => {
+                setSelectedCategory(cat);
+                onChange({
+                  ...data,
+                  fire: { brand: selectedManufacturer, model: "", kw: "", price: 0 },
+                  gasFireTrim: null,
+                  gasFireGatherHood: { enabled: false, priceExVat: 0 },
+                  cjFireplace: null,
+                });
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Choose category" /></SelectTrigger>
+              <SelectContent>
+                {categoriesForMfr.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-        <div>
-          <Label className="text-xs">Model</Label>
-          <Select
-            value={data.fire.model || undefined}
-            onValueChange={handleProductSelect}
-          >
-            <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
-            <SelectContent>
-              {(() => {
-                // Group products in the selected category by Manufacturer → Models
-                const manufacturerMap = new Map<string, typeof productsInCat>();
-                
-                for (const p of productsInCat) {
-                  const manufacturer = p.brand ?? "Charlton & Jenrick";
-                  if (!manufacturerMap.has(manufacturer)) {
-                    manufacturerMap.set(manufacturer, []);
-                  }
-                  manufacturerMap.get(manufacturer)!.push(p);
-                }
-
-                // Render: Manufacturer groups, then models within each
-                return Array.from(manufacturerMap.entries()).map(([manufacturer, items]) => (
-                  <SelectGroup key={manufacturer}>
-                    <SelectLabel className="font-bold text-foreground">{manufacturer}</SelectLabel>
-                    {items.map((p) => (
-                      <SelectItem key={p.name} value={p.name}>
-                        {p.name}{p.description ? ` — ${p.description}` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ));
-              })()}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Dropdown 3: Model (only shown if category selected) */}
+        {selectedCategory && (
+          <div>
+            <Label className="text-xs">Model</Label>
+            <Select
+              value={data.fire.model || undefined}
+              onValueChange={handleProductSelect}
+            >
+              <SelectTrigger><SelectValue placeholder="Choose model" /></SelectTrigger>
+              <SelectContent>
+                {productsInCat.map((p) => (
+                  <SelectItem key={p.name} value={p.name}>
+                    {p.name}{p.description ? ` — ${p.description}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {data.fire.model && hasControlOptions && !isGazcoNoTrim && (
           <div className="space-y-1">
