@@ -7,9 +7,10 @@ import { getJobDetails, extractCustomerDetails } from "@/lib/servicem8";
 interface Props {
   data: CustomerDetails;
   onChange: (data: CustomerDetails) => void;
+  onSM8JobLoad?: (jobId: string, jobDetails?: any) => void;
 }
 
-export function StepCustomer({ data, onChange }: Props) {
+export function StepCustomer({ data, onChange, onSM8JobLoad }: Props) {
   const [jobNumber, setJobNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,6 +31,12 @@ export function StepCustomer({ data, onChange }: Props) {
       const job = await getJobDetails(jobNumber);
       const customerDetails = extractCustomerDetails(job);
       onChange(customerDetails);
+      
+      // IMPORTANT: Pass SM8 job ID back to parent
+      if (onSM8JobLoad && job.id) {
+        onSM8JobLoad(job.id, job);
+      }
+      
       setJobNumber("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load job");
