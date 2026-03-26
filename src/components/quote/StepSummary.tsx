@@ -241,7 +241,7 @@ export function StepSummary({ data, onToggleVat }: Props) {
         }
       }
 
-      // Upload to ServiceM8 via Zapier if job number is present
+      // Upload to ServiceM8 via Railway backend if job number is present
       if (data.customer.jobNumber) {
         try {
           const formData = new FormData();
@@ -249,13 +249,18 @@ export function StepSummary({ data, onToggleVat }: Props) {
           formData.append('filename', filename);
           formData.append('pdfFile', pdfBlob);
 
-          await fetch('https://hooks.zapier.com/hooks/catch/16533264/unuyrz2/', {
+          const uploadResponse = await fetch('https://efficient-education-production-d447.up.railway.app/upload-to-sm8', {
             method: 'POST',
             body: formData,
           });
+
+          if (!uploadResponse.ok) {
+            throw new Error('Upload failed: ' + uploadResponse.statusText);
+          }
+
           toast.success('Quote uploaded to ServiceM8!');
-        } catch (zapierError) {
-          console.error('Zapier upload failed:', zapierError);
+        } catch (uploadError) {
+          console.error('Upload failed:', uploadError);
           toast.error('Failed to upload to ServiceM8');
         }
       }
