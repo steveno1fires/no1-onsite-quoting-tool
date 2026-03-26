@@ -250,6 +250,12 @@ export function StepSummary({ data, onToggleVat }: Props) {
       // Upload to ServiceM8 via Railway backend if job number is present
       if (data.customer.jobNumber) {
         try {
+          console.log('Uploading PDF to SM8...', {
+            jobNumber: data.customer.jobNumber,
+            filename,
+            pdfSize: pdfBlob.size,
+          });
+
           const formData = new FormData();
           formData.append('jobNumber', data.customer.jobNumber);
           formData.append('filename', filename);
@@ -260,14 +266,21 @@ export function StepSummary({ data, onToggleVat }: Props) {
             body: formData,
           });
 
+          const responseText = await uploadResponse.text();
+          console.log('Upload response:', {
+            status: uploadResponse.status,
+            statusText: uploadResponse.statusText,
+            body: responseText,
+          });
+
           if (!uploadResponse.ok) {
-            throw new Error('Upload failed: ' + uploadResponse.statusText);
+            throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
           }
 
           toast.success('Quote uploaded to ServiceM8!');
         } catch (uploadError) {
           console.error('Upload failed:', uploadError);
-          toast.error('Failed to upload to ServiceM8');
+          toast.error(`Failed to upload to ServiceM8: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`);
         }
       }
 
