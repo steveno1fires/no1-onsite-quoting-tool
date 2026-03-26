@@ -216,75 +216,11 @@ export function StepSummary({ data, onToggleVat }: Props) {
     try {
       setIsGenerating(true);
 
-      // Get the summary element to capture as PDF
-      const summaryElement = document.querySelector('[data-summary-content]');
-      if (!summaryElement) {
-        throw new Error('Summary content not found');
-      }
+      // Generate PDF from quote data
+      const pdfBlob = generateQuotePDF(data);
+      const filename = `Quote_Job${data.customer.jobNumber}_${new Date().toISOString().split('T')[0]}.pdf`;
 
-      // Generate PDF
-      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
-      const pdfBase64 = await blobToBase64(pdfBlob);
-      const filename = `Quote_${data.customer.lastName}_${new Date().toISOString().split('T')[0]}.pdf`;
-
-      // Send email
-      if (data.customer.email) {
-        try {
-          await fetch('/api/email/send-quote', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: data.customer.email,
-              filename,
-              fileContent: pdfBase64,
-              customerName: `${data.customer.firstName} ${data.customer.lastName}`,
-            }),
-          });
-          toast.success('Quote email sent!');
-        } catch (emailError) {
-          console.error('Email send failed:', emailError);
-          toast.error('Failed to send email');
-        }
-      }
-
-      // Upload to ServiceM8 via Railway backend if job number is present
-      if (data.customer.jobNumber) {
-        try {
-          console.log('Uploading PDF to SM8...', {
-            jobNumber: data.customer.jobNumber,
-            filename,
-            pdfSize: pdfBlob.size,
-          });
-
-          const formData = new FormData();
-          formData.append('jobNumber', data.customer.jobNumber);
-          formData.append('filename', filename);
-          formData.append('pdfFile', pdfBlob);
-
-          const uploadResponse = await fetch('https://efficient-education-production-d447.up.railway.app/upload-to-sm8', {
-            method: 'POST',
-            body: formData,
-          });
-
-          const responseText = await uploadResponse.text();
-          console.log('Upload response:', {
-            status: uploadResponse.status,
-            statusText: uploadResponse.statusText,
-            body: responseText,
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
-          }
-
-          toast.success('Quote uploaded to ServiceM8!');
-        } catch (uploadError) {
-          console.error('Upload failed:', uploadError);
-          toast.error(`Failed to upload to ServiceM8: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`);
-        }
-      }
-
-      // Always allow download as fallback
+      // Download PDF
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -301,22 +237,10 @@ export function StepSummary({ data, onToggleVat }: Props) {
     }
   };
 
-  async function blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        // Remove the data:application/pdf;base64, prefix
-        const base64 = result.split(',')[1] || result;
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
+
 
   return (
-    <div className="space-y-4 animate-slide-in" data-summary-content>
+    <div className="space-y-4 animate-slide-in">
       {/* Job Number */}
       <div className="bg-card rounded-lg p-4 shadow-sm">
         <p className="text-xs text-muted-foreground mb-1">SM8 Job Number</p>
