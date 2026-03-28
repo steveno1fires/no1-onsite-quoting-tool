@@ -422,6 +422,27 @@ export function StepSummary({ data, onToggleVat }: Props) {
               </>
             )}
           </Button>
+          {data.customer.linkedJobUuid && (
+            <Button
+              variant="outline"
+              className="w-full border-primary text-primary hover:bg-primary/10"
+              size="lg"
+              onClick={handleUploadToSM8}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Uploading to SM8...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Quote to SM8 Job #{data.customer.linkedJobNumber}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </>
