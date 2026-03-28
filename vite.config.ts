@@ -24,7 +24,7 @@ function sm8ApiPlugin(): Plugin {
           }
           try {
             const sm8Res = await fetch(`${SM8_BASE}/company.json`, {
-              headers: { Authorization: `Bearer ${SM8_TOKEN}` },
+              headers: { "X-Api-Key": SM8_TOKEN },
             });
             if (!sm8Res.ok) {
               res.statusCode = sm8Res.status;
