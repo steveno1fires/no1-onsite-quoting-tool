@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 function sm8ApiPlugin(): Plugin {
-  const SM8_TOKEN = "smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3";
+  const SM8_TOKEN = "smk-a5f784-6ea17ab17249c972-707b5ecb521890de";
   const SM8_BASE = "https://api.servicem8.com/api_1.0";
 
   return {
@@ -24,7 +24,7 @@ function sm8ApiPlugin(): Plugin {
           }
           try {
             const sm8Res = await fetch(`${SM8_BASE}/company.json`, {
-              headers: { Authorization: `Bearer ${SM8_TOKEN}` },
+              headers: { "X-Api-Key": SM8_TOKEN },
             });
             if (!sm8Res.ok) {
               res.statusCode = sm8Res.status;
@@ -71,7 +71,7 @@ function sm8ApiPlugin(): Plugin {
           try {
             const sm8Res = await fetch(
               `${SM8_BASE}/job.json?%24filter=company_uuid%20eq%20'${encodeURIComponent(companyUuid)}'`,
-              { headers: { Authorization: `Bearer ${SM8_TOKEN}` } }
+              { headers: { "X-Api-Key": SM8_TOKEN } }
             );
             if (!sm8Res.ok) {
               res.statusCode = sm8Res.status;
@@ -112,7 +112,7 @@ function sm8ApiPlugin(): Plugin {
           }
           try {
             const sm8Res = await fetch(`${SM8_BASE}/job/${id}.json`, {
-              headers: { Authorization: `Bearer ${SM8_TOKEN}` },
+              headers: { "X-Api-Key": SM8_TOKEN },
             });
             if (!sm8Res.ok) {
               res.statusCode = sm8Res.status;

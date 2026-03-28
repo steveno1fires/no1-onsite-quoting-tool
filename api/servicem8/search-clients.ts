@@ -20,7 +20,7 @@ export default async function handler(
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3`,
+          "X-Api-Key": "smk-a5f784-6ea17ab17249c972-707b5ecb521890de",
         },
       }
     );
