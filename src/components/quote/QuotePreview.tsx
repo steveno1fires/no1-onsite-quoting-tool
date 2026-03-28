@@ -107,7 +107,7 @@ export function QuotePreview({ data }: Props) {
 
         {/* Footer */}
         <div className="border-t border-gray-200 pt-2 text-[8px] text-gray-400 flex justify-between">
-          <span>No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 30 days</span>
+          <span>No1 Fires  |  Professional Fireplace Installation  |  <span>No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 7 days</span></span>
           <span>Page 1 of 1</span>
         </div>
       </div>

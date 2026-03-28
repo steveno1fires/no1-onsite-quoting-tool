@@ -235,7 +235,7 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
 
     pdf.setFontSize(7);
     pdf.setTextColor(...GREY);
-    pdf.text('No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 30 days', margin, 289);
+    pdf.text('No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 7 days', margin, 289);
     pdf.text(`Page ${p} of ${pageCount}`, pageW - margin, 289, { align: 'right' });
   }
 
