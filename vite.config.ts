@@ -23,16 +23,36 @@ function sm8ApiPlugin(): Plugin {
             return;
           }
           try {
-            const sm8Res = await fetch(`${SM8_BASE}/company.json`, {
-              headers: { "X-Api-Key": SM8_TOKEN },
-            });
-            if (!sm8Res.ok) {
-              res.statusCode = sm8Res.status;
+            // Fetch companies and jobs in parallel
+            const [compRes, jobRes] = await Promise.all([
+              fetch(`${SM8_BASE}/company.json`, { headers: { "X-Api-Key": SM8_TOKEN } }),
+              fetch(`${SM8_BASE}/job.json`, { headers: { "X-Api-Key": SM8_TOKEN } }),
+            ]);
+            if (!compRes.ok) {
+              res.statusCode = compRes.status;
               res.setHeader("Content-Type", "application/json");
-              res.end(JSON.stringify({ error: `SM8 error: ${sm8Res.statusText}` }));
+              res.end(JSON.stringify({ error: `SM8 error: ${compRes.statusText}` }));
               return;
             }
-            const companies = await sm8Res.json() as any[];
+            const companies = await compRes.json() as any[];
+            const jobs = jobRes.ok ? await jobRes.json() as any[] : [];
+
+            // Build map: company_uuid -> latest job numbers
+            const companyJobs = new Map<string, { jobNumber: string; date: string }[]>();
+            for (const j of jobs) {
+              const cid = j.company_uuid;
+              if (!cid) continue;
+              if (!companyJobs.has(cid)) companyJobs.set(cid, []);
+              companyJobs.get(cid)!.push({
+                jobNumber: j.generated_job_id || "",
+                date: j.date || "",
+              });
+            }
+            // Sort each company's jobs by date desc
+            for (const [, arr] of companyJobs) {
+              arr.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+            }
+
             const term = isAll ? "" : (q as string).trim().toLowerCase();
             const filtered = (isAll ? companies : companies
               .filter((c) => {
@@ -41,14 +61,26 @@ function sm8ApiPlugin(): Plugin {
                 const phone = (c.phone || c.mobile || "").toLowerCase();
                 return name.includes(term) || email.includes(term) || phone.includes(term);
               }))
-              .slice(0, 200)
-              .map((c) => ({
-                uuid: c.uuid,
-                name: c.name || "",
-                email: c.email || "",
-                phone: c.phone || c.mobile || "",
-                address: [c.address, c.address_city, c.address_postcode].filter(Boolean).join(", "),
-              }));
+              .map((c) => {
+                const cJobs = companyJobs.get(c.uuid) || [];
+                const latestJobNumber = cJobs.length > 0 ? cJobs[0].jobNumber : "";
+                return {
+                  uuid: c.uuid,
+                  name: c.name || "",
+                  email: c.email || "",
+                  phone: c.phone || c.mobile || "",
+                  address: [c.address, c.address_city, c.address_postcode].filter(Boolean).join(", "),
+                  latestJobNumber,
+                  jobCount: cJobs.length,
+                };
+              })
+              .sort((a, b) => {
+                // Sort clients with jobs first, then by latest job number desc
+                if (a.jobCount && !b.jobCount) return -1;
+                if (!a.jobCount && b.jobCount) return 1;
+                return (b.latestJobNumber || "").localeCompare(a.latestJobNumber || "");
+              })
+              .slice(0, 300);
             res.statusCode = 200;
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ results: filtered }));
