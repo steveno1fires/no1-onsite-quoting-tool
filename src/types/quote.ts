@@ -156,7 +156,7 @@ export interface QuoteData {
 }
 
 export const initialQuoteData: QuoteData = {
-  customer: { jobNumber: "" },
+  customer: { jobNumber: "", clientName: "", email: "", phone: "", address: "" },
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },
