@@ -67,13 +67,23 @@ export default async function handler(req: any, res: any) {
     }
 
     // Step 3: Upload the actual file binary to the attachment
+    // Use correct content type for images so SM8 can display them
+    const contentTypeMap: Record<string, string> = {
+      '.pdf': 'application/pdf',
+      '.jpeg': 'image/jpeg',
+      '.jpg': 'image/jpeg',
+      '.png': 'image/png',
+      '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    };
+    const uploadContentType = contentTypeMap[fileExtension.toLowerCase()] || 'application/octet-stream';
+
     const uploadRes = await fetch(
       `https://api.servicem8.com/api_1.0/Attachment/${attachmentUuid}.file`,
       {
         method: 'POST',
         headers: {
           'X-Api-Key': SM8_API_KEY,
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': uploadContentType,
         },
         body: fileBuffer,
       }
