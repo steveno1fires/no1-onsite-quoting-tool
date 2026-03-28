@@ -38,8 +38,8 @@ export function QuoteWizard() {
     switch (actualStep) {
       case 1: {
         const c = data.customer;
-        if (!c.jobNumber) {
-          toast.error("Please enter the SM8 Job Number");
+        if (!c.clientName) {
+          toast.error("Please search and select a client");
           return false;
         }
         return true;
