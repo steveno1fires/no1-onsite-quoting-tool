@@ -19,7 +19,6 @@ export function StepSummary({ data, onToggleVat }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [previewPdf, setPreviewPdf] = useState<string | null>(null);
   
   const items = getLineItems(data);
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
