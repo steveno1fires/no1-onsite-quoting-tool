@@ -80,7 +80,7 @@ function sm8ApiPlugin(): Plugin {
                 if (!a.jobCount && b.jobCount) return 1;
                 return (b.latestJobNumber || "").localeCompare(a.latestJobNumber || "");
               })
-              .slice(0, 300);
+              ;
             res.statusCode = 200;
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ results: filtered }));
