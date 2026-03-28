@@ -225,11 +225,34 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
     });
   }
 
-  // ── OUR COSTS PAGE ──
-  pdf.addPage();
-  y = 0;
+  // ── FOOTER on all pages ──
+  const pageCount = pdf.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    pdf.setPage(p);
+    pdf.setDrawColor(220, 220, 220);
+    pdf.setLineWidth(0.3);
+    pdf.line(margin, 284, pageW - margin, 284);
 
-  // Costs header banner
+    pdf.setFontSize(7);
+    pdf.setTextColor(...GREY);
+    pdf.text('No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 30 days', margin, 289);
+    pdf.text(`Page ${p} of ${pageCount}`, pageW - margin, 289, { align: 'right' });
+  }
+
+  return pdf.output('blob');
+}
+
+/** Generate a separate "OUR COSTS" PDF (internal use only) */
+export async function generateCostsPDF(data: QuoteData): Promise<Blob> {
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const pageW = 210;
+  const margin = 18;
+  const contentW = pageW - margin * 2;
+  let y = 0;
+
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Header banner
   pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
   pdf.rect(0, 0, pageW, 30, 'F');
   pdf.setTextColor(255, 255, 255);
@@ -265,7 +288,6 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
   pdf.text('Price (£)', pageW - margin - 3, y, { align: 'right' });
   y += 8;
 
-  // Cost items (ALL items including labour)
   const costItems = getLineItems(data);
   const costSubtotal = costItems.reduce((sum, item) => sum + item.price, 0);
   const costVat = data.includeVat ? costSubtotal * 0.2 : 0;
@@ -275,7 +297,6 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
   costItems.forEach((item, idx) => {
     y = checkPageBreak(pdf, y, 6, margin);
 
-    // Alternate row shading
     if (idx % 2 === 0) {
       pdf.setFillColor(250, 250, 250);
       pdf.rect(margin, y - 3.5, contentW, 6, 'F');
@@ -298,7 +319,6 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
 
   y += 4;
 
-  // Totals
   pdf.setDrawColor(200, 200, 200);
   pdf.line(margin + contentW * 0.5, y, pageW - margin, y);
   y += 6;
@@ -321,19 +341,13 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
   pdf.text('TOTAL', pageW - margin - 40, y);
   pdf.text(`£${costTotal.toFixed(2)}`, pageW - margin - 3, y, { align: 'right' });
 
-  // ── FOOTER on all pages ──
-  const pageCount = pdf.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
-    pdf.setPage(p);
-    pdf.setDrawColor(220, 220, 220);
-    pdf.setLineWidth(0.3);
-    pdf.line(margin, 284, pageW - margin, 284);
-
-    pdf.setFontSize(7);
-    pdf.setTextColor(...GREY);
-    pdf.text('No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 30 days', margin, 289);
-    pdf.text(`Page ${p} of ${pageCount}`, pageW - margin, 289, { align: 'right' });
-  }
+  // Footer
+  pdf.setDrawColor(220, 220, 220);
+  pdf.setLineWidth(0.3);
+  pdf.line(margin, 284, pageW - margin, 284);
+  pdf.setFontSize(7);
+  pdf.setTextColor(...GREY);
+  pdf.text('No1 Fires  |  INTERNAL COSTS — NOT FOR CUSTOMER', margin, 289);
 
   return pdf.output('blob');
 }
