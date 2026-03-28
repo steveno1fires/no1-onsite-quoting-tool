@@ -66,23 +66,41 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
     try {
       setIsUploading(true);
+      const dateSuffix = new Date().toISOString().split('T')[0];
+      const clientSlug = data.customer.clientName.replace(/\s+/g, '_');
 
-      // Generate single PDF with costs page included
-      const pdfBlob = await generateQuotePDF(data);
-      const pdfBase64 = await blobToBase64(pdfBlob);
-      const pdfFilename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      // Generate proposal PDF and costs PDF in parallel
+      const [proposalBlob, costsBlob] = await Promise.all([
+        generateQuotePDF(data),
+        generateCostsPDF(data),
+      ]);
 
-      // Upload PDF
-      const pdfRes = await fetch('/api/servicem8/upload-quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: pdfFilename, fileBase64: pdfBase64 }),
-      });
-      const pdfResult = await pdfRes.json();
+      const [proposalBase64, costsBase64] = await Promise.all([
+        blobToBase64(proposalBlob),
+        blobToBase64(costsBlob),
+      ]);
 
-      if (!pdfRes.ok || !pdfResult.success) {
-        toast.error('Failed to upload PDF to ServiceM8');
-        return;
+      // Upload both PDFs in parallel
+      const [proposalRes, costsRes] = await Promise.all([
+        fetch('/api/servicem8/upload-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: `Proposal_${clientSlug}_${dateSuffix}.pdf`, fileBase64: proposalBase64, caption: 'Customer Proposal' }),
+        }),
+        fetch('/api/servicem8/upload-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: `OUR_COSTS_${clientSlug}_${dateSuffix}.pdf`, fileBase64: costsBase64, caption: 'OUR COSTS (Internal)' }),
+        }),
+      ]);
+
+      const proposalOk = proposalRes.ok && (await proposalRes.json()).success;
+      const costsOk = costsRes.ok && (await costsRes.json()).success;
+
+      if (!proposalOk || !costsOk) {
+        const fails = [!proposalOk && 'Proposal', !costsOk && 'Costs'].filter(Boolean).join(' & ');
+        toast.error(`${fails} PDF upload failed`);
+        if (!proposalOk) return;
       }
 
       // Upload site photos with category captions
@@ -96,11 +114,9 @@ export function StepSummary({ data, onToggleVat }: Props) {
       for (const cat of photoCategories) {
         const photos = data.photos[cat.key] || [];
         photos.forEach((dataUrl, idx) => {
-          // Strip data URL prefix to get raw base64
           const base64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
-          const extMatch = dataUrl.match(/^data:image\/(\w+)/);
-          const ext = extMatch ? extMatch[1].replace('jpeg', 'jpg') : 'jpg';
-          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.${ext}`;
+          // Always use .jpeg for SM8 compatibility
+          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.jpeg`;
 
           photoUploads.push(
             fetch('/api/servicem8/upload-quote', {
@@ -122,12 +138,12 @@ export function StepSummary({ data, onToggleVat }: Props) {
         const photoResults = await Promise.all(photoUploads);
         const failed = photoResults.filter(r => !r.ok).length;
         if (failed > 0) {
-          toast.warning(`PDF uploaded. ${totalPhotos - failed}/${totalPhotos} photos uploaded (${failed} failed).`);
+          toast.warning(`PDFs uploaded. ${totalPhotos - failed}/${totalPhotos} photos uploaded (${failed} failed).`);
         } else {
-          toast.success(`Quote PDF + ${totalPhotos} photo${totalPhotos > 1 ? 's' : ''} uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+          toast.success(`Proposal + Costs + ${totalPhotos} photo${totalPhotos > 1 ? 's' : ''} uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
         }
       } else {
-        toast.success(`Quote PDF uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+        toast.success(`Proposal + Costs PDFs uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
       }
     } catch (error) {
       console.error('Upload error:', error);
