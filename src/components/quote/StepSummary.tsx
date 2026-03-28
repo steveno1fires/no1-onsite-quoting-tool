@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
-import { generateQuotePDF } from "@/lib/pdfGenerator";
+import { generateQuotePDF, generateCostsPDF } from "@/lib/pdfGenerator";
 
 import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import { QuotePreview } from "@/components/quote/QuotePreview";
