@@ -1,14 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { CustomerDetails } from "@/types/quote";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Search, Loader2, User, X } from "lucide-react";
+import { Search, Loader2, User, X, Briefcase, CheckCircle2 } from "lucide-react";
 
 interface SM8Client {
   uuid: string;
   name: string;
   email: string;
   phone: string;
+  address: string;
+}
+
+interface SM8Job {
+  uuid: string;
+  jobNumber: string;
+  description: string;
+  status: string;
+  date: string;
   address: string;
 }
 
@@ -22,6 +30,8 @@ export function StepCustomer({ data, onChange }: Props) {
   const [results, setResults] = useState<SM8Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [jobs, setJobs] = useState<SM8Job[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -50,8 +60,8 @@ export function StepCustomer({ data, onChange }: Props) {
       try {
         const res = await fetch(`/api/servicem8/search-clients?q=${encodeURIComponent(query)}`);
         if (res.ok) {
-          const data = await res.json();
-          setResults(data.results || []);
+          const d = await res.json();
+          setResults(d.results || []);
           setShowResults(true);
         }
       } catch {
@@ -64,6 +74,31 @@ export function StepCustomer({ data, onChange }: Props) {
     return () => clearTimeout(debounceRef.current);
   }, [query]);
 
+  // Fetch jobs when client is selected
+  useEffect(() => {
+    if (!data.sm8ClientId) {
+      setJobs([]);
+      return;
+    }
+
+    let cancelled = false;
+    setJobsLoading(true);
+
+    fetch(`/api/servicem8/client-jobs?company_uuid=${encodeURIComponent(data.sm8ClientId)}`)
+      .then((res) => res.ok ? res.json() : { results: [] })
+      .then((d) => {
+        if (!cancelled) setJobs(d.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setJobs([]);
+      })
+      .finally(() => {
+        if (!cancelled) setJobsLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [data.sm8ClientId]);
+
   const selectClient = (client: SM8Client) => {
     onChange({
       ...data,
@@ -72,6 +107,9 @@ export function StepCustomer({ data, onChange }: Props) {
       email: client.email,
       phone: client.phone,
       address: client.address,
+      linkedJobUuid: undefined,
+      linkedJobNumber: undefined,
+      linkedJobDescription: undefined,
     });
     setQuery("");
     setShowResults(false);
@@ -79,12 +117,37 @@ export function StepCustomer({ data, onChange }: Props) {
 
   const clearClient = () => {
     onChange({
-      jobNumber: data.jobNumber,
+      jobNumber: "",
       sm8ClientId: undefined,
       clientName: "",
       email: "",
       phone: "",
       address: "",
+      linkedJobUuid: undefined,
+      linkedJobNumber: undefined,
+      linkedJobDescription: undefined,
+    });
+    setJobs([]);
+  };
+
+  const linkJob = (job: SM8Job) => {
+    onChange({
+      ...data,
+      linkedJobUuid: job.uuid,
+      linkedJobNumber: job.jobNumber,
+      linkedJobDescription: job.description,
+      jobNumber: job.jobNumber,
+      address: job.address || data.address,
+    });
+  };
+
+  const unlinkJob = () => {
+    onChange({
+      ...data,
+      linkedJobUuid: undefined,
+      linkedJobNumber: undefined,
+      linkedJobDescription: undefined,
+      jobNumber: "",
     });
   };
 
@@ -150,6 +213,58 @@ export function StepCustomer({ data, onChange }: Props) {
         )}
       </div>
 
+      {/* Jobs Section — shown after client selected */}
+      {hasClient && (
+        <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-border">
+          <div className="flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">Link to Existing Job</h3>
+          </div>
+
+          {data.linkedJobUuid ? (
+            <div className="bg-primary/10 rounded-lg p-3 flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-foreground">Job #{data.linkedJobNumber}</p>
+                {data.linkedJobDescription && (
+                  <p className="text-xs text-muted-foreground line-clamp-2">{data.linkedJobDescription}</p>
+                )}
+              </div>
+              <button onClick={unlinkJob} className="text-muted-foreground hover:text-foreground p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : jobsLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading jobs...
+            </div>
+          ) : jobs.length > 0 ? (
+            <div className="space-y-1 max-h-48 overflow-y-auto">
+              {jobs.map((job) => (
+                <button
+                  key={job.uuid}
+                  onClick={() => linkJob(job)}
+                  className="w-full text-left px-3 py-2 rounded-md hover:bg-accent/50 transition-colors border border-transparent hover:border-border"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm text-foreground">#{job.jobNumber}</span>
+                    <span className="text-xs text-muted-foreground capitalize">{job.status}</span>
+                  </div>
+                  {job.description && (
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{job.description}</p>
+                  )}
+                  {job.date && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{job.date}</p>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No existing jobs found for this client.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
