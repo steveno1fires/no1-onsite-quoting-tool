@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { CustomerDetails } from "@/types/quote";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2, User, X, Briefcase, CheckCircle2 } from "lucide-react";
+import { Search, Loader2, User, X, Briefcase, CheckCircle2, ChevronDown } from "lucide-react";
 
 interface SM8Client {
   uuid: string;
@@ -27,52 +27,65 @@ interface Props {
 
 export function StepCustomer({ data, onChange }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SM8Client[]>([]);
+  const [allClients, setAllClients] = useState<SM8Client[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [jobs, setJobs] = useState<SM8Job[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setShowResults(false);
+        setOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Debounced search
-  useEffect(() => {
-    if (query.length < 2) {
-      setResults([]);
-      setShowResults(false);
-      return;
+  // Load all clients on first open
+  const loadClients = async () => {
+    if (initialLoaded) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/servicem8/search-clients?q=*`);
+      if (res.ok) {
+        const d = await res.json();
+        setAllClients(d.results || []);
+      }
+    } catch {
+      setAllClients([]);
+    } finally {
+      setLoading(false);
+      setInitialLoaded(true);
     }
+  };
 
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
+  // Also search when query changes (for server-side filtering)
+  useEffect(() => {
+    if (!open || query.length < 2) return;
+
+    const timer = setTimeout(async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/servicem8/search-clients?q=${encodeURIComponent(query)}`);
         if (res.ok) {
           const d = await res.json();
-          setResults(d.results || []);
-          setShowResults(true);
+          setAllClients(d.results || []);
         }
       } catch {
-        setResults([]);
+        // keep existing
       } finally {
         setLoading(false);
       }
     }, 350);
 
-    return () => clearTimeout(debounceRef.current);
-  }, [query]);
+    return () => clearTimeout(timer);
+  }, [query, open]);
 
   // Fetch jobs when client is selected
   useEffect(() => {
@@ -86,18 +99,23 @@ export function StepCustomer({ data, onChange }: Props) {
 
     fetch(`/api/servicem8/client-jobs?company_uuid=${encodeURIComponent(data.sm8ClientId)}`)
       .then((res) => res.ok ? res.json() : { results: [] })
-      .then((d) => {
-        if (!cancelled) setJobs(d.results || []);
-      })
-      .catch(() => {
-        if (!cancelled) setJobs([]);
-      })
-      .finally(() => {
-        if (!cancelled) setJobsLoading(false);
-      });
+      .then((d) => { if (!cancelled) setJobs(d.results || []); })
+      .catch(() => { if (!cancelled) setJobs([]); })
+      .finally(() => { if (!cancelled) setJobsLoading(false); });
 
     return () => { cancelled = true; };
   }, [data.sm8ClientId]);
+
+  // Client-side filter
+  const filtered = query.length >= 2
+    ? allClients
+    : allClients;
+
+  const handleOpen = () => {
+    setOpen(true);
+    loadClients();
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
 
   const selectClient = (client: SM8Client) => {
     onChange({
@@ -112,7 +130,7 @@ export function StepCustomer({ data, onChange }: Props) {
       linkedJobDescription: undefined,
     });
     setQuery("");
-    setShowResults(false);
+    setOpen(false);
   };
 
   const clearClient = () => {
@@ -128,6 +146,7 @@ export function StepCustomer({ data, onChange }: Props) {
       linkedJobDescription: undefined,
     });
     setJobs([]);
+    setQuery("");
   };
 
   const linkJob = (job: SM8Job) => {
@@ -155,9 +174,9 @@ export function StepCustomer({ data, onChange }: Props) {
 
   return (
     <div className="space-y-4 animate-slide-in">
-      {/* Client Search */}
+      {/* Client Search Dropdown */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-border">
-        <h3 className="text-sm font-semibold text-foreground">Search ServiceM8 Client</h3>
+        <h3 className="text-sm font-semibold text-foreground">ServiceM8 Client</h3>
 
         {hasClient ? (
           <div className="bg-muted rounded-lg p-3 flex items-start gap-3">
@@ -174,46 +193,66 @@ export function StepCustomer({ data, onChange }: Props) {
           </div>
         ) : (
           <div ref={wrapperRef} className="relative">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by name, email, or phone..."
-                className="pl-9 pr-9"
-              />
-              {loading && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground animate-spin" />
-              )}
-            </div>
+            {/* Trigger button styled like a select */}
+            <button
+              type="button"
+              onClick={handleOpen}
+              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <span className="text-muted-foreground">Select a client...</span>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            </button>
 
-            {showResults && results.length > 0 && (
-              <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {results.map((client) => (
-                  <button
-                    key={client.uuid}
-                    onClick={() => selectClient(client)}
-                    className="w-full text-left px-3 py-2.5 hover:bg-accent/50 border-b border-border last:border-0 transition-colors"
-                  >
-                    <p className="font-medium text-sm text-foreground">{client.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {[client.email, client.phone].filter(Boolean).join(" · ")}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Dropdown */}
+            {open && (
+              <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+                {/* Search input inside dropdown */}
+                <div className="p-2 border-b border-border">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      ref={inputRef}
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Type to search..."
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                </div>
 
-            {showResults && results.length === 0 && !loading && query.length >= 2 && (
-              <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg p-3 text-center text-sm text-muted-foreground">
-                No clients found
+                {/* Results list */}
+                <div className="max-h-60 overflow-y-auto">
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Loading clients...
+                    </div>
+                  ) : filtered.length > 0 ? (
+                    filtered.map((client) => (
+                      <button
+                        key={client.uuid}
+                        onClick={() => selectClient(client)}
+                        className="w-full text-left px-3 py-2.5 hover:bg-accent/50 border-b border-border last:border-0 transition-colors"
+                      >
+                        <p className="font-medium text-sm text-foreground">{client.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {[client.email, client.phone].filter(Boolean).join(" · ")}
+                        </p>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="py-4 text-center text-sm text-muted-foreground">
+                      {query.length >= 2 ? "No clients found" : "Type at least 2 characters to search"}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Jobs Section — shown after client selected */}
+      {/* Jobs Section */}
       {hasClient && (
         <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-border">
           <div className="flex items-center gap-2">
