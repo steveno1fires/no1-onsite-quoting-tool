@@ -263,7 +263,56 @@ export function StepSummary({ data, onToggleVat }: Props) {
       setIsGenerating(false);
     }
   };
+  const handleUploadToSM8 = async () => {
+    if (!data.customer.linkedJobUuid) {
+      toast.error("No job linked — please link a ServiceM8 job on the Customer step first");
+      return;
+    }
 
+    try {
+      setIsUploading(true);
+      const summaryElement = document.querySelector('[data-summary-content]');
+      if (!summaryElement) throw new Error('Summary content not found');
+
+      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
+
+      // Convert blob to base64
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove data:... prefix
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      const filename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      const res = await fetch('/api/servicem8/upload-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobUuid: data.customer.linkedJobUuid,
+          filename,
+          fileBase64: base64,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        toast.success(`Quote uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+      } else {
+        toast.error(result.error || 'Failed to upload to ServiceM8');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload quote to ServiceM8');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
 
   return (
