@@ -2,11 +2,11 @@ import { QuoteData } from "@/types/quote";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { generateQuotePDF } from "@/lib/pdfGenerator";
-import { getLineItems, formatCurrency } from "@/lib/quoteLineItems";
+import { generateCostsExcel, getCostsFilename } from "@/lib/excelGenerator";
+import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import { QuotePreview } from "@/components/quote/QuotePreview";
 import { toast } from "sonner";
 
