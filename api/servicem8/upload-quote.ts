@@ -1,7 +1,7 @@
 // src/api/servicem8/upload-quote.ts
 // Upload generated quote PDF to ServiceM8 job record
 
-const SM8_API_KEY = process.env.SM8_API_KEY || 'smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3';
+const SM8_API_KEY = process.env.SM8_API_KEY || 'smk-a5f784-6ea17ab17249c972-707b5ecb521890de';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
