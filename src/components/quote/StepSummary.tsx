@@ -99,19 +99,19 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
   return (
     <>
-      {showPreview && previewPdf && (
+      {showPreview && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-background rounded-lg max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl">
             <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-lg font-bold">Quote Preview</h2>
+              <h2 className="text-lg font-bold">Proposal Preview</h2>
               <button onClick={() => setShowPreview(false)} className="text-muted-foreground hover:text-foreground">✕</button>
             </div>
-            <div className="flex-1 overflow-auto min-h-[400px]">
-              <iframe src={previewPdf} className="w-full h-full min-h-[400px]" />
+            <div className="flex-1 overflow-auto p-4 bg-gray-100">
+              <QuotePreview data={data} />
             </div>
             <div className="flex gap-2 p-4 border-t">
               <Button variant="outline" className="flex-1" onClick={() => setShowPreview(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handleDownload} disabled={isGenerating}>Download</Button>
+              <Button className="flex-1" onClick={handleDownload} disabled={isGenerating}>Download PDF</Button>
             </div>
           </div>
         </div>
