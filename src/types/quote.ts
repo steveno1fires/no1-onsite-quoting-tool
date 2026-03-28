@@ -5,6 +5,11 @@ export type { Extra };
 
 export interface CustomerDetails {
   jobNumber: string;
+  sm8ClientId?: string;
+  clientName: string;
+  email: string;
+  phone: string;
+  address: string;
 }
 
 export const JOB_TYPES = [
@@ -151,7 +156,7 @@ export interface QuoteData {
 }
 
 export const initialQuoteData: QuoteData = {
-  customer: { jobNumber: "" },
+  customer: { jobNumber: "", clientName: "", email: "", phone: "", address: "" },
   jobType: "",
   products: {
     fire: { brand: "", model: "", kw: "", price: 0 },
