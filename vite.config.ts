@@ -164,6 +164,95 @@ function sm8ApiPlugin(): Plugin {
           return;
         }
 
+        // Upload attachment to SM8 job
+        if (url.pathname === "/api/servicem8/upload-quote" && req.method === "POST") {
+          let body = "";
+          req.on("data", (chunk: Buffer) => { body += chunk.toString(); });
+          req.on("end", async () => {
+            try {
+              const { jobUuid, filename, fileBase64 } = JSON.parse(body);
+              if (!jobUuid || !filename || !fileBase64) {
+                res.statusCode = 400;
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify({ error: "Missing jobUuid, filename, or fileBase64" }));
+                return;
+              }
+
+              // Step 1: Create attachment record
+              const createRes = await fetch(`${SM8_BASE}/attachment.json`, {
+                method: "POST",
+                headers: {
+                  "X-Api-Key": SM8_TOKEN,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  related_object: "job",
+                  related_object_uuid: jobUuid,
+                  attachment_name: filename,
+                  file_type: ".pdf",
+                  active: 1,
+                }),
+              });
+
+              if (!createRes.ok) {
+                const err = await createRes.text();
+                res.statusCode = createRes.status;
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify({ error: "Failed to create attachment", details: err }));
+                return;
+              }
+
+              // Get the attachment UUID from the response
+              const attachmentUuid = createRes.headers.get("x-record-uuid") || "";
+              if (!attachmentUuid) {
+                // Try to get from response body
+                const createData = await createRes.json().catch(() => ({}));
+                const uuid = (createData as any).uuid || "";
+                if (!uuid) {
+                  res.statusCode = 500;
+                  res.setHeader("Content-Type", "application/json");
+                  res.end(JSON.stringify({ error: "No attachment UUID returned" }));
+                  return;
+                }
+              }
+
+              const finalUuid = attachmentUuid || "";
+
+              // Step 2: Upload the file content
+              const fileBuffer = Buffer.from(fileBase64, "base64");
+              const uploadRes = await fetch(
+                `${SM8_BASE}/attachment/${finalUuid}.file`,
+                {
+                  method: "POST",
+                  headers: {
+                    "X-Api-Key": SM8_TOKEN,
+                    "Content-Type": "application/pdf",
+                    "Content-Disposition": `attachment; filename="${filename}"`,
+                  },
+                  body: fileBuffer,
+                }
+              );
+
+              if (!uploadRes.ok) {
+                const err = await uploadRes.text();
+                res.statusCode = uploadRes.status;
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify({ error: "Failed to upload file", details: err }));
+                return;
+              }
+
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ success: true, attachmentUuid: finalUuid }));
+            } catch (e) {
+              res.statusCode = 500;
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ error: "Upload failed", details: String(e) }));
+            }
+          });
+          return;
+        }
+
         next();
       });
     },
