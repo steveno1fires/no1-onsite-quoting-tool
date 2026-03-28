@@ -111,8 +111,8 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
   y += clientBoxH + 10;
 
   // ── SCOPE OF WORKS ──
-  const items = getLineItems(data);
-  const total = items.reduce((sum, item) => sum + item.price, 0) * (data.includeVat ? 1.2 : 1);
+  const items = getProposalLineItems(data);
+  const total = getProposalTotal(data);
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'bold');
