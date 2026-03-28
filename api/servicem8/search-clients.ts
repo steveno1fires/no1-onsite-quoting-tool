@@ -12,10 +12,9 @@ export default async function handler(
     return response.status(400).json({ error: "Search query must be at least 2 characters" });
   }
 
-  const searchTerm = q.trim().toLowerCase();
+  const searchTerm = isAll ? "" : (q as string).trim().toLowerCase();
 
   try {
-    // Fetch companies from ServiceM8
     const sm8Response = await fetch(
       `https://api.servicem8.com/api_1.0/company.json`,
       {
@@ -34,8 +33,7 @@ export default async function handler(
 
     const companies = await sm8Response.json();
 
-    // Filter client-side since SM8 API filtering is limited
-    const filtered = companies
+    const filtered = (isAll ? companies : companies
       .filter((c: any) => {
         const name = (c.name || "").toLowerCase();
         const email = (c.email || "").toLowerCase();
@@ -45,8 +43,8 @@ export default async function handler(
           email.includes(searchTerm) ||
           phone.includes(searchTerm)
         );
-      })
-      .slice(0, 15) // Limit results
+      }))
+      .slice(0, 200)
       .map((c: any) => ({
         uuid: c.uuid,
         name: c.name || "",
