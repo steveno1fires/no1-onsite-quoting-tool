@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { generateQuotePDF } from "@/lib/pdfGenerator";
-import { generateCostsExcel, getCostsFilename } from "@/lib/excelGenerator";
+
 import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import { QuotePreview } from "@/components/quote/QuotePreview";
 import { toast } from "sonner";
