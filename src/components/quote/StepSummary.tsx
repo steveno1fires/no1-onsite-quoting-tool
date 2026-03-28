@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, Send, Loader2 } from "lucide-react";
+import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { generateQuotePDF } from "@/lib/pdfGenerator";
 import { toast } from "sonner";
