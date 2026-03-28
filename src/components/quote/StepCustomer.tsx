@@ -11,6 +11,8 @@ interface SM8Client {
   email: string;
   phone: string;
   address: string;
+  latestJobNumber?: string;
+  jobCount?: number;
 }
 
 interface SM8Job {
@@ -243,9 +245,17 @@ export function StepCustomer({ data, onChange }: Props) {
                         onClick={() => selectClient(client)}
                         className="w-full text-left px-3 py-2.5 hover:bg-accent/50 border-b border-border last:border-0 transition-colors"
                       >
-                        <p className="font-medium text-sm text-foreground">{client.name}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium text-sm text-foreground">{client.name}</p>
+                          {client.latestJobNumber && (
+                            <span className="text-xs font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                              #{client.latestJobNumber}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           {[client.email, client.phone].filter(Boolean).join(" · ")}
+                          {client.jobCount ? ` · ${client.jobCount} job${client.jobCount > 1 ? "s" : ""}` : ""}
                         </p>
                       </button>
                     ))
