@@ -3,10 +3,10 @@ import { QuoteData } from '@/types/quote';
 import { getLineItems, formatCurrency } from './quoteLineItems';
 import logoJpeg from '@/assets/logo.jpeg';
 
-const PRIMARY_R = 192, PRIMARY_G = 40, PRIMARY_B = 28; // #C0281C
-const DARK = [33, 33, 33] as const;
-const GREY = [120, 120, 120] as const;
-const LIGHT_BG = [248, 248, 248] as const;
+const PRIMARY_R = 192, PRIMARY_G = 40, PRIMARY_B = 28;
+const DARK = [40, 40, 40] as const;
+const GREY = [130, 130, 130] as const;
+const LIGHT_BG = [250, 250, 250] as const;
 
 async function loadLogoAsBase64(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -25,207 +25,219 @@ async function loadLogoAsBase64(): Promise<string> {
   });
 }
 
+function checkPageBreak(pdf: jsPDF, y: number, needed: number, margin: number): number {
+  if (y + needed > 275) {
+    pdf.addPage();
+    return margin + 5;
+  }
+  return y;
+}
+
 export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageW = 210;
-  const margin = 15;
+  const margin = 18;
   const contentW = pageW - margin * 2;
   let y = 0;
 
-  // Load logo
-  let logoBase64: string;
-  try {
-    logoBase64 = await loadLogoAsBase64();
-  } catch {
-    logoBase64 = '';
-  }
+  let logoBase64 = '';
+  try { logoBase64 = await loadLogoAsBase64(); } catch {}
 
-  // --- HEADER ---
-  // Red banner
+  // ── HEADER BANNER ──
   pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
-  pdf.rect(0, 0, pageW, 38, 'F');
+  pdf.rect(0, 0, pageW, 44, 'F');
 
-  // Logo
   if (logoBase64) {
-    pdf.addImage(logoBase64, 'JPEG', margin, 6, 26, 26);
+    pdf.addImage(logoBase64, 'JPEG', margin, 7, 30, 30);
   }
 
-  // Company name
   pdf.setTextColor(255, 255, 255);
-  pdf.setFontSize(22);
+  pdf.setFontSize(26);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('No1 Fires', margin + 30, 18);
+  pdf.text('No1 Fires', margin + 35, 22);
 
-  // "QUOTATION" label
-  pdf.setFontSize(11);
-  pdf.setFont('helvetica', 'normal');
-  pdf.text('QUOTATION', margin + 30, 26);
-
-  // Date on right
-  pdf.setFontSize(9);
-  const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  pdf.text(dateStr, pageW - margin, 18, { align: 'right' });
-
-  y = 46;
-
-  // --- CLIENT & JOB INFO ---
-  pdf.setTextColor(...DARK);
   pdf.setFontSize(10);
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('Prepared for:', margin, y);
-  y += 5;
-
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(11);
-  pdf.text(data.customer.clientName || '—', margin, y);
-  y += 5;
+  pdf.text('Professional Fireplace Installation', margin + 35, 30);
+
+  // PROPOSAL badge on right
+  pdf.setFontSize(12);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('PROPOSAL', pageW - margin, 20, { align: 'right' });
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  pdf.text(dateStr, pageW - margin, 28, { align: 'right' });
+
+  y = 54;
+
+  // ── CLIENT INFO BOX ──
+  pdf.setFillColor(...LIGHT_BG);
+  const clientBoxH = 28 + (data.customer.address ? 5 : 0);
+  pdf.roundedRect(margin, y, contentW, clientBoxH, 2, 2, 'F');
+
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...GREY);
+  pdf.text('PREPARED FOR', margin + 5, y + 6);
+
+  pdf.setFontSize(13);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...DARK);
+  pdf.text(data.customer.clientName || '—', margin + 5, y + 14);
+
+  let infoY = y + 6;
+  const rightCol = pageW - margin - 5;
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...GREY);
+
+  if (data.customer.linkedJobNumber) {
+    pdf.text(`JOB #${data.customer.linkedJobNumber}`, rightCol, infoY, { align: 'right' });
+    infoY += 5;
+  }
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(...DARK);
+  pdf.setFontSize(9);
+  pdf.text(data.jobType || '', rightCol, infoY, { align: 'right' });
 
   if (data.customer.address) {
     pdf.setFontSize(9);
     pdf.setTextColor(...GREY);
-    const addrLines = pdf.splitTextToSize(data.customer.address, contentW / 2);
-    pdf.text(addrLines, margin, y);
-    y += addrLines.length * 4;
+    const addrLines = pdf.splitTextToSize(data.customer.address, contentW * 0.5);
+    pdf.text(addrLines, margin + 5, y + 20);
   }
 
-  // Job info on right side
-  const rightX = pageW - margin;
-  let ry = 46;
-  if (data.customer.linkedJobNumber) {
-    pdf.setFontSize(9);
-    pdf.setTextColor(...GREY);
-    pdf.text(`Job #${data.customer.linkedJobNumber}`, rightX, ry, { align: 'right' });
-    ry += 5;
-  }
-  pdf.setTextColor(...DARK);
-  pdf.setFontSize(9);
-  pdf.text(`Job Type: ${data.jobType}`, rightX, ry, { align: 'right' });
+  y += clientBoxH + 10;
 
-  y = Math.max(y, ry) + 8;
+  // ── SCOPE OF WORKS ──
+  const items = getLineItems(data);
+  const total = items.reduce((sum, item) => sum + item.price, 0) * (data.includeVat ? 1.2 : 1);
 
-  // --- DIVIDER ---
-  pdf.setDrawColor(220, 220, 220);
-  pdf.setLineWidth(0.3);
-  pdf.line(margin, y, pageW - margin, y);
+  pdf.setFontSize(11);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+  pdf.text('Scope of Works', margin, y);
+  y += 2;
+  pdf.setDrawColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+  pdf.setLineWidth(0.5);
+  pdf.line(margin, y, margin + 35, y);
   y += 6;
 
-  // --- LINE ITEMS TABLE ---
-  const items = getLineItems(data);
-  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-  const vat = data.includeVat ? subtotal * 0.2 : 0;
-  const total = subtotal + vat;
-
-  // Table header
-  pdf.setFillColor(...LIGHT_BG);
-  pdf.rect(margin, y - 3, contentW, 7, 'F');
-  pdf.setFontSize(8);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...DARK);
-  pdf.text('Item', margin + 2, y + 1);
-  pdf.text('Details', margin + 60, y + 1);
-  pdf.text('Price', pageW - margin - 2, y + 1, { align: 'right' });
-  y += 8;
-
-  // Table rows
-  pdf.setFont('helvetica', 'normal');
+  // Items list — clean proposal style, no prices per line
   pdf.setFontSize(9);
+  items.forEach((item) => {
+    y = checkPageBreak(pdf, y, 8, margin);
 
-  items.forEach((item, i) => {
-    // Check page break
-    if (y > 265) {
-      pdf.addPage();
-      y = 20;
-    }
+    // Bullet
+    pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+    pdf.circle(margin + 2, y - 1, 0.8, 'F');
 
-    // Alternate row shading
-    if (i % 2 === 0) {
-      pdf.setFillColor(252, 252, 252);
-      pdf.rect(margin, y - 3.5, contentW, 6, 'F');
-    }
-
+    pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(...DARK);
-    pdf.text(item.label, margin + 2, y);
+    pdf.text(item.label, margin + 6, y);
 
     if (item.detail) {
+      const labelW = pdf.getTextWidth(item.label);
+      pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(...GREY);
-      const detailTrunc = item.detail.length > 50 ? item.detail.substring(0, 47) + '...' : item.detail;
-      pdf.text(detailTrunc, margin + 60, y);
+      const detailTrunc = item.detail.length > 55 ? item.detail.substring(0, 52) + '...' : item.detail;
+      pdf.text(`— ${detailTrunc}`, margin + 6 + labelW + 2, y);
     }
 
-    pdf.setTextColor(...DARK);
-    pdf.text(formatCurrency(item.price), pageW - margin - 2, y, { align: 'right' });
     y += 6;
   });
 
-  y += 2;
+  y += 4;
 
-  // --- TOTALS ---
-  pdf.setDrawColor(220, 220, 220);
-  pdf.line(margin + contentW * 0.55, y, pageW - margin, y);
-  y += 6;
+  // ── TOTAL BOX ──
+  y = checkPageBreak(pdf, y, 20, margin);
 
-  const totalsX = margin + contentW * 0.55;
-
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(...DARK);
-  pdf.text('Subtotal', totalsX, y);
-  pdf.text(formatCurrency(subtotal), pageW - margin - 2, y, { align: 'right' });
-  y += 5;
-
-  if (data.includeVat) {
-    pdf.text('VAT (20%)', totalsX, y);
-    pdf.text(formatCurrency(vat), pageW - margin - 2, y, { align: 'right' });
-    y += 5;
-  }
-
-  // Total highlight
   pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
-  pdf.rect(totalsX - 2, y - 3.5, (pageW - margin) - totalsX + 4, 8, 'F');
+  pdf.roundedRect(margin, y, contentW, 16, 2, 2, 'F');
+
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(11);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(data.includeVat ? 'Total (inc. VAT)' : 'Total (ex. VAT)', margin + 6, y + 10);
+
+  pdf.setFontSize(18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text(formatCurrency(total), pageW - margin - 6, y + 10.5, { align: 'right' });
+
+  y += 24;
+
+  // ── PAYMENT TERMS ──
+  y = checkPageBreak(pdf, y, 22, margin);
+
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(255, 255, 255);
-  pdf.text('TOTAL', totalsX, y + 1);
-  pdf.text(formatCurrency(total), pageW - margin - 2, y + 1, { align: 'right' });
-  y += 14;
-
-  // --- PAYMENT TERMS ---
-  if (y > 255) { pdf.addPage(); y = 20; }
-
-  pdf.setFillColor(255, 243, 224);
-  pdf.roundedRect(margin, y - 2, contentW, 14, 2, 2, 'F');
-  pdf.setFontSize(8);
-  pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
-  pdf.text('Payment Terms', margin + 4, y + 3);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(...DARK);
-  pdf.text('45% deposit  ·  45% on materials arrival  ·  10% on completion', margin + 4, y + 8);
-  y += 18;
+  pdf.text('Payment Terms', margin, y);
+  y += 2;
+  pdf.setDrawColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+  pdf.line(margin, y, margin + 35, y);
+  y += 6;
 
-  // --- NOTES ---
-  if (data.notes) {
-    if (y > 250) { pdf.addPage(); y = 20; }
-    pdf.setFontSize(8);
+  const terms = [
+    { pct: '45%', desc: 'Due on acceptance of this proposal' },
+    { pct: '45%', desc: 'Due on delivery of materials' },
+    { pct: '10%', desc: 'Due on completion of works' },
+  ];
+
+  terms.forEach((t) => {
+    y = checkPageBreak(pdf, y, 7, margin);
+    pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+    pdf.circle(margin + 2, y - 1, 0.8, 'F');
     pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(...DARK);
+    pdf.setFontSize(9);
+    pdf.text(t.pct, margin + 6, y);
+    pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(...GREY);
-    pdf.text('Notes', margin, y);
-    y += 4;
+    pdf.text(`— ${t.desc}`, margin + 6 + pdf.getTextWidth(t.pct) + 2, y);
+    y += 6;
+  });
+
+  y += 4;
+
+  // ── NOTES ──
+  if (data.notes) {
+    y = checkPageBreak(pdf, y, 20, margin);
+
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+    pdf.text('Additional Notes', margin, y);
+    y += 2;
+    pdf.setDrawColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+    pdf.line(margin, y, margin + 38, y);
+    y += 6;
+
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(9);
     pdf.setTextColor(...DARK);
-    const noteLines = pdf.splitTextToSize(data.notes, contentW);
-    pdf.text(noteLines, margin, y);
+    const noteLines = pdf.splitTextToSize(data.notes, contentW - 4);
+    noteLines.forEach((line: string) => {
+      y = checkPageBreak(pdf, y, 5, margin);
+      pdf.text(line, margin + 2, y);
+      y += 4.5;
+    });
   }
 
-  // --- FOOTER ---
+  // ── FOOTER on all pages ──
   const pageCount = pdf.getNumberOfPages();
   for (let p = 1; p <= pageCount; p++) {
     pdf.setPage(p);
+    // Bottom line
+    pdf.setDrawColor(220, 220, 220);
+    pdf.setLineWidth(0.3);
+    pdf.line(margin, 284, pageW - margin, 284);
+
     pdf.setFontSize(7);
     pdf.setTextColor(...GREY);
-    pdf.text('No1 Fires  ·  Professional Fireplace Installation', margin, 290);
-    pdf.text(`Page ${p} of ${pageCount}`, pageW - margin, 290, { align: 'right' });
+    pdf.text('No1 Fires  |  Professional Fireplace Installation  |  All prices valid for 30 days', margin, 289);
+    pdf.text(`Page ${p} of ${pageCount}`, pageW - margin, 289, { align: 'right' });
   }
 
   return pdf.output('blob');
