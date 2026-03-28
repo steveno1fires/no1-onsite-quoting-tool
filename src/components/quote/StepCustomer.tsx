@@ -150,21 +150,6 @@ export function StepCustomer({ data, onChange }: Props) {
         )}
       </div>
 
-      {/* Job Number (optional, still useful) */}
-      <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-border">
-        <h3 className="text-sm font-semibold text-foreground">SM8 Job Number (optional)</h3>
-        <div>
-          <Label htmlFor="jobNumber" className="text-xs font-medium">
-            Job Number
-          </Label>
-          <Input
-            id="jobNumber"
-            value={data.jobNumber}
-            onChange={(e) => onChange({ ...data, jobNumber: e.target.value })}
-            placeholder="e.g. #1059"
-          />
-        </div>
-      </div>
     </div>
   );
 }
