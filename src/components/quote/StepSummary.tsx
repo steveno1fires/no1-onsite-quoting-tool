@@ -336,10 +336,16 @@ export function StepSummary({ data, onToggleVat }: Props) {
       )}
 
       <div className="space-y-4 animate-slide-in" data-summary-content>
-        {/* Job Number */}
+        {/* Client & Job */}
       <div className="bg-card rounded-lg p-4 shadow-sm">
-        <p className="text-xs text-muted-foreground mb-1">SM8 Job Number</p>
-        <p className="font-semibold text-sm">{data.customer.jobNumber}</p>
+        <p className="text-xs text-muted-foreground mb-1">Client</p>
+        <p className="font-semibold text-sm">{data.customer.clientName || "—"}</p>
+        {data.customer.linkedJobNumber && (
+          <p className="text-xs text-muted-foreground mt-1">Job #{data.customer.linkedJobNumber}</p>
+        )}
+        {data.customer.address && (
+          <p className="text-xs text-muted-foreground mt-1">{data.customer.address}</p>
+        )}
       </div>
 
       {/* Job Type */}
