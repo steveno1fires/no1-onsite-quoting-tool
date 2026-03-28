@@ -22,7 +22,7 @@ export default async function handler(req: any, res: any) {
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${SM8_API_KEY}`,
+          'X-Api-Key': SM8_API_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
