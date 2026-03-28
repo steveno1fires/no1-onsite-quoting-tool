@@ -11,6 +11,8 @@ interface SM8Client {
   email: string;
   phone: string;
   address: string;
+  latestJobNumber?: string;
+  jobCount?: number;
 }
 
 interface SM8Job {
