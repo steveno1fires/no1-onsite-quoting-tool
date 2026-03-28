@@ -25,19 +25,8 @@ export function StepSummary({ data, onToggleVat }: Props) {
   const vat = data.includeVat ? subtotal * 0.2 : 0;
   const total = subtotal + vat;
 
-  const handlePreview = async () => {
-    try {
-      setIsGenerating(true);
-      const pdfBlob = await generateQuotePDF(data);
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      setPreviewPdf(pdfUrl);
-      setShowPreview(true);
-    } catch (error) {
-      console.error('Preview error:', error);
-      toast.error('Failed to generate preview');
-    } finally {
-      setIsGenerating(false);
-    }
+  const handlePreview = () => {
+    setShowPreview(true);
   };
 
   const handleDownload = async () => {
