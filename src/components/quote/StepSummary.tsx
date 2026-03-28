@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, Send, Loader2 } from "lucide-react";
+import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { generateQuotePDF } from "@/lib/pdfGenerator";
 import { toast } from "sonner";
@@ -206,6 +206,7 @@ function formatCurrency(value: number) {
 
 export function StepSummary({ data, onToggleVat }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [previewPdf, setPreviewPdf] = useState<string | null>(null);
   
@@ -262,7 +263,56 @@ export function StepSummary({ data, onToggleVat }: Props) {
       setIsGenerating(false);
     }
   };
+  const handleUploadToSM8 = async () => {
+    if (!data.customer.linkedJobUuid) {
+      toast.error("No job linked — please link a ServiceM8 job on the Customer step first");
+      return;
+    }
 
+    try {
+      setIsUploading(true);
+      const summaryElement = document.querySelector('[data-summary-content]');
+      if (!summaryElement) throw new Error('Summary content not found');
+
+      const pdfBlob = await generateQuotePDF(summaryElement as HTMLElement);
+
+      // Convert blob to base64
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove data:... prefix
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      const filename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      const res = await fetch('/api/servicem8/upload-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobUuid: data.customer.linkedJobUuid,
+          filename,
+          fileBase64: base64,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        toast.success(`Quote uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+      } else {
+        toast.error(result.error || 'Failed to upload to ServiceM8');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload quote to ServiceM8');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
 
   return (
@@ -286,10 +336,16 @@ export function StepSummary({ data, onToggleVat }: Props) {
       )}
 
       <div className="space-y-4 animate-slide-in" data-summary-content>
-        {/* Job Number */}
+        {/* Client & Job */}
       <div className="bg-card rounded-lg p-4 shadow-sm">
-        <p className="text-xs text-muted-foreground mb-1">SM8 Job Number</p>
-        <p className="font-semibold text-sm">{data.customer.jobNumber}</p>
+        <p className="text-xs text-muted-foreground mb-1">Client</p>
+        <p className="font-semibold text-sm">{data.customer.clientName || "—"}</p>
+        {data.customer.linkedJobNumber && (
+          <p className="text-xs text-muted-foreground mt-1">Job #{data.customer.linkedJobNumber}</p>
+        )}
+        {data.customer.address && (
+          <p className="text-xs text-muted-foreground mt-1">{data.customer.address}</p>
+        )}
       </div>
 
       {/* Job Type */}
@@ -372,6 +428,27 @@ export function StepSummary({ data, onToggleVat }: Props) {
               </>
             )}
           </Button>
+          {data.customer.linkedJobUuid && (
+            <Button
+              variant="outline"
+              className="w-full border-primary text-primary hover:bg-primary/10"
+              size="lg"
+              onClick={handleUploadToSM8}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Uploading to SM8...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Quote to SM8 Job #{data.customer.linkedJobNumber}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </>
