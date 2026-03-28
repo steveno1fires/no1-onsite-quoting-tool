@@ -11,6 +11,7 @@ export default async function handler(req: any, res: any) {
   const jobUuid = req.body.jobUuid || req.body.jobId;
   const filename = req.body.filename;
   const fileBase64 = req.body.fileBase64 || req.body.fileContent;
+  const caption = req.body.caption; // optional caption for the attachment
 
   if (!jobUuid || !filename || !fileBase64) {
     return res.status(400).json({ error: 'Missing required fields' });
