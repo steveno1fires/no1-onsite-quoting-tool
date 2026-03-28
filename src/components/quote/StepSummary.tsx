@@ -20,10 +20,8 @@ export function StepSummary({ data, onToggleVat }: Props) {
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   
-  const items = getLineItems(data);
-  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-  const vat = data.includeVat ? subtotal * 0.2 : 0;
-  const total = subtotal + vat;
+  const items = getProposalLineItems(data);
+  const total = getProposalTotal(data);
 
   const handlePreview = () => {
     setShowPreview(true);
