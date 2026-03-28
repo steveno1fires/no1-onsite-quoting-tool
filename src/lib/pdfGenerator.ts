@@ -225,11 +225,106 @@ export async function generateQuotePDF(data: QuoteData): Promise<Blob> {
     });
   }
 
+  // ── OUR COSTS PAGE ──
+  pdf.addPage();
+  y = 0;
+
+  // Costs header banner
+  pdf.setFillColor(PRIMARY_R, PRIMARY_G, PRIMARY_B);
+  pdf.rect(0, 0, pageW, 30, 'F');
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('OUR COSTS', margin, 20);
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(dateStr, pageW - margin, 20, { align: 'right' });
+
+  y = 40;
+
+  // Client & job info
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...DARK);
+  pdf.text(`Client: ${data.customer.clientName || '—'}`, margin, y);
+  pdf.text(`Job #${data.customer.linkedJobNumber || data.customer.jobNumber || '—'}`, pageW - margin, y, { align: 'right' });
+  y += 5;
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(...GREY);
+  pdf.text(`Job Type: ${data.jobType || '—'}`, margin, y);
+  y += 10;
+
+  // Table header
+  pdf.setFillColor(240, 240, 240);
+  pdf.rect(margin, y - 4, contentW, 8, 'F');
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...DARK);
+  pdf.text('Item', margin + 3, y);
+  pdf.text('Detail', margin + 60, y);
+  pdf.text('Price (£)', pageW - margin - 3, y, { align: 'right' });
+  y += 8;
+
+  // Cost items (ALL items including labour)
+  const costItems = getLineItems(data);
+  const costSubtotal = costItems.reduce((sum, item) => sum + item.price, 0);
+  const costVat = data.includeVat ? costSubtotal * 0.2 : 0;
+  const costTotal = costSubtotal + costVat;
+
+  pdf.setFontSize(8);
+  costItems.forEach((item, idx) => {
+    y = checkPageBreak(pdf, y, 6, margin);
+
+    // Alternate row shading
+    if (idx % 2 === 0) {
+      pdf.setFillColor(250, 250, 250);
+      pdf.rect(margin, y - 3.5, contentW, 6, 'F');
+    }
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(...DARK);
+    pdf.text(item.label, margin + 3, y);
+
+    if (item.detail) {
+      pdf.setTextColor(...GREY);
+      const detailTrunc = item.detail.length > 45 ? item.detail.substring(0, 42) + '...' : item.detail;
+      pdf.text(detailTrunc, margin + 60, y);
+    }
+
+    pdf.setTextColor(...DARK);
+    pdf.text(`£${item.price.toFixed(2)}`, pageW - margin - 3, y, { align: 'right' });
+    y += 6;
+  });
+
+  y += 4;
+
+  // Totals
+  pdf.setDrawColor(200, 200, 200);
+  pdf.line(margin + contentW * 0.5, y, pageW - margin, y);
+  y += 6;
+
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(...DARK);
+  pdf.text('Subtotal (ex VAT)', pageW - margin - 40, y);
+  pdf.text(`£${costSubtotal.toFixed(2)}`, pageW - margin - 3, y, { align: 'right' });
+  y += 6;
+
+  if (data.includeVat) {
+    pdf.text('VAT (20%)', pageW - margin - 40, y);
+    pdf.text(`£${costVat.toFixed(2)}`, pageW - margin - 3, y, { align: 'right' });
+    y += 6;
+  }
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(11);
+  pdf.text('TOTAL', pageW - margin - 40, y);
+  pdf.text(`£${costTotal.toFixed(2)}`, pageW - margin - 3, y, { align: 'right' });
+
   // ── FOOTER on all pages ──
   const pageCount = pdf.getNumberOfPages();
   for (let p = 1; p <= pageCount; p++) {
     pdf.setPage(p);
-    // Bottom line
     pdf.setDrawColor(220, 220, 220);
     pdf.setLineWidth(0.3);
     pdf.line(margin, 284, pageW - margin, 284);
