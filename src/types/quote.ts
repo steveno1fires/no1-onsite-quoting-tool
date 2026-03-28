@@ -5,6 +5,11 @@ export type { Extra };
 
 export interface CustomerDetails {
   jobNumber: string;
+  sm8ClientId?: string;
+  clientName: string;
+  email: string;
+  phone: string;
+  address: string;
 }
 
 export const JOB_TYPES = [
