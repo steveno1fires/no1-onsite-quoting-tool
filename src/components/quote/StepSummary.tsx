@@ -72,18 +72,62 @@ export function StepSummary({ data, onToggleVat }: Props) {
       const pdfBase64 = await blobToBase64(pdfBlob);
       const pdfFilename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
 
+      // Upload PDF
       const pdfRes = await fetch('/api/servicem8/upload-quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: pdfFilename, fileBase64: pdfBase64 }),
       });
-
       const pdfResult = await pdfRes.json();
 
-      if (pdfRes.ok && pdfResult.success) {
-        toast.success(`Quote PDF (with costs) uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+      if (!pdfRes.ok || !pdfResult.success) {
+        toast.error('Failed to upload PDF to ServiceM8');
+        return;
+      }
+
+      // Upload site photos with category captions
+      const photoCategories: { key: keyof typeof data.photos; label: string }[] = [
+        { key: 'current', label: 'Current Setup' },
+        { key: 'upClose', label: 'Up Close' },
+        { key: 'outside', label: 'Outside Access' },
+      ];
+
+      const photoUploads: Promise<Response>[] = [];
+      for (const cat of photoCategories) {
+        const photos = data.photos[cat.key] || [];
+        photos.forEach((dataUrl, idx) => {
+          // Strip data URL prefix to get raw base64
+          const base64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
+          const extMatch = dataUrl.match(/^data:image\/(\w+)/);
+          const ext = extMatch ? extMatch[1].replace('jpeg', 'jpg') : 'jpg';
+          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.${ext}`;
+
+          photoUploads.push(
+            fetch('/api/servicem8/upload-quote', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                jobUuid: data.customer.linkedJobUuid,
+                filename,
+                fileBase64: base64,
+                caption: `${cat.label} - Photo ${idx + 1}`,
+              }),
+            })
+          );
+        });
+      }
+
+      const totalPhotos = photoUploads.length;
+      if (totalPhotos > 0) {
+        const photoResults = await Promise.all(photoUploads);
+        const failed = photoResults.filter(r => !r.ok).length;
+        if (failed > 0) {
+          toast.warning(`PDF uploaded. ${totalPhotos - failed}/${totalPhotos} photos uploaded (${failed} failed).`);
+        } else {
+          toast.success(`Quote PDF + ${totalPhotos} photo${totalPhotos > 1 ? 's' : ''} uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+        }
       } else {
-        toast.error('Failed to upload to ServiceM8');
+        toast.success(`Quote PDF uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
       }
     } catch (error) {
       console.error('Upload error:', error);
