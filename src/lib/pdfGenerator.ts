@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import { QuoteData } from '@/types/quote';
-import { getProposalLineItems, getProposalTotal, formatCurrency } from './quoteLineItems';
+import { getProposalLineItems, getProposalTotal, getLineItems, formatCurrency } from './quoteLineItems';
 import logoJpeg from '@/assets/logo.jpeg';
 
 const PRIMARY_R = 192, PRIMARY_G = 40, PRIMARY_B = 28;
