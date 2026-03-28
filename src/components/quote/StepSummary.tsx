@@ -191,7 +191,7 @@ export function StepSummary({ data, onToggleVat }: Props) {
               ) : (
                 <>
                   <Upload className="w-4 h-4 mr-2" />
-                  Upload Quote to SM8 Job #{data.customer.linkedJobNumber}
+                  Upload Quote + Costs to SM8 Job #{data.customer.linkedJobNumber}
                 </>
               )}
             </Button>
