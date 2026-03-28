@@ -33,15 +33,15 @@ function sm8ApiPlugin(): Plugin {
               return;
             }
             const companies = await sm8Res.json() as any[];
-            const term = q.trim().toLowerCase();
-            const filtered = companies
+            const term = isAll ? "" : (q as string).trim().toLowerCase();
+            const filtered = (isAll ? companies : companies
               .filter((c) => {
                 const name = (c.name || "").toLowerCase();
                 const email = (c.email || "").toLowerCase();
                 const phone = (c.phone || c.mobile || "").toLowerCase();
                 return name.includes(term) || email.includes(term) || phone.includes(term);
-              })
-              .slice(0, 15)
+              }))
+              .slice(0, 200)
               .map((c) => ({
                 uuid: c.uuid,
                 name: c.name || "",
