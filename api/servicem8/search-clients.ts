@@ -19,7 +19,7 @@ export default async function handler(
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer smk-a5f784-bcf831f418766718-c61b510d0ddb07db`,
+          Authorization: `Bearer smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3`,
         },
       }
     );

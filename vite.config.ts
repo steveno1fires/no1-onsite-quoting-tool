@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 function sm8ApiPlugin(): Plugin {
-  const SM8_TOKEN = "smk-a5f784-bcf831f418766718-c61b510d0ddb07db";
+  const SM8_TOKEN = "smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3";
   const SM8_BASE = "https://api.servicem8.com/api_1.0";
 
   return {
