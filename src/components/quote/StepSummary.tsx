@@ -115,8 +115,9 @@ export function StepSummary({ data, onToggleVat }: Props) {
         const photos = data.photos[cat.key] || [];
         photos.forEach((dataUrl, idx) => {
           const base64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
-          // Always use .jpeg for SM8 compatibility
-          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.jpeg`;
+          const caption = `${cat.label} - Photo ${idx + 1}`;
+          // Use .jpg — SM8 doesn't reliably handle .jpeg
+          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.jpg`;
 
           photoUploads.push(
             fetch('/api/servicem8/upload-quote', {
@@ -126,7 +127,7 @@ export function StepSummary({ data, onToggleVat }: Props) {
                 jobUuid: data.customer.linkedJobUuid,
                 filename,
                 fileBase64: base64,
-                caption: `${cat.label} - Photo ${idx + 1}`,
+                caption: `${caption} (${filename})`,
               }),
             })
           );
