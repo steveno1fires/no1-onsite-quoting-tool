@@ -1,4 +1,5 @@
 // Upload files (PDF / Excel) to a ServiceM8 job as attachments
+// SM8 docs: https://developer.servicem8.com/docs/attaching-files-to-a-job-diary
 
 const SM8_API_KEY = process.env.SM8_API_KEY || 'smk-a5f784-6ea17ab17249c972-707b5ecb521890de';
 
@@ -15,16 +16,14 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // Determine MIME type from extension
-  let contentType = 'application/pdf';
-  if (filename.endsWith('.xlsx')) {
-    contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-  }
+  // SM8 expects file_type as the extension with dot, e.g. ".pdf", ".xlsx"
+  const extMatch = filename.match(/\.[^.]+$/);
+  const fileExtension = extMatch ? extMatch[0] : '.pdf';
 
   try {
     const fileBuffer = Buffer.from(fileBase64, 'base64');
 
-    // Step 1: Create the attachment record on the job
+    // Step 1: Create the attachment record
     const createRes = await fetch('https://api.servicem8.com/api_1.0/Attachment.json', {
       method: 'POST',
       headers: {
@@ -35,23 +34,25 @@ export default async function handler(req: any, res: any) {
         related_object: 'job',
         related_object_uuid: jobUuid,
         attachment_name: filename,
+        file_type: fileExtension,
         attachment_source: 'staff',
-        file_type: contentType,
         active: 1,
       }),
     });
 
     if (!createRes.ok) {
       const errText = await createRes.text();
-      console.error('SM8 create attachment error:', errText);
-      return res.status(createRes.status).json({ error: 'Failed to create attachment', details: errText });
+      console.error('SM8 create attachment error:', createRes.status, errText);
+      return res.status(createRes.status).json({ error: 'Failed to create attachment record', details: errText });
     }
 
-    // Step 2: Extract attachment UUID from Location header
-    const locationHeader = createRes.headers.get('Location') || createRes.headers.get('x-record-uuid') || '';
+    // Step 2: Get the attachment UUID from the response
     let attachmentUuid = '';
-    const match = locationHeader.match(/([0-9a-f-]{36})/i);
-    if (match) attachmentUuid = match[1];
+    const locationHeader = createRes.headers.get('x-record-uuid') || createRes.headers.get('Location') || '';
+    const uuidMatch = locationHeader.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+    if (uuidMatch) {
+      attachmentUuid = uuidMatch[1];
+    }
 
     if (!attachmentUuid) {
       try {
@@ -60,26 +61,27 @@ export default async function handler(req: any, res: any) {
       } catch {}
     }
 
-    // Step 3: Upload the actual file binary
-    if (attachmentUuid) {
-      const uploadRes = await fetch(
-        `https://api.servicem8.com/api_1.0/Attachment/${attachmentUuid}.file`,
-        {
-          method: 'POST',
-          headers: {
-            'X-Api-Key': SM8_API_KEY,
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${filename}"`,
-          },
-          body: fileBuffer,
-        }
-      );
+    if (!attachmentUuid) {
+      return res.status(500).json({ error: 'Could not get attachment UUID from SM8 response' });
+    }
 
-      if (!uploadRes.ok) {
-        const errText = await uploadRes.text();
-        console.error('SM8 file upload error:', errText);
-        return res.status(uploadRes.status).json({ error: 'Failed to upload file content', details: errText });
+    // Step 3: Upload the actual file binary to the attachment
+    const uploadRes = await fetch(
+      `https://api.servicem8.com/api_1.0/Attachment/${attachmentUuid}.file`,
+      {
+        method: 'POST',
+        headers: {
+          'X-Api-Key': SM8_API_KEY,
+          'Content-Type': 'application/octet-stream',
+        },
+        body: fileBuffer,
       }
+    );
+
+    if (!uploadRes.ok) {
+      const errText = await uploadRes.text();
+      console.error('SM8 file upload error:', uploadRes.status, errText);
+      return res.status(uploadRes.status).json({ error: 'Failed to upload file binary', details: errText });
     }
 
     return res.status(200).json({ success: true, jobUuid, filename, attachmentUuid });
