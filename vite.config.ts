@@ -71,7 +71,7 @@ function sm8ApiPlugin(): Plugin {
           try {
             const sm8Res = await fetch(
               `${SM8_BASE}/job.json?%24filter=company_uuid%20eq%20'${encodeURIComponent(companyUuid)}'`,
-              { headers: { Authorization: `Bearer ${SM8_TOKEN}` } }
+              { headers: { "X-Api-Key": SM8_TOKEN } }
             );
             if (!sm8Res.ok) {
               res.statusCode = sm8Res.status;
