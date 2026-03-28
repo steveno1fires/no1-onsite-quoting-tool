@@ -1,5 +1,5 @@
 import { QuoteData } from "@/types/quote";
-import { getLineItems, formatCurrency } from "@/lib/quoteLineItems";
+import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import logo from "@/assets/logo.jpeg";
 
 interface Props {
