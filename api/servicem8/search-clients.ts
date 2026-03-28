@@ -6,7 +6,9 @@ export default async function handler(
 ) {
   const { q } = request.query;
 
-  if (!q || typeof q !== "string" || q.trim().length < 2) {
+  const isAll = q === "*";
+
+  if (!isAll && (!q || typeof q !== "string" || q.trim().length < 2)) {
     return response.status(400).json({ error: "Search query must be at least 2 characters" });
   }
 

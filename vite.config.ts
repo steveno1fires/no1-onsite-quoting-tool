@@ -15,7 +15,8 @@ function sm8ApiPlugin(): Plugin {
 
         if (url.pathname === "/api/servicem8/search-clients") {
           const q = url.searchParams.get("q");
-          if (!q || q.trim().length < 2) {
+          const isAll = q === "*";
+          if (!isAll && (!q || q.trim().length < 2)) {
             res.statusCode = 400;
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ error: "Search query must be at least 2 characters" }));
