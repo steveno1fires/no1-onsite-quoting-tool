@@ -34,10 +34,11 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         related_object: 'job',
         related_object_uuid: jobUuid,
-        attachment_name: caption || filename,
+        attachment_name: filename,
         file_type: fileExtension,
         attachment_source: 'staff',
         active: 1,
+        ...(caption ? { description: caption } : {}),
       }),
     });
 
