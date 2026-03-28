@@ -104,7 +104,7 @@ export function StepSummary({ data, onToggleVat }: Props) {
         if (!proposalOk) return;
       }
 
-      // Upload site photos with category captions
+      // Upload site photos as individual PDFs (one per photo)
       const photoCategories: { key: keyof typeof data.photos; label: string }[] = [
         { key: 'current', label: 'Current Setup' },
         { key: 'upClose', label: 'Up Close' },
@@ -114,11 +114,10 @@ export function StepSummary({ data, onToggleVat }: Props) {
       const photoUploads: Promise<Response>[] = [];
       for (const cat of photoCategories) {
         const photos = data.photos[cat.key] || [];
-        photos.forEach((dataUrl, idx) => {
-          const base64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
-          const caption = `${cat.label} - Photo ${idx + 1}`;
-          // Use .jpg — SM8 doesn't reliably handle .jpeg
-          const filename = `${cat.label.replace(/\s+/g, '_')}_${idx + 1}.jpg`;
+        for (let idx = 0; idx < photos.length; idx++) {
+          const pdfBlob = await imageToSinglePagePdf(photos[idx]);
+          const pdfB64 = await blobToBase64(pdfBlob);
+          const filename = `${cat.label.replace(/\s+/g, '_')}_Photo_${idx + 1}.pdf`;
 
           photoUploads.push(
             fetch('/api/servicem8/upload-quote', {
@@ -127,12 +126,11 @@ export function StepSummary({ data, onToggleVat }: Props) {
               body: JSON.stringify({
                 jobUuid: data.customer.linkedJobUuid,
                 filename,
-                fileBase64: base64,
-                caption: `${caption} (${filename})`,
+                fileBase64: pdfB64,
               }),
             })
           );
-        });
+        }
       }
 
       const totalPhotos = photoUploads.length;
@@ -140,9 +138,9 @@ export function StepSummary({ data, onToggleVat }: Props) {
         const photoResults = await Promise.all(photoUploads);
         const failed = photoResults.filter(r => !r.ok).length;
         if (failed > 0) {
-          toast.warning(`PDFs uploaded. ${totalPhotos - failed}/${totalPhotos} photos uploaded (${failed} failed).`);
+          toast.warning(`PDFs uploaded. ${totalPhotos - failed}/${totalPhotos} photo PDFs uploaded (${failed} failed).`);
         } else {
-          toast.success(`Proposal + Costs + ${totalPhotos} photo${totalPhotos > 1 ? 's' : ''} uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+          toast.success(`Proposal + Costs + ${totalPhotos} photo PDF${totalPhotos > 1 ? 's' : ''} uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
         }
       } else {
         toast.success(`Proposal + Costs PDFs uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
