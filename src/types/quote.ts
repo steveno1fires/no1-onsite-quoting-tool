@@ -10,6 +10,9 @@ export interface CustomerDetails {
   email: string;
   phone: string;
   address: string;
+  linkedJobUuid?: string;
+  linkedJobNumber?: string;
+  linkedJobDescription?: string;
 }
 
 export const JOB_TYPES = [
