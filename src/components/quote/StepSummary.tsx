@@ -67,45 +67,23 @@ export function StepSummary({ data, onToggleVat }: Props) {
     try {
       setIsUploading(true);
 
-      // Generate both files
-      const [pdfBlob, excelBlob] = await Promise.all([
-        generateQuotePDF(data),
-        Promise.resolve(generateCostsExcel(data)),
-      ]);
-
-      const [pdfBase64, excelBase64] = await Promise.all([
-        blobToBase64(pdfBlob),
-        blobToBase64(excelBlob),
-      ]);
-
+      // Generate single PDF with costs page included
+      const pdfBlob = await generateQuotePDF(data);
+      const pdfBase64 = await blobToBase64(pdfBlob);
       const pdfFilename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const excelFilename = getCostsFilename(data);
 
-      // Upload both in parallel
-      const [pdfRes, excelRes] = await Promise.all([
-        fetch('/api/servicem8/upload-quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: pdfFilename, fileBase64: pdfBase64 }),
-        }),
-        fetch('/api/servicem8/upload-quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: excelFilename, fileBase64: excelBase64 }),
-        }),
-      ]);
+      const pdfRes = await fetch('/api/servicem8/upload-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: pdfFilename, fileBase64: pdfBase64 }),
+      });
 
       const pdfResult = await pdfRes.json();
-      const excelResult = await excelRes.json();
 
-      if (pdfRes.ok && pdfResult.success && excelRes.ok && excelResult.success) {
-        toast.success(`Quote PDF & Costs Excel uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+      if (pdfRes.ok && pdfResult.success) {
+        toast.success(`Quote PDF (with costs) uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
       } else {
-        const errors = [
-          !pdfResult.success && 'PDF upload failed',
-          !excelResult.success && 'Excel upload failed',
-        ].filter(Boolean).join(', ');
-        toast.error(errors || 'Failed to upload to ServiceM8');
+        toast.error('Failed to upload to ServiceM8');
       }
     } catch (error) {
       console.error('Upload error:', error);
