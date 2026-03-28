@@ -48,6 +48,15 @@ export function StepSummary({ data, onToggleVat }: Props) {
     }
   };
 
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const handleUploadToSM8 = async () => {
     if (!data.customer.linkedJobUuid) {
       toast.error("No job linked — please link a ServiceM8 job on the Customer step first");
@@ -56,40 +65,50 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
     try {
       setIsUploading(true);
-      const pdfBlob = await generateQuotePDF(data);
 
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(pdfBlob);
-      });
+      // Generate both files
+      const [pdfBlob, excelBlob] = await Promise.all([
+        generateQuotePDF(data),
+        Promise.resolve(generateCostsExcel(data)),
+      ]);
 
-      const filename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const [pdfBase64, excelBase64] = await Promise.all([
+        blobToBase64(pdfBlob),
+        blobToBase64(excelBlob),
+      ]);
 
-      const res = await fetch('/api/servicem8/upload-quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jobUuid: data.customer.linkedJobUuid,
-          filename,
-          fileBase64: base64,
+      const pdfFilename = `Quote_${data.customer.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const excelFilename = getCostsFilename(data);
+
+      // Upload both in parallel
+      const [pdfRes, excelRes] = await Promise.all([
+        fetch('/api/servicem8/upload-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: pdfFilename, fileBase64: pdfBase64 }),
         }),
-      });
+        fetch('/api/servicem8/upload-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: excelFilename, fileBase64: excelBase64 }),
+        }),
+      ]);
 
-      const result = await res.json();
+      const pdfResult = await pdfRes.json();
+      const excelResult = await excelRes.json();
 
-      if (res.ok && result.success) {
-        toast.success(`Quote uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
+      if (pdfRes.ok && pdfResult.success && excelRes.ok && excelResult.success) {
+        toast.success(`Quote PDF & Costs Excel uploaded to SM8 Job #${data.customer.linkedJobNumber}`);
       } else {
-        toast.error(result.error || 'Failed to upload to ServiceM8');
+        const errors = [
+          !pdfResult.success && 'PDF upload failed',
+          !excelResult.success && 'Excel upload failed',
+        ].filter(Boolean).join(', ');
+        toast.error(errors || 'Failed to upload to ServiceM8');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload quote to ServiceM8');
+      toast.error('Failed to upload to ServiceM8');
     } finally {
       setIsUploading(false);
     }
