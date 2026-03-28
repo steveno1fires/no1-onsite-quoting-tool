@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, Send, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { generateQuotePDF, generateCostsPDF } from "@/lib/pdfGenerator";
+import { imageToSinglePagePdf } from "@/lib/imageToSinglePagePdf";
 
 import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import { QuotePreview } from "@/components/quote/QuotePreview";
