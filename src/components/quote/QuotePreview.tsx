@@ -1,5 +1,5 @@
 import { QuoteData } from "@/types/quote";
-import { getLineItems, formatCurrency } from "@/lib/quoteLineItems";
+import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import logo from "@/assets/logo.jpeg";
 
 interface Props {
@@ -7,8 +7,8 @@ interface Props {
 }
 
 export function QuotePreview({ data }: Props) {
-  const items = getLineItems(data);
-  const total = items.reduce((sum, item) => sum + item.price, 0) * (data.includeVat ? 1.2 : 1);
+  const items = getProposalLineItems(data);
+  const total = getProposalTotal(data);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (

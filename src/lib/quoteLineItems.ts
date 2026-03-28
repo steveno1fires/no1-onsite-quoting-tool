@@ -175,6 +175,18 @@ export function getLineItems(data: QuoteData): LineItem[] {
   return items;
 }
 
+/** Line items for the customer-facing proposal — excludes labour */
+export function getProposalLineItems(data: QuoteData): LineItem[] {
+  return getLineItems(data).filter(item => item.label !== "Labour");
+}
+
+/** Total for the customer-facing proposal (excludes labour, optionally includes VAT) */
+export function getProposalTotal(data: QuoteData): number {
+  const items = getProposalLineItems(data);
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  return subtotal * (data.includeVat ? 1.2 : 1);
+}
+
 export function formatCurrency(value: number) {
   return `£${value.toFixed(2)}`;
 }
