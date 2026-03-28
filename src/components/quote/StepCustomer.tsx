@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { CustomerDetails } from "@/types/quote";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2, User, X, Briefcase, CheckCircle2, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Loader2, User, X, Briefcase, CheckCircle2, ChevronDown, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface SM8Client {
   uuid: string;
@@ -29,12 +31,37 @@ export function StepCustomer({ data, onChange }: Props) {
   const [query, setQuery] = useState("");
   const [allClients, setAllClients] = useState<SM8Client[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [open, setOpen] = useState(false);
-  const [initialLoaded, setInitialLoaded] = useState(false);
   const [jobs, setJobs] = useState<SM8Job[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const fetchAllClients = useCallback(async (showToast = false) => {
+    setLoading(true);
+    if (showToast) setSyncing(true);
+    try {
+      const res = await fetch(`/api/servicem8/search-clients?q=*`);
+      if (res.ok) {
+        const d = await res.json();
+        setAllClients(d.results || []);
+        if (showToast) toast.success(`Synced ${(d.results || []).length} clients from ServiceM8`);
+      } else {
+        if (showToast) toast.error("Failed to sync clients");
+      }
+    } catch {
+      if (showToast) toast.error("Failed to connect to ServiceM8");
+    } finally {
+      setLoading(false);
+      setSyncing(false);
+    }
+  }, []);
+
+  // Preload all clients on mount
+  useEffect(() => {
+    fetchAllClients();
+  }, [fetchAllClients]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -47,73 +74,37 @@ export function StepCustomer({ data, onChange }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Load all clients on first open
-  const loadClients = async () => {
-    if (initialLoaded) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/servicem8/search-clients?q=*`);
-      if (res.ok) {
-        const d = await res.json();
-        setAllClients(d.results || []);
-      }
-    } catch {
-      setAllClients([]);
-    } finally {
-      setLoading(false);
-      setInitialLoaded(true);
-    }
-  };
-
-  // Also search when query changes (for server-side filtering)
-  useEffect(() => {
-    if (!open || query.length < 2) return;
-
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/servicem8/search-clients?q=${encodeURIComponent(query)}`);
-        if (res.ok) {
-          const d = await res.json();
-          setAllClients(d.results || []);
-        }
-      } catch {
-        // keep existing
-      } finally {
-        setLoading(false);
-      }
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [query, open]);
-
   // Fetch jobs when client is selected
   useEffect(() => {
     if (!data.sm8ClientId) {
       setJobs([]);
       return;
     }
-
     let cancelled = false;
     setJobsLoading(true);
-
     fetch(`/api/servicem8/client-jobs?company_uuid=${encodeURIComponent(data.sm8ClientId)}`)
       .then((res) => res.ok ? res.json() : { results: [] })
       .then((d) => { if (!cancelled) setJobs(d.results || []); })
       .catch(() => { if (!cancelled) setJobs([]); })
       .finally(() => { if (!cancelled) setJobsLoading(false); });
-
     return () => { cancelled = true; };
   }, [data.sm8ClientId]);
 
-  // Client-side filter
-  const filtered = query.length >= 2
-    ? allClients
+  // Client-side filter from preloaded list
+  const filtered = query.length >= 1
+    ? allClients.filter((c) => {
+        const term = query.toLowerCase();
+        return (
+          c.name.toLowerCase().includes(term) ||
+          c.email.toLowerCase().includes(term) ||
+          c.phone.toLowerCase().includes(term) ||
+          c.address.toLowerCase().includes(term)
+        );
+      })
     : allClients;
 
   const handleOpen = () => {
     setOpen(true);
-    loadClients();
     setTimeout(() => inputRef.current?.focus(), 50);
   };
 
@@ -176,7 +167,23 @@ export function StepCustomer({ data, onChange }: Props) {
     <div className="space-y-4 animate-slide-in">
       {/* Client Search Dropdown */}
       <div className="bg-card rounded-lg p-4 shadow-sm space-y-3 border border-border">
-        <h3 className="text-sm font-semibold text-foreground">ServiceM8 Client</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">ServiceM8 Client</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => fetchAllClients(true)}
+            disabled={syncing}
+            className="h-7 px-2 text-xs gap-1"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Syncing..." : "Sync SM8"}
+          </Button>
+        </div>
+
+        {allClients.length > 0 && !hasClient && (
+          <p className="text-xs text-muted-foreground">{allClients.length} clients loaded</p>
+        )}
 
         {hasClient ? (
           <div className="bg-muted rounded-lg p-3 flex items-start gap-3">
@@ -193,20 +200,23 @@ export function StepCustomer({ data, onChange }: Props) {
           </div>
         ) : (
           <div ref={wrapperRef} className="relative">
-            {/* Trigger button styled like a select */}
             <button
               type="button"
               onClick={handleOpen}
               className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <span className="text-muted-foreground">Select a client...</span>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">
+                {loading && allClients.length === 0 ? "Loading clients..." : "Select a client..."}
+              </span>
+              {loading && allClients.length === 0 ? (
+                <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
             </button>
 
-            {/* Dropdown */}
             {open && (
               <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
-                {/* Search input inside dropdown */}
                 <div className="p-2 border-b border-border">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -214,15 +224,14 @@ export function StepCustomer({ data, onChange }: Props) {
                       ref={inputRef}
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Type to search..."
+                      placeholder="Filter clients..."
                       className="pl-8 h-9 text-sm"
                     />
                   </div>
                 </div>
 
-                {/* Results list */}
                 <div className="max-h-60 overflow-y-auto">
-                  {loading ? (
+                  {loading && allClients.length === 0 ? (
                     <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       Loading clients...
@@ -242,7 +251,7 @@ export function StepCustomer({ data, onChange }: Props) {
                     ))
                   ) : (
                     <div className="py-4 text-center text-sm text-muted-foreground">
-                      {query.length >= 2 ? "No clients found" : "Type at least 2 characters to search"}
+                      No clients found
                     </div>
                   )}
                 </div>

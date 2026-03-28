@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 function sm8ApiPlugin(): Plugin {
-  const SM8_TOKEN = "smk-a5f784-bcf831f418766718-c61b510d0ddb07db";
+  const SM8_TOKEN = "smk-a5f784-21bf3b7b4b868ff6-54fbf7018be798d3";
   const SM8_BASE = "https://api.servicem8.com/api_1.0";
 
   return {
@@ -15,7 +15,8 @@ function sm8ApiPlugin(): Plugin {
 
         if (url.pathname === "/api/servicem8/search-clients") {
           const q = url.searchParams.get("q");
-          if (!q || q.trim().length < 2) {
+          const isAll = q === "*";
+          if (!isAll && (!q || q.trim().length < 2)) {
             res.statusCode = 400;
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ error: "Search query must be at least 2 characters" }));
@@ -32,15 +33,15 @@ function sm8ApiPlugin(): Plugin {
               return;
             }
             const companies = await sm8Res.json() as any[];
-            const term = q.trim().toLowerCase();
-            const filtered = companies
+            const term = isAll ? "" : (q as string).trim().toLowerCase();
+            const filtered = (isAll ? companies : companies
               .filter((c) => {
                 const name = (c.name || "").toLowerCase();
                 const email = (c.email || "").toLowerCase();
                 const phone = (c.phone || c.mobile || "").toLowerCase();
                 return name.includes(term) || email.includes(term) || phone.includes(term);
-              })
-              .slice(0, 15)
+              }))
+              .slice(0, 200)
               .map((c) => ({
                 uuid: c.uuid,
                 name: c.name || "",
