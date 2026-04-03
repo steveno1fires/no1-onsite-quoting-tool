@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Loader2, User, X, Briefcase, CheckCircle2, ChevronDown, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SM8Client {
   uuid: string;
@@ -44,7 +45,18 @@ export function StepCustomer({ data, onChange }: Props) {
     setLoading(true);
     if (showToast) setSyncing(true);
     try {
-      const res = await fetch(`/api/servicem8/search-clients?q=*`);
+      const { data: fnData, error } = await supabase.functions.invoke("sm8-proxy", {
+        method: "GET",
+        body: null,
+        headers: {},
+      });
+      // supabase.functions.invoke doesn't support query params, so use fetch directly
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || import.meta.env.VITE_SUPABASE_URL?.match(/\/\/([^.]+)/)?.[1] || "";
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const res = await fetch(`${supabaseUrl}/functions/v1/sm8-proxy?action=search-clients&q=*`, {
+        headers: { Authorization: `Bearer ${anonKey}`, apikey: anonKey },
+      });
       if (res.ok) {
         const d = await res.json();
         setAllClients(d.results || []);
@@ -84,7 +96,11 @@ export function StepCustomer({ data, onChange }: Props) {
     }
     let cancelled = false;
     setJobsLoading(true);
-    fetch(`/api/servicem8/client-jobs?company_uuid=${encodeURIComponent(data.sm8ClientId)}`)
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    fetch(`${supabaseUrl}/functions/v1/sm8-proxy?action=client-jobs&company_uuid=${encodeURIComponent(data.sm8ClientId)}`, {
+      headers: { Authorization: `Bearer ${anonKey}`, apikey: anonKey },
+    })
       .then((res) => res.ok ? res.json() : { results: [] })
       .then((d) => { if (!cancelled) setJobs(d.results || []); })
       .catch(() => { if (!cancelled) setJobs([]); })
