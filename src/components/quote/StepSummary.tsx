@@ -10,6 +10,7 @@ import { imageToSinglePagePdf } from "@/lib/imageToSinglePagePdf";
 import { getProposalLineItems, getProposalTotal, formatCurrency } from "@/lib/quoteLineItems";
 import { QuotePreview } from "@/components/quote/QuotePreview";
 import { toast } from "sonner";
+import { sm8Post } from "@/lib/sm8Api";
 
 interface Props {
   data: QuoteData;
@@ -83,16 +84,8 @@ export function StepSummary({ data, onToggleVat }: Props) {
 
       // Upload both PDFs in parallel
       const [proposalRes, costsRes] = await Promise.all([
-        fetch('/api/servicem8/upload-quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: `Proposal_${clientSlug}_${dateSuffix}.pdf`, fileBase64: proposalBase64, caption: 'Customer Proposal' }),
-        }),
-        fetch('/api/servicem8/upload-quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobUuid: data.customer.linkedJobUuid, filename: `OUR_COSTS_${clientSlug}_${dateSuffix}.pdf`, fileBase64: costsBase64, caption: 'OUR COSTS (Internal)' }),
-        }),
+        sm8Post("upload-quote", { jobUuid: data.customer.linkedJobUuid, filename: `Proposal_${clientSlug}_${dateSuffix}.pdf`, fileBase64: proposalBase64, caption: 'Customer Proposal' }),
+        sm8Post("upload-quote", { jobUuid: data.customer.linkedJobUuid, filename: `OUR_COSTS_${clientSlug}_${dateSuffix}.pdf`, fileBase64: costsBase64, caption: 'OUR COSTS (Internal)' }),
       ]);
 
       const proposalOk = proposalRes.ok && (await proposalRes.json()).success;
@@ -120,14 +113,10 @@ export function StepSummary({ data, onToggleVat }: Props) {
           const filename = `${cat.label.replace(/\s+/g, '_')}_Photo_${idx + 1}.pdf`;
 
           photoUploads.push(
-            fetch('/api/servicem8/upload-quote', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jobUuid: data.customer.linkedJobUuid,
-                filename,
-                fileBase64: pdfB64,
-              }),
+            sm8Post("upload-quote", {
+              jobUuid: data.customer.linkedJobUuid,
+              filename,
+              fileBase64: pdfB64,
             })
           );
         }
