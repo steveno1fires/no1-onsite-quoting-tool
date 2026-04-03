@@ -29,9 +29,8 @@ export async function getJobDetails(jobId: string): Promise<SM8Job> {
 
   // Use the backend API proxy instead of calling SM8 directly
   // This avoids CORS issues by proxying through our server
-  const response = await fetch(
-    `/api/servicem8/job?id=${encodeURIComponent(cleanedId)}`
-  );
+  const { sm8Get } = await import("@/lib/sm8Api");
+  const response = await sm8Get("job", { id: cleanedId });
 
   if (!response.ok) {
     if (response.status === 404) {

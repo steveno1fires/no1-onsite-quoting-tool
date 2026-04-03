@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Loader2, User, X, Briefcase, CheckCircle2, ChevronDown, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { sm8Get } from "@/lib/sm8Api";
 
 interface SM8Client {
   uuid: string;
@@ -44,7 +45,7 @@ export function StepCustomer({ data, onChange }: Props) {
     setLoading(true);
     if (showToast) setSyncing(true);
     try {
-      const res = await fetch(`/api/servicem8/search-clients?q=*`);
+      const res = await sm8Get("search-clients", { q: "*" });
       if (res.ok) {
         const d = await res.json();
         setAllClients(d.results || []);
@@ -84,7 +85,7 @@ export function StepCustomer({ data, onChange }: Props) {
     }
     let cancelled = false;
     setJobsLoading(true);
-    fetch(`/api/servicem8/client-jobs?company_uuid=${encodeURIComponent(data.sm8ClientId)}`)
+    sm8Get("client-jobs", { company_uuid: data.sm8ClientId })
       .then((res) => res.ok ? res.json() : { results: [] })
       .then((d) => { if (!cancelled) setJobs(d.results || []); })
       .catch(() => { if (!cancelled) setJobs([]); })
